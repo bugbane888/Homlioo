@@ -52,20 +52,20 @@ const Home = () => {
   return (
     <PageTransition>
       {/* --- HERO SECTION: DEEP NAVY PIXEL-PERFECT --- */}
-      <section className="bg-[#0F2133] pt-24 pb-20 px-6 relative text-center overflow-hidden">
+      <section className="bg-[#0F2133] pt-12 sm:pt-20 md:pt-24 pb-12 sm:pb-16 md:pb-20 px-4 sm:px-6 relative text-center overflow-hidden">
         {/* Subtle Gradient Glows */}
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_20%_50%,#F59E0B,transparent_50%)]"></div>
 
         <div className="max-w-6xl mx-auto relative z-10">
           {/* Main Tagline */}
-          <h1 className="text-[42px] md:text-[68px] font-[900] text-white leading-[1.1] mb-2 tracking-tighter">
+          <h1 className="text-2xl sm:text-4xl md:text-[68px] font-[900] text-white leading-[1.2] sm:leading-[1.1] mb-1 sm:mb-2 tracking-tighter">
             Find Your Perfect PG
           </h1>
-          <h2 className="text-[42px] md:text-[68px] font-[900] text-[#F59E0B] leading-[1.1] mb-6 tracking-tighter">
+          <h2 className="text-2xl sm:text-4xl md:text-[68px] font-[900] text-[#F59E0B] leading-[1.2] sm:leading-[1.1] mb-4 sm:mb-6 tracking-tighter">
             Near Your College
           </h2>
 
-          <p className="text-slate-300 text-sm md:text-[17px] font-medium mb-12 opacity-80 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-slate-300 text-xs sm:text-sm md:text-[17px] font-medium mb-8 sm:mb-12 opacity-80 leading-relaxed max-w-2xl mx-auto">
             Verified listings. Transparent pricing. Zero broker fees.
             <br />
             On a mission to empower{" "}
@@ -78,15 +78,15 @@ const Home = () => {
           {/* --- PILL-SHAPED SEARCH BAR (AS PER SCREENSHOT) --- */}
           <form
             onSubmit={handleSearch}
-            className="bg-white rounded-full p-1.5 flex flex-col md:flex-row items-center max-w-4xl mx-auto mb-10 shadow-2xl transition-all"
+            className="bg-white rounded-2xl md:rounded-full p-2 sm:p-1.5 flex flex-col md:flex-row items-stretch md:items-center max-w-4xl mx-auto mb-6 sm:mb-10 shadow-2xl transition-all gap-2 md:gap-0"
           >
             {/* 1. Location Input */}
-            <div className="flex-[1.5] flex items-center gap-3 px-6 py-2 w-full">
-              <Search size={18} className="text-slate-300" />
+            <div className="flex-[1.5] flex items-center gap-3 px-4 sm:px-6 py-3 md:py-2 w-full">
+              <Search size={16} className="text-slate-300 shrink-0" />
               <input
                 type="text"
-                placeholder="Search by area, college, or landmark..."
-                className="bg-transparent border-none outline-none w-full text-slate-700 font-bold text-[13px] placeholder:text-slate-300"
+                placeholder="Search by area, college..."
+                className="bg-transparent border-none outline-none w-full text-slate-700 font-bold text-xs sm:text-[13px] placeholder:text-slate-300"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -99,7 +99,7 @@ const Home = () => {
             <select
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
-              className="flex-1 bg-transparent px-6 py-2 text-slate-500 font-black text-[13px] outline-none cursor-pointer appearance-none text-center md:text-left"
+              className="flex-1 bg-transparent px-4 sm:px-6 py-3 md:py-2 text-slate-500 font-black text-xs sm:text-[13px] outline-none cursor-pointer appearance-none text-center md:text-left"
             >
               <option>Any Budget</option>
               <option value="6000">Under ₹6,000</option>
@@ -124,14 +124,14 @@ const Home = () => {
             {/* 4. Search Button */}
             <button
               type="submit"
-              className="bg-[#F59E0B] hover:bg-amber-500 text-[#0F2133] px-10 py-3.5 rounded-full font-[900] text-[13px] flex items-center gap-2 transition-all shadow-lg shadow-amber-500/20 ml-2 w-full md:w-auto"
+              className="bg-[#F59E0B] hover:bg-amber-500 text-[#0F2133] px-6 sm:px-10 py-3 md:py-3.5 rounded-xl md:rounded-full font-[900] text-xs sm:text-[13px] flex items-center justify-center gap-2 transition-all shadow-lg shadow-amber-500/20 md:ml-2 w-full md:w-auto shrink-0"
             >
-              <Search size={16} strokeWidth={3} /> Search
+              <Search size={14} strokeWidth={3} /> <span className="hidden sm:inline">Search</span>
             </button>
           </form>
 
           {/* UNIVERSITY PILLS (Tabs behind search) */}
-          <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-6 sm:mt-8">
             {[
               "NIET",
               "GL Bajaj",
@@ -144,7 +144,7 @@ const Home = () => {
               <span
                 key={l}
                 onClick={() => navigate(`/listings?location=${l}`)}
-                className="bg-[#1E2E3D] border border-white/5 text-slate-400 px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-[#F59E0B] hover:text-[#0F2133] transition-all"
+                className="bg-[#1E2E3D] border border-white/5 text-slate-400 px-3 sm:px-6 py-1.5 sm:py-2.5 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-[#F59E0B] hover:text-[#0F2133] transition-all"
               >
                 {l}
               </span>
@@ -154,12 +154,12 @@ const Home = () => {
       </section>
 
       {/* --- AMBER STATS BAR --- */}
-      <section className="bg-[#D97706] py-8 px-6">
-        <div className="max-w-7xl mx-auto flex justify-center items-center gap-16 md:gap-40">
+      <section className="bg-[#D97706] py-6 sm:py-8 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto flex justify-center items-center gap-6 sm:gap-16 md:gap-40 flex-wrap">
           {STATS.map((s) => (
-            <div key={s.label} className="text-center">
-              <div className="font-[900] text-3xl text-amber-100">{s.n}</div>
-              <div className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-900/40 mt-1">
+            <div key={s.label} className="text-center min-w-[120px]">
+              <div className="font-[900] text-2xl sm:text-3xl text-amber-100">{s.n}</div>
+              <div className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-amber-900/40 mt-1">
                 {s.label}
               </div>
             </div>
@@ -168,7 +168,7 @@ const Home = () => {
       </section>
 
       {/* --- CATEGORY GRID SECTION --- */}
-      <section className="max-w-7xl mx-auto px-6 py-24 grid grid-cols-1 md:grid-cols-2 gap-8">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-24 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
         <div className="grid grid-rows-2 gap-8 text-left">
           <CategoryCard
             title="Boys"

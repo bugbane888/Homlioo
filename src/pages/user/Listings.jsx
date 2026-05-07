@@ -75,8 +75,8 @@ const Listings = () => {
 
   return (
     <PageTransition>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 lg:py-12 transition-colors">
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 lg:py-12 transition-colors">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-8 lg:gap-10">
           {/* SIDEBAR (Stacks on top on mobile) */}
           <aside className="w-full lg:w-72 shrink-0">
             <FilterSidebar filters={filters} dispatch={dispatch} />
@@ -84,13 +84,13 @@ const Listings = () => {
 
           {/* RESULTS AREA */}
           <main className="flex-1">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 sm:mb-10 gap-4 sm:gap-6">
               <div className="text-left">
-                <h1 className="text-3xl lg:text-4xl font-[900] text-brand-navy dark:text-white tracking-tighter italic">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-[900] text-brand-navy dark:text-white tracking-tighter italic">
                   Found {filteredListings.length} Sanctuaries
                 </h1>
-                <p className="text-slate-400 font-[900] text-[10px] uppercase tracking-widest mt-1 italic flex items-center gap-2">
-                  <MapPin size={12} /> Verified Stays in{" "}
+                <p className="text-slate-400 font-[900] text-[8px] sm:text-[10px] uppercase tracking-widest mt-1 italic flex items-center gap-2">
+                  <MapPin size={10} className="sm:w-3 sm:h-3" /> Verified Stays in{" "}
                   {filters.search || "All Locations"}
                 </p>
               </div>
@@ -114,7 +114,7 @@ const Listings = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
               {isLoading ? (
                 [...Array(6)].map((_, i) => <ListingCardSkeleton key={i} />)
               ) : filteredListings.length > 0 ? (

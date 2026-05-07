@@ -10,9 +10,9 @@ const AdminLayout = ({ children }) => {
     <div className="flex bg-slate-50 min-h-screen">
       <AdminSidebar />
 
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col w-full">
         {/* Top Admin Header */}
-        <header className="h-20 bg-white border-b border-slate-100 flex items-center justify-between px-4 sm:px-6 md:px-10 sticky top-0 z-30">
+        <header className="h-16 sm:h-20 bg-white border-b border-slate-100 flex items-center justify-between px-4 sm:px-6 md:px-10 sticky top-0 z-30">
           <div className="relative w-full sm:w-96 md:w-96 max-w-[32rem]">
             <Search
               className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"

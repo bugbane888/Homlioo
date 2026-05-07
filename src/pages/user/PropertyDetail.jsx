@@ -50,8 +50,8 @@ const PropertyDetail = () => {
   };
 
   return (
-    <div className="bg-[#F8F7F4] dark:bg-slate-900 min-h-screen pb-20">
-      <div className="max-w-7xl mx-auto px-4 lg:px-6 py-6">
+    <div className="bg-[#F8F7F4] dark:bg-slate-900 min-h-screen pb-12 sm:pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         <button
           onClick={() => navigate(-1)}
           className="w-10 h-10 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-sm mb-6"
@@ -59,35 +59,35 @@ const PropertyDetail = () => {
           <ChevronLeft size={20} />
         </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Image Placeholder */}
-            <div className="aspect-video bg-blue-500 rounded-3xl relative flex items-center justify-center overflow-hidden">
-              <div className="text-8xl">🏠</div>
-              <div className="absolute bottom-4 text-white/70 text-xs">
+            <div className="aspect-video bg-blue-500 rounded-2xl sm:rounded-3xl relative flex items-center justify-center overflow-hidden">
+              <div className="text-6xl sm:text-8xl">🏠</div>
+              <div className="absolute bottom-2 sm:bottom-4 text-white/70 text-[10px] sm:text-xs px-2">
                 5 verified photos · 1 video walkthrough
               </div>
-              <div className="absolute top-6 left-6 bg-[#10B981] text-white px-4 py-2 rounded-full text-[10px] font-black flex items-center gap-2">
+              <div className="absolute top-3 sm:top-6 left-3 sm:left-6 bg-[#10B981] text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full text-[8px] sm:text-[10px] font-black flex items-center gap-2">
                 <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>{" "}
                 HOMLiOO VERIFIED
               </div>
             </div>
 
             {/* Main Info */}
-            <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700">
-              <div className="flex gap-2 mb-4">
+            <div className="bg-white dark:bg-slate-800 p-4 sm:p-8 rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700">
+              <div className="flex flex-wrap gap-2 mb-4">
                 <Badge
                   variant="amber"
-                  className="bg-pink-100 text-pink-600 border-none"
+                  className="bg-pink-100 text-pink-600 border-none text-xs"
                 >
                   Women Safety
                 </Badge>
-                <Badge variant="amber">Power Backup</Badge>
+                <Badge variant="amber" className="text-xs">Power Backup</Badge>
               </div>
-              <h1 className="text-3xl font-black text-brand-navy dark:text-white mb-2">
+              <h1 className="text-xl sm:text-3xl font-black text-brand-navy dark:text-white mb-2">
                 {pg.name}
               </h1>
-              <div className="flex items-center gap-6 text-slate-400 text-sm font-bold">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-slate-400 text-xs sm:text-sm font-bold">
                 <span className="flex items-center gap-1">
                   <MapPin size={14} /> {pg.locality}
                 </span>

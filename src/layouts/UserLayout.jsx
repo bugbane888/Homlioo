@@ -29,13 +29,13 @@ const UserLayout = ({ children }) => {
     <div className="min-h-screen bg-[#F8F7F4] dark:bg-slate-900 transition-colors flex flex-col relative font-outfit">
       {/* --- PIXEL-PERFECT NAVBAR --- */}
       <nav className="bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 sticky top-0 z-50 h-16 flex items-center shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 w-full flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full flex items-center justify-between">
           {/* 1. Left: Logo */}
-          <Link to="/" className="flex items-center gap-2 group shrink-0">
-            <div className="bg-[#0F172A] dark:bg-brand-purple text-[#F59E0B] dark:text-white w-9 h-9 rounded-lg flex items-center justify-center font-black text-lg shadow-lg group-hover:scale-105 transition-transform">
+          <Link to="/" className="flex items-center gap-2 group shrink-0 min-w-0">
+            <div className="bg-[#0F172A] dark:bg-brand-purple text-[#F59E0B] dark:text-white w-8 sm:w-9 h-8 sm:h-9 rounded-lg flex items-center justify-center font-black text-sm sm:text-lg shadow-lg group-hover:scale-105 transition-transform shrink-0">
               H
             </div>
-            <span className="font-[900] text-xl tracking-tighter dark:text-white uppercase">
+            <span className="font-[900] text-sm sm:text-xl tracking-tighter dark:text-white uppercase hidden sm:inline">
               HOMLiOO
             </span>
           </Link>
@@ -114,7 +114,7 @@ const UserLayout = ({ children }) => {
 
       {/* --- MOBILE OVERLAY MENU --- */}
       {isMenuOpen && (
-        <div className="md:hidden fixed inset-0 top-16 bg-white dark:bg-slate-900 z-[100] p-8 space-y-8 animate-in slide-in-from-top-5">
+        <div className="md:hidden fixed inset-0 top-16 bg-white dark:bg-slate-900 z-[100] p-4 sm:p-8 space-y-4 sm:space-y-8 animate-in slide-in-from-top-5 overflow-y-auto">
           <Link
             to="/listings"
             className="block font-black text-lg uppercase text-brand-navy dark:text-white"

@@ -22,26 +22,26 @@ const Compare = () => {
 
   return (
     <PageTransition>
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="flex justify-between items-center mb-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-12">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-10 gap-4">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-slate-400 font-bold hover:text-brand-navy dark:hover:text-white transition-colors"
+            className="flex items-center gap-2 text-slate-400 font-bold hover:text-brand-navy dark:hover:text-white transition-colors text-sm"
           >
-            <ChevronLeft size={20} /> Back
+            <ChevronLeft size={18} /> Back
           </button>
-          <h1 className="text-3xl font-black text-brand-navy dark:text-white tracking-tighter">
+          <h1 className="text-xl sm:text-3xl font-black text-brand-navy dark:text-white tracking-tighter order-2 sm:order-none">
             Compare Sanctuaries
           </h1>
           <button
             onClick={clearCompare}
-            className="text-red-500 font-black text-xs uppercase tracking-widest hover:underline"
+            className="text-red-500 font-black text-xs uppercase tracking-widest hover:underline self-start sm:self-auto"
           >
             Reset All
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 overflow-x-auto">
           {/* Labels Column */}
           <div className="hidden lg:block space-y-4 pt-52">
             {features.map((f) => (
@@ -58,25 +58,25 @@ const Compare = () => {
           {compareList.map((pg) => (
             <div
               key={pg.id}
-              className="bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 p-6 shadow-xl relative"
+              className="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-[2.5rem] border border-slate-100 dark:border-slate-700 p-4 sm:p-6 shadow-xl relative min-w-[300px] sm:min-w-auto"
             >
               <button
                 onClick={() => toggleCompare(pg)}
-                className="absolute top-6 right-6 text-slate-300 hover:text-red-500 transition-colors"
+                className="absolute top-3 sm:top-6 right-3 sm:right-6 text-slate-300 hover:text-red-500 transition-colors"
               >
-                <X size={20} />
+                <X size={18} className="sm:w-5 sm:h-5" />
               </button>
 
-              <div className="text-center mb-8 pt-4">
-                <div className="text-5xl mb-4">🏠</div>
-                <h3 className="text-lg font-black text-brand-navy dark:text-white mb-1 line-clamp-1">
+              <div className="text-center mb-6 sm:mb-8 pt-2 sm:pt-4">
+                <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">🏠</div>
+                <h3 className="text-base sm:text-lg font-black text-brand-navy dark:text-white mb-1 line-clamp-1">
                   {pg.name}
                 </h3>
-                <p className="text-xs font-bold text-brand-purple">
+                <p className="text-xs font-bold text-brand-purple truncate">
                   {pg.locality}
                 </p>
                 <Button
-                  className="mt-6 w-full py-2 text-xs"
+                  className="mt-4 sm:mt-6 w-full py-2 text-xs"
                   onClick={() => navigate(`/property/${pg.id}`)}
                 >
                   View Details
