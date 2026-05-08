@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Phone, MessageCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Phone, MessageCircle, ChevronDown, ChevronUp, Send } from "lucide-react";
 import Button from "../common/Button";
 
-const PricingCard = ({ pg }) => {
+const PricingCard = ({ pg, onEnquiry }) => {
   const [selectedRoom, setSelectedRoom] = useState(0);
   const [isOpen, setIsOpen] = useState(null);
 
@@ -86,8 +86,8 @@ const PricingCard = ({ pg }) => {
       </div>
 
       <div className="space-y-3">
-        <Button className="w-full" variant="primary">
-          <Phone size={18} /> Call Owner
+        <Button onClick={onEnquiry} className="w-full" variant="primary">
+          <Send size={18} /> Send Enquiry
         </Button>
         <Button className="w-full" variant="secondary">
           <MessageCircle size={18} /> WhatsApp

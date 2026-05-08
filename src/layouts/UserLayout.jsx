@@ -66,18 +66,31 @@ const UserLayout = ({ children }) => {
           <div className="flex items-center gap-4">
             <ThemeToggle />
 
-            <div className="hidden md:flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-3">
               {user ? (
                 <div className="flex items-center gap-3 pl-4 border-l dark:border-slate-800 transition-colors">
-                  <span className="text-[10px] font-black uppercase text-brand-purple dark:text-purple-400">
-                    {user.name}
-                  </span>
+                  <div className="text-right">
+                    <p className="text-[10px] font-black uppercase text-brand-navy dark:text-white">
+                      {user.name}
+                    </p>
+                    <p className="text-[8px] text-slate-400 font-bold uppercase">
+                      {user.role}
+                    </p>
+                  </div>
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-purple to-brand-navy text-white flex items-center justify-center font-black text-sm overflow-hidden">
+                    {user.photo ? (
+                      <img src={user.photo} alt={user.name} className="w-full h-full object-cover" />
+                    ) : (
+                      user.name?.[0]?.toUpperCase() || "U"
+                    )}
+                  </div>
                   <button
                     onClick={() => {
                       logout();
                       navigate("/");
                     }}
                     className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all"
+                    title="Logout"
                   >
                     <LogOut size={18} />
                   </button>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useProperties } from "../../context/PropertyContext";
 import PricingCard from "../../components/listings/PricingCard";
+import EnquiryFormModal from "../../components/listings/EnquiryFormModal";
 import Badge from "../../components/common/Badge";
 import Button from "../../components/common/Button";
 import {
@@ -19,6 +20,7 @@ import {
   Dumbbell,
   Zap,
   Map as MapIcon,
+  Send,
 } from "lucide-react";
 
 const PropertyDetail = () => {
@@ -26,6 +28,7 @@ const PropertyDetail = () => {
   const navigate = useNavigate();
   const { properties } = useProperties();
   const pg = properties.find((p) => p.id === parseInt(id));
+  const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -193,10 +196,18 @@ const PropertyDetail = () => {
           {/* RIGHT COLUMN: Pricing Card */}
           <div className="lg:col-span-1">
             <div className="sticky top-24">
-              <PricingCard pg={pg} />
+              <PricingCard pg={pg} onEnquiry={() => setIsEnquiryOpen(true)} />
             </div>
           </div>
         </div>
+
+        {/* Enquiry Modal */}
+        <EnquiryFormModal
+          isOpen={isEnquiryOpen}
+          onClose={() => setIsEnquiryOpen(false)}
+          pgName={pg?.name}
+          pgId={pg?.id}
+        />
       </div>
     </div>
   );

@@ -32,6 +32,7 @@ import Signup from "./pages/auth/Signup";
 import AdminDashboard from "./pages/admin/Dashboard";
 import Properties from "./pages/admin/Properties";
 import Enquiries from "./pages/admin/Enquiries";
+import Settings from "./pages/admin/Settings";
 import About from "./pages/user/About";
 
 const ProtectedRoute = ({ children, role }) => {
@@ -120,6 +121,16 @@ const AnimatedRoutes = () => {
             <ProtectedRoute role="admin">
               <AdminLayout>
                 <Enquiries />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/settings"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminLayout>
+                <Settings />
               </AdminLayout>
             </ProtectedRoute>
           }
