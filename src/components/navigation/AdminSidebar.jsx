@@ -51,31 +51,31 @@ const AdminSidebar = () => {
 
       {/* Sidebar */}
       <aside
-        className={`w-64 bg-brand-navy h-screen sticky top-0 flex flex-col text-white transition-all ${
+        className={`w-64 bg-gradient-to-b from-[#0F172A] to-brand-navy dark:from-slate-900 dark:to-slate-800 h-screen sticky top-0 flex flex-col text-white transition-all shadow-2xl ${
           isOpen
             ? "fixed left-0 top-0 z-50"
             : "hidden lg:flex lg:sticky lg:top-0"
         }`}
       >
         {/* Logo Area */}
-        <div className="p-6 sm:p-8 border-b border-slate-800">
+        <div className="p-6 sm:p-8 border-b border-slate-700/50">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="bg-brand-amber text-brand-navy w-8 h-8 rounded-lg flex items-center justify-center font-black shrink-0">
+              <div className="bg-brand-amber text-brand-navy w-9 h-9 rounded-lg flex items-center justify-center font-black text-lg shrink-0 shadow-lg">
                 H
               </div>
               <div className="min-w-0">
-                <span className="font-bold text-lg sm:text-xl tracking-tight block">
+                <span className="font-[900] text-lg tracking-tight block">
                   HOMLiOO
                 </span>
-                <p className="text-[8px] sm:text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                  Admin
+                <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest">
+                  Admin Panel
                 </p>
               </div>
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="lg:hidden text-slate-400 hover:text-white"
+              className="lg:hidden text-slate-400 hover:text-white transition-colors"
             >
               <X size={20} />
             </button>
@@ -83,7 +83,7 @@ const AdminSidebar = () => {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 sm:px-4 py-4 space-y-2 overflow-y-auto">
+        <nav className="flex-1 px-3 sm:px-4 py-6 space-y-2 overflow-y-auto">
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
@@ -91,10 +91,10 @@ const AdminSidebar = () => {
                 key={item.name}
                 to={item.path}
                 onClick={() => setIsOpen(false)}
-                className={`flex items-center justify-between p-3 rounded-xl transition-all duration-200 group ${
+                className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 group font-bold text-sm ${
                   isActive
-                    ? "bg-brand-purple text-white shadow-lg shadow-purple-900/20"
-                    : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                    ? "bg-brand-amber text-brand-navy shadow-lg shadow-amber-500/20"
+                    : "text-slate-300 hover:bg-slate-700/40 hover:text-white"
                 }`}
               >
                 <div className="flex items-center gap-3 min-w-0">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X, Save, Map as MapIcon, Check } from "lucide-react";
+import { X, Save, Map as MapIcon, Check, Plus, MapPin, Clock, Lock } from "lucide-react";
 import Button from "../common/Button";
 
 const PropertyFormModal = ({
@@ -10,25 +10,56 @@ const PropertyFormModal = ({
 }) => {
   const [formData, setFormData] = useState({
     name: "",
-    locality: "",
-    college: "",
-    price: "",
-    total: "",
-    gender: "Girls",
+    pgType: "Girls",
     description: "",
-    mapUrl: "",
+    locality: "",
+    fullAddress: "",
+    landmark: "",
+    city: "",
+    state: "",
+    pincode: "",
+    monthlyRent: "",
+    securityDeposit: "",
+    maintenance: "",
+    availableBeds: "1",
+    attachedBathroom: false,
+    acRoom: false,
+    roomPhotos: [],
     amenities: [],
+    coverImage: "",
+    galleryImages: [],
+    videoWalkthrough: "",
+    mapUrl: "",
+    latitude: "",
+    longitude: "",
+    gateClosingTime: "10:00 PM",
+    smokingAllowed: false,
+    guestsAllowed: false,
+    noticePeriod: "30 Days",
+    lockInPeriod: "6 Months",
+    foodTiming: "Breakfast, Lunch, Dinner",
+    visitorTiming: "11:00 AM - 08:00 PM",
+    nearbyPlaces: [],
+    adminNotes: "",
+    isVerified: false,
   });
 
   const availableAmenities = [
-    "WiFi",
-    "AC",
-    "Food",
-    "CCTV",
-    "Laundry",
-    "Parking",
-    "Gym",
-    "Power Backup",
+    { name: "WiFi", icon: "📡" },
+    { name: "AC", icon: "❄️" },
+    { name: "Food Included", icon: "🍽️" },
+    { name: "CCTV", icon: "📹" },
+    { name: "Laundry", icon: "🧺" },
+    { name: "Parking", icon: "🚗" },
+    { name: "Gym", icon: "💪" },
+    { name: "Power Backup", icon: "⚡" },
+    { name: "RO Water", icon: "💧" },
+    { name: "Refrigerator", icon: "❄️" },
+    { name: "Study Table", icon: "📚" },
+    { name: "Hot Water", icon: "🔥" },
+    { name: "Housekeeping", icon: "🧹" },
+    { name: "Lift", icon: "🛗" },
+    { name: "Biometric Entry", icon: "🔐" },
   ];
 
   useEffect(() => {
@@ -36,14 +67,38 @@ const PropertyFormModal = ({
     else
       setFormData({
         name: "",
-        locality: "",
-        college: "",
-        price: "",
-        total: "",
-        gender: "Girls",
+        pgType: "Girls",
         description: "",
-        mapUrl: "",
+        locality: "",
+        fullAddress: "",
+        landmark: "",
+        city: "",
+        state: "",
+        pincode: "",
+        monthlyRent: "",
+        securityDeposit: "",
+        maintenance: "",
+        availableBeds: "1",
+        attachedBathroom: false,
+        acRoom: false,
+        roomPhotos: [],
         amenities: [],
+        coverImage: "",
+        galleryImages: [],
+        videoWalkthrough: "",
+        mapUrl: "",
+        latitude: "",
+        longitude: "",
+        gateClosingTime: "10:00 PM",
+        smokingAllowed: false,
+        guestsAllowed: false,
+        noticePeriod: "30 Days",
+        lockInPeriod: "6 Months",
+        foodTiming: "Breakfast, Lunch, Dinner",
+        visitorTiming: "11:00 AM - 08:00 PM",
+        nearbyPlaces: [],
+        adminNotes: "",
+        isVerified: false,
       });
   }, [initialData, isOpen]);
 
@@ -73,10 +128,10 @@ const PropertyFormModal = ({
         </button>
 
         <h2 className="text-3xl font-black text-brand-navy dark:text-white mb-2 tracking-tighter">
-          {initialData ? "Update Sanctuary" : "List New Sanctuary"}
+          {initialData ? "Update PG Property" : "Add New PG Property"}
         </h2>
         <p className="text-slate-400 text-sm mb-10 font-medium tracking-tight">
-          Fill in the professional details for this property.
+          Fill all the details to list your property and get more bookings.
         </p>
 
         <form
@@ -84,136 +139,613 @@ const PropertyFormModal = ({
             e.preventDefault();
             onSubmit(formData);
           }}
-          className="space-y-8"
+          className="space-y-6"
         >
-          {/* Core Info */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
-                Property Name
-              </label>
-              <input
-                required
-                className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-900 dark:text-white rounded-2xl border-none outline-none focus:ring-4 ring-brand-purple/5 font-bold"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                placeholder="e.g. Sunrise Luxury PG"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
-                Locality / Area
-              </label>
-              <input
-                required
-                className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-900 dark:text-white rounded-2xl border-none outline-none focus:ring-4 ring-brand-purple/5 font-bold"
-                value={formData.locality}
-                onChange={(e) =>
-                  setFormData({ ...formData, locality: e.target.value })
-                }
-                placeholder="e.g. Knowledge Park II"
-              />
+          {/* Section 1: Basic Property Information */}
+          <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
+            <h3 className="text-sm font-black text-brand-navy dark:text-white mb-6 flex items-center gap-2">
+              <span className="w-6 h-6 bg-brand-purple text-white rounded-full flex items-center justify-center text-[10px]">1</span>
+              Basic Property Information
+            </h3>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                    Property Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    required
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                    placeholder="e.g. Sunrise Girls PG"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                    PG Type <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                    value={formData.pgType}
+                    onChange={(e) =>
+                      setFormData({ ...formData, pgType: e.target.value })
+                    }
+                  >
+                    <option>Girls</option>
+                    <option>Boys</option>
+                    <option>Co-ed</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                    Property Description <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                    value={formData.description}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
+                    placeholder="Describe your property..."
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                    Locality / Area <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    required
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                    value={formData.locality}
+                    onChange={(e) =>
+                      setFormData({ ...formData, locality: e.target.value })
+                    }
+                    placeholder="e.g. Knowledge Park II"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                    Full Address <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    required
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                    value={formData.fullAddress}
+                    onChange={(e) =>
+                      setFormData({ ...formData, fullAddress: e.target.value })
+                    }
+                    placeholder="House No., Building, Street, Sector..."
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                    Landmark
+                  </label>
+                  <input
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                    value={formData.landmark}
+                    onChange={(e) =>
+                      setFormData({ ...formData, landmark: e.target.value })
+                    }
+                    placeholder="e.g. Near Metro Station"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                    City <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                    value={formData.city}
+                    onChange={(e) =>
+                      setFormData({ ...formData, city: e.target.value })
+                    }
+                  >
+                    <option value="">Select City</option>
+                    <option>Greater Noida</option>
+                    <option>Noida</option>
+                    <option>Delhi</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                    State <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                    value={formData.state}
+                    onChange={(e) =>
+                      setFormData({ ...formData, state: e.target.value })
+                    }
+                  >
+                    <option value="">Select State</option>
+                    <option>Uttar Pradesh</option>
+                    <option>Delhi</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                    Pincode <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    required
+                    type="number"
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                    value={formData.pincode}
+                    onChange={(e) =>
+                      setFormData({ ...formData, pincode: e.target.value })
+                    }
+                    placeholder="201310"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
-                Gender
-              </label>
-              <select
-                className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-900 dark:text-white rounded-2xl outline-none font-bold"
-                value={formData.gender}
-                onChange={(e) =>
-                  setFormData({ ...formData, gender: e.target.value })
-                }
-              >
-                <option>Girls</option>
-                <option>Boys</option>
-                <option>Co-ed</option>
-              </select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
-                Base Rent (₹)
-              </label>
-              <input
-                type="number"
-                required
-                className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-900 dark:text-white rounded-2xl outline-none font-bold"
-                value={formData.price}
-                onChange={(e) =>
-                  setFormData({ ...formData, price: e.target.value })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
-                Total / Month (₹)
-              </label>
-              <input
-                type="number"
-                required
-                className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-900 dark:text-white rounded-2xl outline-none font-bold"
-                value={formData.total}
-                onChange={(e) =>
-                  setFormData({ ...formData, total: e.target.value })
-                }
-              />
+          {/* Section 2: Pricing & Room Types */}
+          <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
+            <h3 className="text-sm font-black text-brand-navy dark:text-white mb-6 flex items-center gap-2">
+              <span className="w-6 h-6 bg-brand-purple text-white rounded-full flex items-center justify-center text-[10px]">2</span>
+              Pricing & Room Types
+            </h3>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                    Monthly Rent (₹) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                    value={formData.monthlyRent}
+                    onChange={(e) =>
+                      setFormData({ ...formData, monthlyRent: e.target.value })
+                    }
+                    placeholder="6000"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                    Security Deposit (₹) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                    value={formData.securityDeposit}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        securityDeposit: e.target.value,
+                      })
+                    }
+                    placeholder="6000"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                    Maintenance (₹) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                    value={formData.maintenance}
+                    onChange={(e) =>
+                      setFormData({ ...formData, maintenance: e.target.value })
+                    }
+                    placeholder="500"
+                  />
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                <h4 className="text-xs font-black text-slate-700 dark:text-slate-300 mb-4 uppercase">
+                  Single Room - Active
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                      Available Beds
+                    </label>
+                    <input
+                      type="number"
+                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 dark:text-white rounded-lg outline-none font-medium text-sm"
+                      value={formData.availableBeds}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          availableBeds: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="flex items-end gap-3">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.attachedBathroom}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            attachedBathroom: e.target.checked,
+                          })
+                        }
+                        className="w-4 h-4 rounded"
+                      />
+                      <span className="text-xs font-bold text-slate-600 dark:text-slate-400">
+                        Attached Bathroom
+                      </span>
+                    </label>
+                  </div>
+                  <div className="flex items-end gap-3">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.acRoom}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            acRoom: e.target.checked,
+                          })
+                        }
+                        className="w-4 h-4 rounded"
+                      />
+                      <span className="text-xs font-bold text-slate-600 dark:text-slate-400">
+                        AC Room
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase text-slate-400 ml-2 flex items-center gap-2">
-              <MapIcon size={12} /> Google Maps Link
-            </label>
-            <input
-              className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-900 dark:text-white rounded-2xl outline-none font-bold text-xs"
-              value={formData.mapUrl}
-              onChange={(e) =>
-                setFormData({ ...formData, mapUrl: e.target.value })
-              }
-              placeholder="Paste https://maps.app.goo.gl/... link here"
-            />
-          </div>
-
-          <div className="space-y-4">
-            <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+          {/* Section 3: Amenities */}
+          <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
+            <h3 className="text-sm font-black text-brand-navy dark:text-white mb-6 flex items-center gap-2">
+              <span className="w-6 h-6 bg-brand-purple text-white rounded-full flex items-center justify-center text-[10px]">3</span>
               Amenities
-            </label>
+            </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {availableAmenities.map((amenity) => (
                 <button
-                  key={amenity}
+                  key={amenity.name}
                   type="button"
-                  onClick={() => toggleAmenity(amenity)}
-                  className={`px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider border-2 transition-all flex items-center justify-center gap-2 ${formData.amenities.includes(amenity) ? "bg-brand-purple border-brand-purple text-white shadow-lg shadow-purple-500/20" : "bg-transparent border-slate-100 text-slate-400"}`}
+                  onClick={() => toggleAmenity(amenity.name)}
+                  className={`px-4 py-3 rounded-lg text-[10px] font-bold uppercase tracking-wider border-2 transition-all flex items-center justify-center gap-2 ${
+                    formData.amenities.includes(amenity.name)
+                      ? "bg-brand-purple border-brand-purple text-white shadow-lg shadow-purple-500/20"
+                      : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-400"
+                  }`}
                 >
-                  {formData.amenities.includes(amenity) && <Check size={12} />}{" "}
-                  {amenity}
+                  {formData.amenities.includes(amenity.name) && (
+                    <Check size={14} />
+                  )}
+                  {amenity.name}
                 </button>
               ))}
             </div>
+            <button
+              type="button"
+              className="mt-4 text-xs font-bold text-brand-purple hover:text-brand-purple/80 flex items-center gap-1"
+            >
+              <Plus size={14} /> Add Custom Amenity
+            </button>
           </div>
 
-          <div className="flex gap-4 pt-6">
+          {/* Section 4: Property Media */}
+          <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
+            <h3 className="text-sm font-black text-brand-navy dark:text-white mb-6 flex items-center gap-2">
+              <span className="w-6 h-6 bg-brand-purple text-white rounded-full flex items-center justify-center text-[10px]">4</span>
+              Property Media
+            </h3>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                  Cover Image <span className="text-red-500">*</span>
+                </label>
+                <div className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-6 text-center bg-white dark:bg-slate-800">
+                  <span className="text-xs text-slate-400">
+                    📸 Upload Cover Image (Recommended: 1200 x 800px)
+                  </span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                  Gallery Images
+                </label>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div
+                      key={i}
+                      className="w-20 h-20 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg flex items-center justify-center bg-white dark:bg-slate-800 cursor-pointer hover:border-brand-purple transition-colors"
+                    >
+                      <Plus size={16} className="text-slate-400" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                  Video Walkthrough (Optional)
+                </label>
+                <div className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-6 text-center bg-white dark:bg-slate-800">
+                  <span className="text-xs text-slate-400">
+                    🎥 Upload Video (Max size: 100MB)
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 5: Location & Map */}
+          <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
+            <h3 className="text-sm font-black text-brand-navy dark:text-white mb-6 flex items-center gap-2">
+              <span className="w-6 h-6 bg-brand-purple text-white rounded-full flex items-center justify-center text-[10px]">5</span>
+              Location & Map
+            </h3>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                    Latitude
+                  </label>
+                  <input
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                    value={formData.latitude}
+                    onChange={(e) =>
+                      setFormData({ ...formData, latitude: e.target.value })
+                    }
+                    placeholder="28.5355"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                    Longitude
+                  </label>
+                  <input
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                    value={formData.longitude}
+                    onChange={(e) =>
+                      setFormData({ ...formData, longitude: e.target.value })
+                    }
+                    placeholder="77.3910"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                  Google Maps Link <span className="text-red-500">*</span>
+                </label>
+                <input
+                  required
+                  className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium text-xs"
+                  value={formData.mapUrl}
+                  onChange={(e) =>
+                    setFormData({ ...formData, mapUrl: e.target.value })
+                  }
+                  placeholder="https://maps.app.goo.gl/..."
+                />
+              </div>
+              <div className="bg-white dark:bg-slate-800 rounded-xl h-48 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
+                <span className="text-sm text-slate-400">Map Preview</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 6: Rules & Policies */}
+          <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
+            <h3 className="text-sm font-black text-brand-navy dark:text-white mb-6 flex items-center gap-2">
+              <span className="w-6 h-6 bg-brand-purple text-white rounded-full flex items-center justify-center text-[10px]">6</span>
+              Rules & Policies
+            </h3>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                    Gate Closing Time <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="time"
+                    required
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                    value={formData.gateClosingTime}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        gateClosingTime: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="flex items-end gap-3">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.smokingAllowed}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          smokingAllowed: e.target.checked,
+                        })
+                      }
+                      className="w-4 h-4 rounded"
+                    />
+                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400">
+                      Smoking Allowed
+                    </span>
+                  </label>
+                </div>
+                <div className="flex items-end gap-3">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.guestsAllowed}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          guestsAllowed: e.target.checked,
+                        })
+                      }
+                      className="w-4 h-4 rounded"
+                    />
+                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400">
+                      Guests Allowed
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                    Notice Period <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                    value={formData.noticePeriod}
+                    onChange={(e) =>
+                      setFormData({ ...formData, noticePeriod: e.target.value })
+                    }
+                  >
+                    <option>30 Days</option>
+                    <option>60 Days</option>
+                    <option>6 Months</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                    Lock-in Period <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                    value={formData.lockInPeriod}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        lockInPeriod: e.target.value,
+                      })
+                    }
+                  >
+                    <option>3 Months</option>
+                    <option>6 Months</option>
+                    <option>12 Months</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                    Food Timing <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    required
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                    value={formData.foodTiming}
+                    onChange={(e) =>
+                      setFormData({ ...formData, foodTiming: e.target.value })
+                    }
+                    placeholder="Breakfast, Lunch, Dinner"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                    Visitor Timing <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    required
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                    value={formData.visitorTiming}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        visitorTiming: e.target.value,
+                      })
+                    }
+                    placeholder="11:00 AM - 08:00 PM"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 7: Reviews & Verification */}
+          <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
+            <h3 className="text-sm font-black text-brand-navy dark:text-white mb-6 flex items-center gap-2">
+              <span className="w-6 h-6 bg-brand-purple text-white rounded-full flex items-center justify-center text-[10px]">7</span>
+              Reviews & Verification
+            </h3>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                <input
+                  type="checkbox"
+                  checked={formData.isVerified}
+                  onChange={(e) =>
+                    setFormData({ ...formData, isVerified: e.target.checked })
+                  }
+                  className="w-5 h-5 rounded"
+                />
+                <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                  ✓ Verified Property
+                </span>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
+                  Admin Notes
+                </label>
+                <textarea
+                  className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium resize-none"
+                  rows="3"
+                  value={formData.adminNotes}
+                  onChange={(e) =>
+                    setFormData({ ...formData, adminNotes: e.target.value })
+                  }
+                  placeholder="Add any notes or special instructions about this property..."
+                />
+                <p className="text-[10px] text-slate-400 text-right">0/500</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-4 pt-6 sticky bottom-0 bg-slate-50 dark:bg-slate-900/50 -m-6 p-6 rounded-b-2xl border-t border-slate-100 dark:border-slate-800">
             <Button
               type="button"
               variant="outline"
               className="flex-1"
               onClick={onClose}
             >
-              Discard
+              Save Draft
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1"
+              onClick={onClose}
+            >
+              Preview Listing
             </Button>
             <Button
               type="submit"
               variant="primary"
-              className="flex-[2] py-4 shadow-xl shadow-amber-500/20"
+              className="flex-1 py-4 shadow-xl shadow-amber-500/20"
             >
-              <Save size={18} />{" "}
-              {initialData ? "Update Property" : "Publish Property"}
+              <Save size={18} /> Publish Property
             </Button>
           </div>
         </form>

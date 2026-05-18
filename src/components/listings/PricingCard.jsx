@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { Phone, MessageCircle, ChevronDown, ChevronUp, Send } from "lucide-react";
+import {
+  Phone,
+  MessageCircle,
+  ChevronDown,
+  ChevronUp,
+  Send,
+} from "lucide-react";
 import Button from "../common/Button";
 
 const PricingCard = ({ pg, onEnquiry }) => {
@@ -64,7 +70,7 @@ const PricingCard = ({ pg, onEnquiry }) => {
                   </span>
                 </div>
                 <div className="flex justify-between text-emerald-600 font-bold">
-                  <span>Zero Brokerage</span>
+                  <span>Brokerage Fee</span>
                   <span>₹0</span>
                 </div>
                 <div className="flex justify-between text-slate-500">

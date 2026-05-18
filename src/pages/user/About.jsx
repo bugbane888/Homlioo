@@ -98,13 +98,21 @@ const About = () => {
               {FOUNDERS.map((f) => (
                 <div
                   key={f.name}
-                  className="bg-white dark:bg-slate-800 p-8 lg:p-10 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm group hover:shadow-xl transition-all duration-500"
+                  className="bg-white dark:bg-slate-800 p-8 lg:p-10 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm group hover:shadow-xl transition-all duration-500 overflow-hidden"
                 >
-                  <div className="flex items-center gap-6 mb-8">
-                    <div className="w-20 h-20 bg-brand-purple/10 dark:bg-brand-purple/20 rounded-3xl flex items-center justify-center text-4xl group-hover:scale-110 transition-transform">
-                      {f.icon}
+                  <div className="flex items-start gap-6 mb-8">
+                    <div className="w-24 h-24 flex-shrink-0 rounded-2xl overflow-hidden bg-brand-purple/10 dark:bg-brand-purple/20 flex items-center justify-center text-5xl group-hover:scale-110 transition-transform">
+                      {f.photo ? (
+                        <img
+                          src={f.photo}
+                          alt={f.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        f.icon
+                      )}
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <h4 className="text-xl font-[900] text-brand-navy dark:text-white tracking-tight">
                         {f.name}
                       </h4>

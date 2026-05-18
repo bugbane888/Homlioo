@@ -4,102 +4,137 @@ import {
   Star,
   Clock,
   CheckCircle,
-  BarChart3,
   Train,
   Building2,
+  Heart,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCompare } from "../../context/CompareContext";
+import { useSaved } from "../../context/SavedContext";
 import Badge from "../common/Badge";
+import { motion } from "framer-motion";
 
 const ListingCard = ({ pg }) => {
   const navigate = useNavigate();
   const { toggleCompare, compareList } = useCompare();
+  const { savedIds, toggleSave } = useSaved();
+
   const isCompared = compareList.some((i) => i.id === pg.id);
+  const isSaved = savedIds.includes(pg.id);
+  const genderVariant = pg.gender
+    ? pg.gender.toLowerCase().replace("-", "")
+    : "default";
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden group hover:shadow-xl transition-all">
-      {/* Visual Header */}
-      <div className="h-48 bg-gradient-to-br from-blue-400 to-indigo-600 relative flex items-center justify-center">
-        <div className="text-6xl group-hover:scale-110 transition-transform">
+    <div className="bg-white dark:bg-slate-800 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden group hover:shadow-2xl transition-all relative flex flex-col h-full">
+      {/* --- VISUAL HEADER --- */}
+      <div className="h-48 bg-gradient-to-br from-blue-400 to-indigo-600 relative flex items-center justify-center overflow-hidden shrink-0">
+        <div className="text-6xl group-hover:scale-110 transition-transform duration-500">
           🏠
         </div>
 
-        {pg.roomsLeft <= 2 && (
-          <div className="absolute top-4 left-4 bg-orange-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase">
+        {/* Room Inventory Alert */}
+        {pg.roomsLeft <= 2 && pg.roomsLeft > 0 && (
+          <div className="absolute top-4 left-4 bg-orange-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-tighter shadow-lg">
             🔥 {pg.roomsLeft} left
           </div>
         )}
 
-        <button className="absolute top-4 right-4 w-9 h-9 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:text-red-500 transition-colors">
-          ❤️
+        {/* Save/Heart Button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleSave(pg);
+          }}
+          className="absolute top-4 right-4 w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all z-10 border border-white/10 active:scale-75"
+        >
+          <Heart
+            size={20}
+            className={isSaved ? "fill-red-500 text-red-500" : "text-white"}
+          />
         </button>
 
-        <div className="absolute bottom-4 left-4 bg-emerald-500 text-white text-[10px] font-black px-3 py-1.5 rounded-full flex items-center gap-1 shadow-lg">
-          <CheckCircle size={12} /> Verified
-        </div>
+        {/* Verification Pill */}
+        {pg.verified && (
+          <div className="absolute bottom-4 left-4 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-[10px] font-black px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-md">
+            <CheckCircle size={12} className="text-emerald-500" /> Verified
+          </div>
+        )}
       </div>
 
-      {/* Content */}
-      <div className="p-6">
-        <div className="flex gap-2 mb-3">
-          <Badge variant={pg.gender.toLowerCase()}>{pg.gender}</Badge>
-          <Badge variant="amber">{pg.tags?.[0]}</Badge>
+      {/* --- CONTENT BODY --- */}
+      <div className="p-6 flex flex-col flex-1">
+        {/* Category Badges */}
+        <div className="flex gap-2 mb-4">
+          <Badge variant={genderVariant}>{pg.gender}</Badge>
+          {pg.tags?.[0] && <Badge variant="amber">{pg.tags[0]}</Badge>}
         </div>
-        <h3 className="text-lg font-black text-brand-navy dark:text-white mb-1">
+
+        {/* Title & Area */}
+        <h3 className="text-xl font-[900] text-brand-navy dark:text-white mb-1 tracking-tight leading-none italic">
           {pg.name}
         </h3>
-        <p className="flex items-center gap-1 text-slate-400 text-xs font-bold mb-4">
-          <MapPin size={12} /> {pg.locality}
+        <p className="flex items-center gap-1 text-slate-400 text-xs font-bold mb-5 italic">
+          <MapPin size={12} className="text-brand-purple" /> {pg.locality}
         </p>
 
-        <div className="space-y-2 mb-6">
-          <div className="flex items-center gap-2 text-emerald-600 text-[11px] font-black uppercase">
+        {/* --- PROXIMITY DETAILS (RESTORED) --- */}
+        <div className="space-y-2.5 mb-6">
+          <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-[11px] font-black uppercase tracking-wide">
             <Clock size={14} /> {pg.college}
           </div>
-          <div className="flex items-center gap-2 text-blue-500 text-[11px] font-black uppercase">
+          <div className="flex items-center gap-2 text-blue-500 dark:text-blue-400 text-[11px] font-black uppercase tracking-wide">
             <Train size={14} /> {pg.metro}
           </div>
-          <div className="flex items-center gap-2 text-slate-400 text-[11px] font-black uppercase">
+          <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500 text-[11px] font-black uppercase tracking-wide opacity-80 italic">
             <Building2 size={14} /> {pg.hospital}
           </div>
         </div>
 
-        <div className="flex justify-between items-end border-t border-slate-50 pt-4">
+        {/* Pricing and Rating Row */}
+        <div className="flex justify-between items-end border-t border-slate-50 dark:border-slate-700/50 pt-5 mt-auto">
           <div>
-            <div className="text-2xl font-black">
+            <div className="text-2xl font-[900] text-brand-navy dark:text-white tracking-tighter">
               ₹{pg.total.toLocaleString()}
-              <span className="text-xs text-slate-400 font-bold ml-1">/mo</span>
+              <span className="text-xs text-slate-400 font-black ml-1 uppercase tracking-widest italic">
+                /mo
+              </span>
             </div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mt-1">
               {pg.sharing}
             </p>
           </div>
           <div className="text-right">
-            <div className="flex items-center gap-1 text-brand-amber font-black">
-              <Star size={14} fill="currentColor" /> {pg.rating}
+            <div className="flex items-center gap-1 text-[#F59E0B] font-black text-sm">
+              <Star size={15} fill="currentColor" /> {pg.rating}
             </div>
-            <p className="text-[10px] text-slate-400 font-bold">
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">
               {pg.reviews} reviews
             </p>
           </div>
         </div>
 
-        <div className="mt-6 flex gap-2">
+        {/* --- ACTION BUTTONS --- */}
+        <div className="mt-7 flex gap-2">
           <button
             onClick={() => navigate(`/property/${pg.id}`)}
-            className="flex-1 bg-[#F59E0B] text-slate-900 py-3 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-amber-500/20"
+            className="flex-[2.5] bg-[#F59E0B] hover:bg-amber-500 text-[#0F172A] py-3.5 rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-amber-500/20 active:scale-95 transition-all"
           >
             View Details
           </button>
+
           <button
             onClick={(e) => {
               e.stopPropagation();
               toggleCompare(pg);
             }}
-            className={`px-4 rounded-xl border-2 transition-all ${isCompared ? "bg-brand-purple border-brand-purple text-white" : "border-slate-100 text-slate-400"}`}
+            className={`flex-1 py-3.5 rounded-2xl border-2 font-black text-[11px] uppercase tracking-widest transition-all active:scale-95 ${
+              isCompared
+                ? "bg-brand-purple border-brand-purple text-white shadow-lg shadow-purple-500/20"
+                : "border-slate-100 dark:border-slate-700 text-slate-400 hover:border-brand-purple hover:text-brand-purple"
+            }`}
           >
-            <BarChart3 size={18} />
+            {isCompared ? "Added" : "Compare"}
           </button>
         </div>
       </div>

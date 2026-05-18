@@ -4,25 +4,28 @@ import { useToast } from "./ToastContext";
 const SavedContext = createContext(null);
 
 export const SavedProvider = ({ children }) => {
+  const { showToast } = useToast();
+
+  // Initialize state from LocalStorage
   const [savedIds, setSavedIds] = useState(() => {
     const localData = localStorage.getItem("homlioo_saved");
     return localData ? JSON.parse(localData) : [];
   });
-  const { showToast } = useToast();
 
+  // Sync state to LocalStorage whenever it changes
   useEffect(() => {
     localStorage.setItem("homlioo_saved", JSON.stringify(savedIds));
   }, [savedIds]);
 
-  const toggleSave = (id, name) => {
+  const toggleSave = (pg) => {
     setSavedIds((prev) => {
-      const isSaved = prev.includes(id);
+      const isSaved = prev.includes(pg.id);
       if (isSaved) {
-        showToast(`${name} removed from favorites`, "info");
-        return prev.filter((i) => i !== id);
+        showToast(`${pg.name} removed from favorites`, "info");
+        return prev.filter((id) => id !== pg.id);
       } else {
-        showToast(`${name} saved to favorites!`, "success");
-        return [...prev, id];
+        showToast(`${pg.name} added to favorites! ❤️`, "success");
+        return [...prev, pg.id];
       }
     });
   };

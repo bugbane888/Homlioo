@@ -156,16 +156,18 @@ export const ABOUT_STATS = [
 export const FOUNDERS = [
   {
     name: "Nitish Patel",
-    role: "Co-Founder",
+    role: "Founder",
     tag: "Vision & Strategy",
     icon: "👤",
+    photo: "https://cdn.builder.io/api/v1/image/assets%2Fe64f25ae71a840eda495cf48dbdcb6d2%2Fc961203008444d82b668ac7e97bf2654?format=webp&width=400",
     desc: "Nitish is the driving force behind HOMLiOO's vision of making student housing transparent, safe, and stress-free. Having navigated the overwhelming and often misleading PG market firsthand, he set out to build a platform where every listing is honest and every price is clear.",
   },
   {
     name: "Neeraj Kumar",
-    role: "Co-Founder",
+    role: "Founder",
     tag: "Operations & Ground",
     icon: "👤",
+    photo: "https://cdn.builder.io/api/v1/image/assets%2Fe64f25ae71a840eda495cf48dbdcb6d2%2F1b7dcff3bfb841f6a21ada5cb77f6c56?format=webp&width=400",
     desc: "Neeraj brings the operational backbone to HOMLiOO, ensuring that every property meets a standard worth living in. His focus on ground-level verification, owner relationships, and resident experience is what makes the HOMLiOO promise more than just words.",
   },
 ];
