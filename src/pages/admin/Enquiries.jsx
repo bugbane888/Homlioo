@@ -4,7 +4,7 @@ import { Phone, CheckCircle, Clock, Trash2 } from "lucide-react";
 import Badge from "../../components/common/Badge";
 
 const Enquiries = () => {
-  const { enquiries, updateStatus } = useEnquiries();
+  const { enquiries, updateStatus, deleteEnquiry, isLoading } = useEnquiries();
 
   // Helper for status styling
   const getStatusStyle = (status) => {
@@ -100,6 +100,11 @@ const Enquiries = () => {
                         </button>
                         {/* Action: Delete Lead */}
                         <button
+                          onClick={() => {
+                            if (window.confirm("Are you sure you want to delete this enquiry?")) {
+                              deleteEnquiry(item.id);
+                            }
+                          }}
                           className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all"
                           title="Remove Lead"
                         >

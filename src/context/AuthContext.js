@@ -1,4 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
+import { supabase } from "../lib/supabase";
+import authService from "../services/supabaseAuthService";
 
 const AuthContext = createContext(null);
 
@@ -6,52 +8,127 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const ADMIN_CRED = { email: "admin@homlioo.com", pass: "adminpghandler" };
-
   useEffect(() => {
-    const saved = localStorage.getItem("homlioo_user");
-    if (saved) setUser(JSON.parse(saved));
-    setLoading(false);
+    // Check for existing session on mount
+    const initAuth = async () => {
+      try {
+        const session = await authService.getSession();
+        if (session?.user) {
+          const profile = await authService.getProfile(session.user.id);
+          setUser({
+            id: session.user.id,
+            name: profile?.name || session.user.email.split("@")[0],
+            email: session.user.email,
+            role: profile?.role || "user",
+            phone: profile?.phone || "",
+            photo: profile?.photo_url || null,
+          });
+        }
+      } catch (error) {
+        console.error("Auth init error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initAuth();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === "SIGNED_IN" && session?.user) {
+          try {
+            const profile = await authService.getProfile(session.user.id);
+            setUser({
+              id: session.user.id,
+              name: profile?.name || session.user.email.split("@")[0],
+              email: session.user.email,
+              role: profile?.role || "user",
+              phone: profile?.phone || "",
+              photo: profile?.photo_url || null,
+            });
+          } catch (error) {
+            // Profile might not exist yet, use basic info
+            setUser({
+              id: session.user.id,
+              name: session.user.user_metadata?.name || session.user.email.split("@")[0],
+              email: session.user.email,
+              role: session.user.user_metadata?.role || "user",
+              phone: "",
+              photo: null,
+            });
+          }
+        } else if (event === "SIGNED_OUT") {
+          setUser(null);
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const login = async (email, password) => {
-    if (email === ADMIN_CRED.email && password === ADMIN_CRED.pass) {
-      const data = {
-        name: "Super Admin",
-        role: "admin",
-        email,
-        photo: null,
-        phone: "+91-9876543210"
-      };
-      setUser(data);
-      localStorage.setItem("homlioo_user", JSON.stringify(data));
-      return { success: true, role: "admin", name: data.name };
+    try {
+      const { user: authUser } = await authService.signIn(email, password);
+      if (authUser) {
+        const profile = await authService.getProfile(authUser.id);
+        const userData = {
+          id: authUser.id,
+          name: profile?.name || authUser.email.split("@")[0],
+          email: authUser.email,
+          role: profile?.role || "user",
+          phone: profile?.phone || "",
+          photo: profile?.photo_url || null,
+        };
+        setUser(userData);
+        return { success: true, role: userData.role, name: userData.name };
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      return { success: false, error: error.message };
     }
-    const data = {
-      name: email.split("@")[0],
-      role: "user",
-      email,
-      photo: null,
-      phone: ""
-    };
-    setUser(data);
-    localStorage.setItem("homlioo_user", JSON.stringify(data));
-    return { success: true, role: "user", name: data.name };
   };
 
-  const updateProfile = (updatedData) => {
-    const newUser = { ...user, ...updatedData };
-    setUser(newUser);
-    localStorage.setItem("homlioo_user", JSON.stringify(newUser));
+  const signup = async (email, password, name) => {
+    try {
+      await authService.signUp(email, password, name);
+      return { success: true };
+    } catch (error) {
+      console.error("Signup error:", error);
+      return { success: false, error: error.message };
+    }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("homlioo_user");
+  const updateProfile = async (updatedData) => {
+    if (!user?.id) return;
+    try {
+      const profile = await authService.updateProfile(user.id, {
+        name: updatedData.name,
+        phone: updatedData.phone,
+        photo_url: updatedData.photo,
+      });
+      setUser((prev) => ({
+        ...prev,
+        name: profile.name,
+        phone: profile.phone,
+        photo: profile.photo_url,
+      }));
+    } catch (error) {
+      console.error("Update profile error:", error);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await authService.signOut();
+      setUser(null);
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, updateProfile }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, loading, updateProfile }}>
       {!loading && children}
     </AuthContext.Provider>
   );

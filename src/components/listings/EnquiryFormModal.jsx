@@ -20,26 +20,29 @@ const EnquiryFormModal = ({ isOpen, onClose, pgName, pgId }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.phone.trim()) {
       return;
     }
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      addEnquiry({
+    try {
+      await addEnquiry({
         studentName: formData.name,
         pgName: pgName,
-        pgId: pgId,
+        propertyId: pgId,
         phone: formData.phone,
         email: formData.email,
         message: formData.message,
       });
       setFormData({ name: user?.name || "", email: user?.email || "", phone: user?.phone || "", message: "" });
-      setIsSubmitting(false);
       onClose();
-    }, 500);
+    } catch (error) {
+      console.error("Error submitting enquiry:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;

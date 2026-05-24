@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
+import { propertyService, mapPropertyFromDB } from "../services/supabasePropertyService";
 import { LISTINGS_DATA } from "../constants/data";
 
 const PropertyContext = createContext(null);
@@ -13,39 +14,94 @@ export const PropertyProvider = ({ children }) => {
   const [properties, setProperties] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Simulation of an API fetch from your future Node.js backend
+  // Fetch properties from Supabase
   useEffect(() => {
-    const loadData = () => {
-      setTimeout(() => {
+    const loadData = async () => {
+      try {
+        const data = await propertyService.getAll();
+        // Map database rows to frontend format
+        const mappedData = data.map(mapPropertyFromDB);
+        setProperties(mappedData);
+      } catch (error) {
+        console.error("Error loading properties:", error);
+        // Fallback to mock data if Supabase fails
         setProperties(LISTINGS_DATA);
+      } finally {
         setIsLoading(false);
-      }, 1000); // 1-second delay for Skeleton loading effect
+      }
     };
     loadData();
-  }, []);
 
-  const addProperty = useCallback((newPg) => {
-    const formattedPg = {
-      ...newPg,
-      id: Date.now(),
-      verified: true,
-      rating: 5.0,
-      reviews: 0,
-      roomsLeft: 3,
-      tags: ["New Listing"],
-      amenities: newPg.amenities || ["WiFi", "AC", "CCTV"],
+    // Subscribe to real-time changes
+    const subscription = propertyService.subscribeToChanges((payload) => {
+      if (payload.eventType === "INSERT") {
+        setProperties((prev) => [mapPropertyFromDB(payload.new), ...prev]);
+      } else if (payload.eventType === "UPDATE") {
+        setProperties((prev) =>
+          prev.map((p) =>
+            p.id === payload.new.id ? mapPropertyFromDB(payload.new) : p
+          )
+        );
+      } else if (payload.eventType === "DELETE") {
+        setProperties((prev) => prev.filter((p) => p.id !== payload.old.id));
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
     };
-    setProperties((prev) => [formattedPg, ...prev]);
   }, []);
 
-  const updateProperty = useCallback((id, updatedData) => {
-    setProperties((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, ...updatedData } : p)),
-    );
+  const addProperty = useCallback(async (newPg) => {
+    try {
+      const created = await propertyService.create(newPg);
+      const mapped = mapPropertyFromDB(created);
+      setProperties((prev) => [mapped, ...prev]);
+      return mapped;
+    } catch (error) {
+      console.error("Error adding property:", error);
+      // Fallback to local state
+      const formattedPg = {
+        ...newPg,
+        id: Date.now(),
+        verified: true,
+        rating: 5.0,
+        reviews: 0,
+        roomsLeft: 3,
+        tags: ["New Listing"],
+        amenities: newPg.amenities || ["WiFi", "AC", "CCTV"],
+      };
+      setProperties((prev) => [formattedPg, ...prev]);
+      return formattedPg;
+    }
   }, []);
 
-  const deleteProperty = useCallback((id) => {
-    setProperties((prev) => prev.filter((p) => p.id !== id));
+  const updateProperty = useCallback(async (id, updatedData) => {
+    try {
+      const updated = await propertyService.update(id, updatedData);
+      const mapped = mapPropertyFromDB(updated);
+      setProperties((prev) =>
+        prev.map((p) => (p.id === id ? mapped : p))
+      );
+      return mapped;
+    } catch (error) {
+      console.error("Error updating property:", error);
+      // Fallback to local state
+      setProperties((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, ...updatedData } : p))
+      );
+    }
+  }, []);
+
+  const deleteProperty = useCallback(async (id) => {
+    try {
+      await propertyService.delete(id);
+      setProperties((prev) => prev.filter((p) => p.id !== id));
+    } catch (error) {
+      console.error("Error deleting property:", error);
+      // Fallback to local state
+      setProperties((prev) => prev.filter((p) => p.id !== id));
+    }
   }, []);
 
   return (

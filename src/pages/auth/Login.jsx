@@ -13,19 +13,23 @@ const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     // Call the global login function
     const result = await login(email, password);
+
+    setIsLoading(false);
 
     if (result?.success) {
       showToast(`Welcome back, ${result.name}!`, "success");
       // Redirect based on the role returned by AuthContext
       navigate(result.role === "admin" ? "/admin" : "/");
     } else {
-      showToast("Invalid credentials. Please try the demo keys.", "error");
+      showToast(result?.error || "Invalid credentials. Please check your email and password.", "error");
     }
   };
 
@@ -89,33 +93,23 @@ const Login = () => {
                 type="submit"
                 variant="secondary"
                 className="w-full py-4 text-sm font-black shadow-xl shadow-navy-900/10"
+                disabled={isLoading}
               >
-                Sign In to Dashboard
+                {isLoading ? "Signing in..." : "Sign In to Dashboard"}
               </Button>
             </div>
 
-            {/* --- DEMO CREDENTIALS BOX (PROFESSIONAL DESIGN) --- */}
+            {/* --- INFO BOX --- */}
             <div className="mt-8 p-6 bg-purple-50 dark:bg-purple-900/10 rounded-[2rem] border border-purple-100 dark:border-purple-800/30">
               <div className="flex items-center gap-2 mb-3">
                 <ShieldCheck size={16} className="text-brand-purple" />
                 <span className="text-[10px] font-black uppercase tracking-widest text-brand-purple">
-                  Demo Admin Access
+                  Secure Login
                 </span>
               </div>
-              <div className="space-y-1">
-                <p className="text-[11px] text-slate-500 font-bold">
-                  Email:{" "}
-                  <span className="text-brand-navy dark:text-purple-200 select-all">
-                    admin@homlioo.com
-                  </span>
-                </p>
-                <p className="text-[11px] text-slate-500 font-bold">
-                  Password:{" "}
-                  <span className="text-brand-navy dark:text-purple-200 select-all">
-                    adminpghandler
-                  </span>
-                </p>
-              </div>
+              <p className="text-[11px] text-slate-500 font-bold">
+                Sign in with your registered email and password. New users can create an account by clicking Sign Up below.
+              </p>
             </div>
 
             <div className="mt-8 flex flex-col gap-4 text-center">

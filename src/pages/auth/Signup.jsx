@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 import Button from "../../components/common/Button";
 import PageTransition from "../../components/common/PageTransition";
 import { UserPlus, ArrowRight } from "lucide-react";
 
 const Signup = () => {
+  const { signup } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -15,14 +18,27 @@ const Signup = () => {
     confirmPassword: "",
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    
     if (formData.password !== formData.confirmPassword) {
       return showToast("Passwords do not match.", "error");
     }
-    // Logic for Node.js API call goes here
-    showToast("Registration successful! Welcome to HOMLiOO.", "success");
-    navigate("/login");
+
+    if (formData.password.length < 6) {
+      return showToast("Password must be at least 6 characters.", "error");
+    }
+
+    setIsLoading(true);
+    const result = await signup(formData.email, formData.password, formData.name);
+    setIsLoading(false);
+
+    if (result?.success) {
+      showToast("Registration successful! Please check your email to verify your account.", "success");
+      navigate("/login");
+    } else {
+      showToast(result?.error || "Registration failed. Please try again.", "error");
+    }
   };
 
   return (
@@ -84,8 +100,9 @@ const Signup = () => {
               type="submit"
               variant="purple"
               className="w-full py-4 text-sm"
+              disabled={isLoading}
             >
-              Create My Account
+              {isLoading ? "Creating Account..." : "Create My Account"}
             </Button>
           </div>
 
