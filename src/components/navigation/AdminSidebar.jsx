@@ -25,6 +25,11 @@ const AdminSidebar = () => {
       path: "/admin/properties",
     },
     {
+      name: "Drafts",
+      icon: <FileText size={20} />,
+      path: "/admin/drafts",
+    },
+    {
       name: "Lease Requests",
       icon: <FileText size={20} />,
       path: "/admin/enquiries",
