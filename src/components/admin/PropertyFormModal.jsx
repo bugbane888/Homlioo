@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { X, Save, Map as MapIcon, Check, Plus, MapPin, Clock, Lock } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { X, Save, Map as MapIcon, Check, Plus, MapPin, Clock, Lock, Trash2 } from "lucide-react";
 import Button from "../common/Button";
 
 const PropertyFormModal = ({
@@ -43,6 +43,9 @@ const PropertyFormModal = ({
     adminNotes: "",
     isVerified: false,
   });
+
+  const coverImageRef = useRef(null);
+  const galleryImageRefs = useRef({});
 
   const availableAmenities = [
     { name: "WiFi", icon: "📡" },
@@ -111,6 +114,35 @@ const PropertyFormModal = ({
         ? prev.amenities.filter((a) => a !== amenity)
         : [...prev.amenities, amenity],
     }));
+  };
+
+  const handleCoverImageUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setFormData({ ...formData, coverImage: event.target?.result });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleGalleryImageUpload = (index, e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const newGalleryImages = [...formData.galleryImages];
+        newGalleryImages[index] = event.target?.result;
+        setFormData({ ...formData, galleryImages: newGalleryImages });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeGalleryImage = (index) => {
+    const newGalleryImages = formData.galleryImages.filter((_, i) => i !== index);
+    setFormData({ ...formData, galleryImages: newGalleryImages });
   };
 
   return (
@@ -458,26 +490,94 @@ const PropertyFormModal = ({
                 <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
                   Cover Image <span className="text-red-500">*</span>
                 </label>
-                <div className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-6 text-center bg-white dark:bg-slate-800">
-                  <span className="text-xs text-slate-400">
-                    📸 Upload Cover Image (Recommended: 1200 x 800px)
-                  </span>
-                </div>
+                <input
+                  type="file"
+                  ref={coverImageRef}
+                  accept="image/*"
+                  onChange={handleCoverImageUpload}
+                  className="hidden"
+                />
+                {formData.coverImage ? (
+                  <div className="relative">
+                    <img
+                      src={formData.coverImage}
+                      alt="Cover"
+                      className="w-full h-48 object-cover rounded-xl border border-slate-200 dark:border-slate-700"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormData({ ...formData, coverImage: "" });
+                        if (coverImageRef.current) coverImageRef.current.value = "";
+                      }}
+                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => coverImageRef.current?.click()}
+                    className="w-full border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-8 text-center bg-white dark:bg-slate-800 hover:border-brand-purple hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer"
+                  >
+                    <span className="text-sm font-bold text-brand-purple">
+                      📸 Click to Upload Cover Image
+                    </span>
+                    <p className="text-xs text-slate-400 mt-1">
+                      Recommended: 1200 x 800px
+                    </p>
+                  </button>
+                )}
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase text-slate-400 ml-2">
                   Gallery Images
                 </label>
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div
-                      key={i}
-                      className="w-20 h-20 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg flex items-center justify-center bg-white dark:bg-slate-800 cursor-pointer hover:border-brand-purple transition-colors"
-                    >
-                      <Plus size={16} className="text-slate-400" />
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {[0, 1, 2, 3].map((i) => (
+                    <div key={i}>
+                      <input
+                        type="file"
+                        ref={(el) => {
+                          if (el) galleryImageRefs.current[i] = el;
+                        }}
+                        accept="image/*"
+                        onChange={(e) => handleGalleryImageUpload(i, e)}
+                        className="hidden"
+                      />
+                      {formData.galleryImages[i] ? (
+                        <div className="relative group">
+                          <img
+                            src={formData.galleryImages[i]}
+                            alt={`Gallery ${i + 1}`}
+                            className="w-full h-24 object-cover rounded-lg border border-slate-200 dark:border-slate-700"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeGalleryImage(i)}
+                            className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 rounded-lg transition-opacity"
+                          >
+                            <Trash2 size={18} className="text-white" />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => galleryImageRefs.current[i]?.click()}
+                          className="w-full h-24 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg flex items-center justify-center bg-white dark:bg-slate-800 hover:border-brand-purple hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer"
+                        >
+                          <Plus size={18} className="text-brand-purple" />
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
+                {formData.galleryImages.length > 0 && (
+                  <p className="text-[10px] text-slate-400 text-right">
+                    {formData.galleryImages.length} image(s) uploaded
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase text-slate-400 ml-2">

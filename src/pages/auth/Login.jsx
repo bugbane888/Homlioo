@@ -104,12 +104,16 @@ const Login = () => {
               <div className="flex items-center gap-2 mb-3">
                 <ShieldCheck size={16} className="text-brand-purple" />
                 <span className="text-[10px] font-black uppercase tracking-widest text-brand-purple">
-                  Secure Login
+                  Test Credentials (Temporary)
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500 font-bold">
-                Sign in with your registered email and password. New users can create an account by clicking Sign Up below.
+              <p className="text-[11px] text-slate-500 font-bold mb-2">
+                Admin Demo:
               </p>
+              <div className="text-[10px] text-slate-600 font-mono space-y-1 bg-white/50 p-2 rounded">
+                <p><strong>Email:</strong> admin@homlioo.com</p>
+                <p><strong>Password:</strong> admin123</p>
+              </div>
             </div>
 
             <div className="mt-8 flex flex-col gap-4 text-center">
