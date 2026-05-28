@@ -1,16 +1,53 @@
 import React from "react";
 import { useProperties } from "../../context/PropertyContext";
+import { useAuth } from "../../context/AuthContext";
 import { useSaved } from "../../context/SavedContext";
 import ListingCard from "../../components/listings/ListingCard";
 import PageTransition from "../../components/common/PageTransition";
 import Button from "../../components/common/Button";
 import { useNavigate } from "react-router-dom";
-import { Heart } from "lucide-react";
+import { Heart, LogIn } from "lucide-react";
 
 const Favorites = () => {
   const { properties } = useProperties();
+  const { user } = useAuth();
   const { savedIds } = useSaved();
   const navigate = useNavigate();
+
+  if (!user) {
+    return (
+      <PageTransition>
+        <div className="h-screen flex items-center justify-center px-4">
+          <div className="text-center max-w-md">
+            <div className="w-24 h-24 bg-pink-100 text-pink-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Heart size={48} fill="currentColor" />
+            </div>
+            <h1 className="text-3xl font-black text-brand-navy dark:text-white mb-2 tracking-tight">
+              Sign in to see your favorites
+            </h1>
+            <p className="text-slate-500 dark:text-slate-400 mb-8 font-medium">
+              Log in to save and access your favorite PG listings anytime.
+            </p>
+            <div className="flex flex-col gap-3">
+              <Button
+                className="w-full py-3 flex items-center justify-center gap-2"
+                onClick={() => navigate("/login")}
+              >
+                <LogIn size={18} /> Sign In
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full py-3"
+                onClick={() => navigate("/signup")}
+              >
+                Create Account
+              </Button>
+            </div>
+          </div>
+        </div>
+      </PageTransition>
+    );
+  }
 
   // Filter properties that have their IDs in the savedIds array
   const savedList = properties.filter((p) => savedIds.includes(p.id));

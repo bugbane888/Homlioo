@@ -1,19 +1,23 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useSaved } from "../context/SavedContext"; // <--- IMPORT THIS
-import { LogOut, Menu, X, Heart, Bell } from "lucide-react";
+import { useSaved } from "../context/SavedContext";
+import { useNotifications } from "../context/NotificationContext";
+import { LogOut, Menu, X, Heart, Bell, CheckCircle, AlertCircle, Info } from "lucide-react";
 import Button from "../components/common/Button";
 import ThemeToggle from "../components/common/ThemeToggle";
 import CompareBar from "../components/listings/CompareBar";
 
 const UserLayout = ({ children }) => {
   const { user, logout } = useAuth();
-  const { savedIds } = useSaved(); // <--- GET SAVED IDS
+  const { savedIds } = useSaved();
+  const { notifications, markAsRead, getUnreadCount } = useNotifications();
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const unreadCount = getUnreadCount();
 
   // LOGIC: Scroll to "How It Works" on Home page
   const handleHowItWorksScroll = () => {
@@ -97,10 +101,85 @@ const UserLayout = ({ children }) => {
             </Link>
 
             {/* --- NOTIFICATION BUTTON --- */}
-            <button className="p-2 text-slate-400 hover:text-brand-navy dark:hover:text-white transition-all relative">
-              <Bell size={20} />
-              <div className="absolute top-2.5 right-2.5 w-2 h-2 bg-brand-amber rounded-full border-2 border-white dark:border-slate-900"></div>
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+                className="p-2 text-slate-400 hover:text-brand-navy dark:hover:text-white transition-all relative"
+                title="Notifications"
+              >
+                <Bell size={20} />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-800 animate-pulse"></span>
+                )}
+              </button>
+
+              {isNotificationOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-30"
+                    onClick={() => setIsNotificationOpen(false)}
+                  ></div>
+                  <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 z-40 overflow-hidden max-h-[400px] flex flex-col">
+                    <div className="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 flex items-center justify-between sticky top-0">
+                      <h3 className="font-bold text-brand-navy dark:text-white text-sm">
+                        Notifications
+                        {unreadCount > 0 && (
+                          <span className="ml-2 text-xs bg-red-500 text-white px-2 py-0.5 rounded-full inline-block">
+                            {unreadCount}
+                          </span>
+                        )}
+                      </h3>
+                      <button
+                        onClick={() => setIsNotificationOpen(false)}
+                        className="text-slate-400 hover:text-slate-600"
+                      >
+                        <X size={18} />
+                      </button>
+                    </div>
+
+                    {notifications.length === 0 ? (
+                      <div className="p-8 text-center flex-1 flex items-center justify-center">
+                        <p className="text-slate-400 text-sm">No notifications yet</p>
+                      </div>
+                    ) : (
+                      <div className="overflow-y-auto flex-1">
+                        {notifications.map((notif) => (
+                          <div
+                            key={notif.id}
+                            className={`p-3 border-b border-slate-100 dark:border-slate-700 cursor-pointer transition-colors ${
+                              !notif.read
+                                ? "bg-blue-50 dark:bg-blue-900/10"
+                                : ""
+                            }`}
+                            onClick={() => markAsRead(notif.id)}
+                          >
+                            <div className="flex gap-2">
+                              <div className="mt-0.5 shrink-0">
+                                {notif.type === "enquiry" ? (
+                                  <AlertCircle size={16} className="text-amber-500" />
+                                ) : notif.type === "issue_resolved" ? (
+                                  <CheckCircle size={16} className="text-emerald-500" />
+                                ) : (
+                                  <Info size={16} className="text-blue-500" />
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-bold text-xs text-brand-navy dark:text-white">
+                                  {notif.title}
+                                </p>
+                                <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-2">
+                                  {notif.message}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
 
             {/* Auth / Profile Logic */}
             <div className="hidden md:flex items-center gap-3">

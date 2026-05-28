@@ -173,9 +173,10 @@ const AdminPropertyForm = ({
       return;
     }
     setValidationErrors({});
-    
+
     const submittedData = {
       ...formData,
+      id: initialData?.id || Date.now(),
       price: parseInt(formData.rooms.single.rent || 0),
       total: parseInt(formData.rooms.single.rent || 0),
       reviews: 0,
@@ -183,9 +184,23 @@ const AdminPropertyForm = ({
       tags: ["New Listing"],
       verified: formData.isVerified,
       sharing: formData.rooms.single.label,
+      status: "published",
+      publishedAt: new Date().toISOString(),
     };
-    
+
+    // Save to localStorage for persistence
+    const properties = JSON.parse(localStorage.getItem("homlioo_properties") || "[]");
+    const existingIndex = properties.findIndex(p => p.id === submittedData.id);
+    if (existingIndex >= 0) {
+      properties[existingIndex] = submittedData;
+    } else {
+      properties.push(submittedData);
+    }
+    localStorage.setItem("homlioo_properties", JSON.stringify(properties));
+
+    alert("Property published successfully!");
     onSubmit(submittedData);
+    onClose();
   };
 
   const handleSaveDraft = () => {
@@ -221,7 +236,7 @@ const AdminPropertyForm = ({
                 {initialData ? "Edit PG Property" : "Add New PG"}
               </h2>
               <p className="text-slate-400 text-sm font-medium">
-                Fill all details that will be visible to students
+                Professional PG listing form. Fill all sections and publish for students to see.
               </p>
             </div>
             <button
@@ -799,12 +814,20 @@ const AdminPropertyForm = ({
         </form>
 
         {/* Footer Buttons - Fixed at Bottom */}
-        <div className="flex gap-4 p-8 lg:p-12 bg-white dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700 shrink-0 flex-wrap">
+        <div className="flex gap-4 p-8 lg:p-12 bg-white dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700 shrink-0 flex-wrap justify-end">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+            className="min-w-[150px]"
+          >
+            Cancel
+          </Button>
           <Button
             type="button"
             variant="outline"
             onClick={handleSaveDraft}
-            className="flex-1 min-w-[150px]"
+            className="min-w-[150px]"
           >
             <FileText size={18} /> Save Draft
           </Button>
@@ -812,9 +835,9 @@ const AdminPropertyForm = ({
             type="submit"
             variant="primary"
             onClick={handleSubmit}
-            className="flex-1 min-w-[150px] py-3 shadow-xl shadow-amber-500/20"
+            className="min-w-[150px] py-3 shadow-xl shadow-amber-500/20"
           >
-            <Save size={18} /> Publish Property
+            <Save size={18} /> Publish
           </Button>
         </div>
       </div>

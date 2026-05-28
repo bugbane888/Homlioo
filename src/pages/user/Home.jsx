@@ -40,8 +40,11 @@ const Home = () => {
     }
   }, [urlSearch]);
 
+  const isSearchDisabled = !search.trim() || budget === "Any Budget" || gender === "Any Gender";
+
   const handleSearch = (e) => {
     e.preventDefault();
+    if (isSearchDisabled) return;
     const params = new URLSearchParams();
     if (search) params.append("location", search);
     if (budget !== "Any Budget") params.append("budget", budget);
@@ -124,7 +127,12 @@ const Home = () => {
             {/* 4. Search Button */}
             <button
               type="submit"
-              className="bg-[#F59E0B] hover:bg-amber-500 text-[#0F2133] px-6 sm:px-10 py-3 md:py-3.5 rounded-xl md:rounded-full font-[900] text-xs sm:text-[13px] flex items-center justify-center gap-2 transition-all shadow-lg shadow-amber-500/20 md:ml-2 w-full md:w-auto shrink-0"
+              disabled={isSearchDisabled}
+              className={`px-6 sm:px-10 py-3 md:py-3.5 rounded-xl md:rounded-full font-[900] text-xs sm:text-[13px] flex items-center justify-center gap-2 transition-all shadow-lg md:ml-2 w-full md:w-auto shrink-0 ${
+                isSearchDisabled
+                  ? "bg-slate-300 text-slate-500 cursor-not-allowed shadow-none"
+                  : "bg-[#F59E0B] hover:bg-amber-500 text-[#0F2133] shadow-amber-500/20"
+              }`}
             >
               <Search size={14} strokeWidth={3} /> <span className="hidden sm:inline">Search</span>
             </button>
