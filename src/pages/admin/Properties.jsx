@@ -5,7 +5,7 @@ import { Plus, Search, Edit3, Trash2, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button";
 import Badge from "../../components/common/Badge";
-import PropertyFormModal from "../../components/admin/PropertyFormModal";
+import AdminPropertyForm from "../../components/admin/AdminPropertyForm";
 
 const Properties = () => {
   const { properties, deleteProperty, addProperty, updateProperty } =
@@ -177,7 +177,7 @@ const Properties = () => {
       </div>
 
       {/* REUSABLE FORM MODAL */}
-      <PropertyFormModal
+      <AdminPropertyForm
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleFormSubmit}

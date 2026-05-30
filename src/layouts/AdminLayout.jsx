@@ -1,7 +1,8 @@
 import React from "react";
 import AdminSidebar from "../components/navigation/AdminSidebar";
+import NotificationDropdown from "../components/admin/NotificationDropdown";
 import { useAuth } from "../context/AuthContext";
-import { Bell, Search } from "lucide-react";
+import { Search } from "lucide-react";
 
 const AdminLayout = ({ children }) => {
   const { user } = useAuth();
@@ -26,10 +27,7 @@ const AdminLayout = ({ children }) => {
           </div>
 
           <div className="flex items-center gap-4 sm:gap-6">
-            <button className="relative p-2 text-slate-400 dark:text-slate-500 hover:text-brand-navy dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
-              <Bell size={22} />
-              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-800 animate-pulse"></span>
-            </button>
+            <NotificationDropdown />
 
             <div className="flex items-center gap-3 pl-4 sm:pl-6 border-l border-slate-100 dark:border-slate-700">
               <div className="text-right hidden md:block">

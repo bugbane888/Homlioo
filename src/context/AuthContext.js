@@ -68,6 +68,20 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
+    // Temporary admin credentials for testing
+    if (email === "admin@homlioo.com" && password === "admin123") {
+      const userData = {
+        id: "admin_temp_id",
+        name: "Admin",
+        email: "admin@homlioo.com",
+        role: "admin",
+        phone: "",
+        photo: null,
+      };
+      setUser(userData);
+      return { success: true, role: userData.role, name: userData.name };
+    }
+
     try {
       const { user: authUser } = await authService.signIn(email, password);
       if (authUser) {
@@ -120,10 +134,16 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
+      // Clear temp admin session
+      if (user?.id === "admin_temp_id") {
+        setUser(null);
+        return;
+      }
       await authService.signOut();
       setUser(null);
     } catch (error) {
       console.error("Logout error:", error);
+      setUser(null);
     }
   };
 

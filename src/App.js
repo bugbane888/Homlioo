@@ -17,6 +17,7 @@ import { PropertyProvider } from "./context/PropertyContext";
 import { CompareProvider } from "./context/CompareContext";
 import { EnquiryProvider } from "./context/EnquiryContext";
 import { SavedProvider } from "./context/SavedContext";
+import { NotificationProvider } from "./context/NotificationContext";
 
 // --- LAYOUTS ---
 import UserLayout from "./layouts/UserLayout";
@@ -46,6 +47,7 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import Properties from "./pages/admin/Properties";
 import Enquiries from "./pages/admin/Enquiries";
 import Settings from "./pages/admin/Settings";
+import Drafts from "./pages/admin/Drafts";
 
 /**
  * PROTECTED ROUTE COMPONENT
@@ -213,6 +215,19 @@ const AnimatedRoutes = () => {
         />
 
         <Route
+          path="/admin/drafts"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminLayout>
+                <PageTransition>
+                  <Drafts />
+                </PageTransition>
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/admin/enquiries"
           element={
             <ProtectedRoute role="admin">
@@ -259,9 +274,11 @@ function App() {
                 <CompareProvider>
                   <EnquiryProvider>
                     <SavedProvider>
-                      <Router>
-                        <AnimatedRoutes />
-                      </Router>
+                      <NotificationProvider>
+                        <Router>
+                          <AnimatedRoutes />
+                        </Router>
+                      </NotificationProvider>
                     </SavedProvider>
                   </EnquiryProvider>
                 </CompareProvider>

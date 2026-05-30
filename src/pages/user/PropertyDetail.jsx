@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useProperties } from "../../context/PropertyContext";
+import { useCompare } from "../../context/CompareContext";
 import PricingCard from "../../components/listings/PricingCard";
 import EnquiryFormModal from "../../components/listings/EnquiryFormModal";
 import Badge from "../../components/common/Badge";
@@ -27,8 +28,10 @@ const PropertyDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { properties } = useProperties();
+  const { compareList, addToCompare, removeFromCompare } = useCompare();
   const pg = properties.find((p) => p.id === parseInt(id));
   const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
+  const isInCompare = compareList.some((p) => p.id === pg?.id);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -196,7 +199,18 @@ const PropertyDetail = () => {
           {/* RIGHT COLUMN: Pricing Card */}
           <div className="lg:col-span-1">
             <div className="sticky top-24">
-              <PricingCard pg={pg} onEnquiry={() => setIsEnquiryOpen(true)} />
+              <PricingCard
+                pg={pg}
+                onEnquiry={() => setIsEnquiryOpen(true)}
+                isInCompare={isInCompare}
+                onCompareToggle={() => {
+                  if (isInCompare) {
+                    removeFromCompare(pg.id);
+                  } else {
+                    addToCompare(pg);
+                  }
+                }}
+              />
             </div>
           </div>
         </div>

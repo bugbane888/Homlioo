@@ -5,10 +5,11 @@ import {
   ChevronDown,
   ChevronUp,
   Send,
+  BarChart3,
 } from "lucide-react";
 import Button from "../common/Button";
 
-const PricingCard = ({ pg, onEnquiry }) => {
+const PricingCard = ({ pg, onEnquiry, isInCompare, onCompareToggle }) => {
   const [selectedRoom, setSelectedRoom] = useState(0);
   const [isOpen, setIsOpen] = useState(null);
 
@@ -98,6 +99,16 @@ const PricingCard = ({ pg, onEnquiry }) => {
         <Button className="w-full" variant="secondary">
           <MessageCircle size={18} /> WhatsApp
         </Button>
+        <button
+          onClick={onCompareToggle}
+          className={`w-full py-3 px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all duration-200 ${
+            isInCompare
+              ? "bg-brand-purple text-white shadow-lg shadow-purple-500/20 hover:bg-brand-purple/90"
+              : "bg-slate-50 dark:bg-slate-700 text-brand-navy dark:text-white border-2 border-slate-200 dark:border-slate-600 hover:border-brand-purple hover:bg-slate-100 dark:hover:bg-slate-600"
+          }`}
+        >
+          <BarChart3 size={18} strokeWidth={2} /> {isInCompare ? "Remove from Compare" : "Add to Compare"}
+        </button>
       </div>
 
       <p className="text-[10px] text-slate-400 text-center mt-4 font-medium">
