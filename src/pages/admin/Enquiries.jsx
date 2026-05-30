@@ -36,16 +36,16 @@ const Enquiries = () => {
           <table className="w-full text-left border-collapse">
             <thead className="bg-slate-50/50 dark:bg-slate-900/30">
               <tr>
-                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">
                   Student Details
                 </th>
-                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">
                   Property Interested
                 </th>
-                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">
                   Status
                 </th>
-                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
+                <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">
                   Actions
                 </th>
               </tr>
@@ -61,21 +61,21 @@ const Enquiries = () => {
                       <p className="font-bold text-brand-navy dark:text-white text-sm">
                         {item.studentName}
                       </p>
-                      <p className="text-[10px] text-slate-400 font-black flex items-center gap-1 mt-1">
-                        <Phone size={10} /> {item.phone}
+                      <p className="text-xs text-slate-400 font-black flex items-center gap-1 mt-1">
+                        <Phone size={12} /> {item.phone}
                       </p>
                     </td>
                     <td className="px-8 py-6">
                       <p className="font-bold text-slate-600 dark:text-slate-300 text-sm">
                         {item.pgName}
                       </p>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase">
+                      <p className="text-xs text-slate-400 font-bold uppercase">
                         {item.date}
                       </p>
                     </td>
                     <td className="px-8 py-6">
                       <span
-                        className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${getStatusStyle(item.status)}`}
+                        className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest ${getStatusStyle(item.status)}`}
                       >
                         {item.status}
                       </span>

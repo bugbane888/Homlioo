@@ -103,14 +103,14 @@ const Login = () => {
             <div className="mt-8 p-6 bg-purple-50 dark:bg-purple-900/10 rounded-[2rem] border border-purple-100 dark:border-purple-800/30">
               <div className="flex items-center gap-2 mb-3">
                 <ShieldCheck size={16} className="text-brand-purple" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-brand-purple">
+                <span className="text-xs font-black uppercase tracking-widest text-brand-purple">
                   Test Credentials (Temporary)
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500 font-bold mb-2">
+              <p className="text-xs text-slate-500 font-bold mb-2">
                 Admin Demo:
               </p>
-              <div className="text-[10px] text-slate-600 font-mono space-y-1 bg-white/50 p-2 rounded">
+              <div className="text-xs text-slate-600 font-mono space-y-1 bg-white/50 p-2 rounded">
                 <p><strong>Email:</strong> admin@homlioo.com</p>
                 <p><strong>Password:</strong> admin123</p>
               </div>
@@ -129,14 +129,14 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => navigate("/")}
-                className="text-slate-300 text-[10px] font-black uppercase tracking-[0.3em] hover:text-brand-navy dark:hover:text-white transition-colors"
+                className="text-slate-300 text-xs font-black uppercase tracking-[0.3em] hover:text-brand-navy dark:hover:text-white transition-colors"
               >
                 Skip for now <ArrowRight size={10} className="inline ml-1" />
               </button>
             </div>
           </form>
 
-          <p className="text-center mt-8 text-[10px] text-slate-400 font-bold uppercase tracking-[0.4em]">
+          <p className="text-center mt-8 text-xs text-slate-400 font-bold uppercase tracking-[0.4em]">
             © {new Date().getFullYear()} HOMLiOO Technology
           </p>
         </div>

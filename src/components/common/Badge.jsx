@@ -12,7 +12,7 @@ const Badge = ({ children, variant = "default", className = "" }) => {
 
   return (
     <span
-      className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ${variants[variant]} ${className}`}
+      className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide ${variants[variant]} ${className}`}
     >
       {children}
     </span>

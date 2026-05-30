@@ -61,14 +61,14 @@ const Home = () => {
 
         <div className="max-w-6xl mx-auto relative z-10">
           {/* Main Tagline */}
-          <h1 className="text-2xl sm:text-4xl md:text-[68px] font-[900] text-white leading-[1.2] sm:leading-[1.1] mb-1 sm:mb-2 tracking-tighter">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-[900] text-white leading-tight sm:leading-tight mb-2 sm:mb-4 tracking-tight">
             Find Your Perfect PG
           </h1>
-          <h2 className="text-2xl sm:text-4xl md:text-[68px] font-[900] text-[#F59E0B] leading-[1.2] sm:leading-[1.1] mb-4 sm:mb-6 tracking-tighter">
+          <h2 className="text-3xl sm:text-5xl md:text-7xl font-[900] text-[#F59E0B] leading-tight sm:leading-tight mb-6 sm:mb-10 tracking-tight">
             Near Your College
           </h2>
 
-          <p className="text-slate-300 text-xs sm:text-sm md:text-[17px] font-medium mb-8 sm:mb-12 opacity-80 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base md:text-lg text-slate-300 font-medium mb-8 sm:mb-12 opacity-80 leading-relaxed max-w-2xl mx-auto">
             Verified listings. Transparent pricing. Zero broker fees.
             <br />
             On a mission to empower{" "}
@@ -89,7 +89,7 @@ const Home = () => {
               <input
                 type="text"
                 placeholder="Search by area, college..."
-                className="bg-transparent border-none outline-none w-full text-slate-700 font-bold text-xs sm:text-[13px] placeholder:text-slate-300"
+                className="bg-transparent border-none outline-none w-full text-slate-700 font-bold text-sm placeholder:text-slate-300"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -102,7 +102,7 @@ const Home = () => {
             <select
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
-              className="flex-1 bg-transparent px-4 sm:px-6 py-3 md:py-2 text-slate-500 font-black text-xs sm:text-[13px] outline-none cursor-pointer appearance-none text-center md:text-left"
+              className="flex-1 bg-transparent px-4 sm:px-6 py-3 md:py-2 text-slate-500 font-black text-sm outline-none cursor-pointer appearance-none text-center md:text-left"
             >
               <option>Any Budget</option>
               <option value="6000">Under ₹6,000</option>
@@ -116,7 +116,7 @@ const Home = () => {
             <select
               value={gender}
               onChange={(e) => setGender(e.target.value)}
-              className="flex-1 bg-transparent px-6 py-2 text-slate-500 font-black text-[13px] outline-none cursor-pointer appearance-none text-center md:text-left"
+              className="flex-1 bg-transparent px-6 py-2 text-slate-500 font-black text-sm outline-none cursor-pointer appearance-none text-center md:text-left"
             >
               <option>Any Gender</option>
               <option>Boys</option>
@@ -128,13 +128,13 @@ const Home = () => {
             <button
               type="submit"
               disabled={isSearchDisabled}
-              className={`px-6 sm:px-10 py-3 md:py-3.5 rounded-xl md:rounded-full font-[900] text-xs sm:text-[13px] flex items-center justify-center gap-2 transition-all shadow-lg md:ml-2 w-full md:w-auto shrink-0 ${
+              className={`px-6 sm:px-10 py-3 md:py-3.5 rounded-xl md:rounded-full font-[900] text-sm flex items-center justify-center gap-2 transition-all shadow-lg md:ml-2 w-full md:w-auto shrink-0 ${
                 isSearchDisabled
                   ? "bg-slate-300 text-slate-500 cursor-not-allowed shadow-none"
                   : "bg-[#F59E0B] hover:bg-amber-500 text-[#0F2133] shadow-amber-500/20"
               }`}
             >
-              <Search size={14} strokeWidth={3} /> <span className="hidden sm:inline">Search</span>
+              <Search size={16} strokeWidth={3} /> <span className="hidden sm:inline">Search</span>
             </button>
           </form>
 
@@ -152,7 +152,7 @@ const Home = () => {
               <span
                 key={l}
                 onClick={() => navigate(`/listings?location=${l}`)}
-                className="bg-[#1E2E3D] border border-white/5 text-slate-400 px-3 sm:px-6 py-1.5 sm:py-2.5 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-[#F59E0B] hover:text-[#0F2133] transition-all"
+                className="bg-[#1E2E3D] border border-white/5 text-slate-400 px-3 sm:px-6 py-1.5 sm:py-2.5 rounded-full text-xs font-black uppercase tracking-widest cursor-pointer hover:bg-[#F59E0B] hover:text-[#0F2133] transition-all"
               >
                 {l}
               </span>
@@ -166,8 +166,8 @@ const Home = () => {
         <div className="max-w-7xl mx-auto flex justify-center items-center gap-6 sm:gap-16 md:gap-40 flex-wrap">
           {STATS.map((s) => (
             <div key={s.label} className="text-center min-w-[120px]">
-              <div className="font-[900] text-2xl sm:text-3xl text-amber-100">{s.n}</div>
-              <div className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-amber-900/40 mt-1">
+              <div className="font-[900] text-3xl sm:text-4xl text-amber-100">{s.n}</div>
+              <div className="text-xs font-black uppercase tracking-[0.2em] text-amber-900/40 mt-2">
                 {s.label}
               </div>
             </div>
@@ -207,10 +207,10 @@ const Home = () => {
             🌸
           </div>
           <div className="relative z-10">
-            <span className="text-pink-400 text-[11px] font-black uppercase tracking-[0.3em]">
+            <span className="text-pink-400 text-xs font-black uppercase tracking-[0.3em]">
               PG FOR
             </span>
-            <h2 className="text-6xl font-[900] text-white mt-2 tracking-tighter leading-none">
+            <h2 className="text-5xl md:text-6xl font-[900] text-white mt-2 tracking-tighter leading-none">
               Girls
             </h2>
           </div>
@@ -218,7 +218,7 @@ const Home = () => {
             <p className="text-pink-200/60 text-sm font-medium leading-relaxed max-w-[200px]">
               Safe, stylish & <br /> peaceful havens
             </p>
-            <div className="bg-white text-[#4A0520] px-8 py-3 rounded-full font-[900] text-[11px] uppercase tracking-widest transition-transform group-hover:scale-105 active:scale-95">
+            <div className="bg-white text-[#4A0520] px-8 py-3 rounded-full font-[900] text-xs uppercase tracking-widest transition-transform group-hover:scale-105 active:scale-95">
               Explore All →
             </div>
           </div>
@@ -228,10 +228,10 @@ const Home = () => {
       {/* --- HOW IT WORKS SECTION --- */}
       <section id="how-it-works" className="bg-[#0F172A] py-28 scroll-mt-10">
         <div className="max-w-6xl mx-auto px-6 text-center">
-          <span className="text-brand-amber text-[11px] font-black tracking-[0.4em] uppercase">
+          <span className="text-brand-amber text-xs font-black tracking-[0.4em] uppercase">
             Step by Step
           </span>
-          <h2 className="text-4xl md:text-5xl font-[900] text-white mt-4 mb-20 tracking-tighter leading-none">
+          <h2 className="text-4xl md:text-5xl font-[900] text-white mt-4 mb-20 tracking-tighter leading-snug">
             Find Your PG in 3 Steps
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -262,10 +262,10 @@ const Home = () => {
                 <div className="text-5xl mb-8 group-hover:scale-110 transition-transform duration-500">
                   {s.icon}
                 </div>
-                <span className="text-[#F59E0B] text-[11px] font-black uppercase tracking-widest">
+                <span className="text-[#F59E0B] text-xs font-black uppercase tracking-widest">
                   Step {s.step}
                 </span>
-                <h4 className="text-2xl font-black text-white mt-2 mb-4 tracking-tight leading-tight">
+                <h4 className="text-xl font-black text-white mt-2 mb-4 tracking-tight leading-snug">
                   {s.title}
                 </h4>
                 <p className="text-slate-400 text-sm leading-relaxed font-medium">
@@ -281,7 +281,7 @@ const Home = () => {
       <section className="max-w-7xl mx-auto px-6 py-28">
         <div className="flex justify-between items-end mb-14 text-left">
           <div>
-            <span className="text-[#F59E0B] font-black text-[11px] uppercase tracking-[0.3em]">
+            <span className="text-[#F59E0B] font-black text-xs uppercase tracking-[0.3em]">
               Trending Now
             </span>
             <h2 className="text-4xl font-[900] text-brand-navy dark:text-white mt-2 tracking-tighter leading-none">
@@ -290,7 +290,7 @@ const Home = () => {
           </div>
           <Button
             variant="outline"
-            className="py-3 px-10 text-[10px] font-black uppercase tracking-widest rounded-full border-slate-200"
+            className="py-3 px-10 text-xs font-black uppercase tracking-widest rounded-full border-slate-200"
             onClick={() => navigate("/listings")}
           >
             View All Properties <ArrowRight size={14} className="ml-1" />
@@ -306,7 +306,7 @@ const Home = () => {
 
       {/* --- WHY HOMLiOO SECTION --- */}
       <section className="max-w-7xl mx-auto px-6 pb-32 text-center">
-        <span className="text-brand-purple text-[11px] font-black tracking-[0.4em] uppercase">
+        <span className="text-brand-purple text-xs font-black tracking-[0.4em] uppercase">
           Why Choose Us
         </span>
         <h2 className="text-4xl md:text-5xl font-[900] text-brand-navy dark:text-white mt-4 mb-20 tracking-tighter leading-none">
@@ -369,24 +369,21 @@ const CategoryCard = ({ title, sub, emoji, bg, accent, border, onClick }) => (
     </div>
     <div>
       <span
-        className={`${accent} text-[11px] font-black uppercase tracking-[0.3em]`}
+        className={`${accent} text-xs font-black uppercase tracking-[0.3em]`}
       >
         PG For
       </span>
-      <h3 className="text-3xl lg:text-4xl font-[900] text-white mt-1 leading-none tracking-tight">
+      <h3 className="text-3xl lg:text-4xl font-[900] text-white mt-1 leading-snug tracking-tight">
         {title}
       </h3>
-      <p className="text-white/30 text-sm mt-3 font-medium">{sub}</p>
+      <p className="text-white/30 text-base mt-3 font-medium">{sub}</p>
     </div>
-    <div className="mt-6 flex items-center gap-2 text-white/50 text-[10px] font-black uppercase tracking-widest group-hover:text-white transition-colors">
-      Browse Sanctuaries <ArrowRight size={12} />
+    <div className="mt-6 flex items-center gap-2 text-white/50 text-xs font-black uppercase tracking-widest group-hover:text-white transition-colors">
+      Browse Sanctuaries <ArrowRight size={14} />
     </div>
   </motion.div>
 );
 
-/**
- * REUSABLE FEATURE CARD
- */
 const FeatureCard = ({ title, desc, bg, icon }) => (
   <div
     className={`${bg} p-10 rounded-[2.5rem] text-left border border-slate-50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-100 group`}
@@ -394,10 +391,10 @@ const FeatureCard = ({ title, desc, bg, icon }) => (
     <div className="text-4xl mb-8 group-hover:scale-110 transition-transform duration-500">
       {icon}
     </div>
-    <h4 className="font-black text-brand-navy text-[13px] mb-3 uppercase tracking-tighter">
+    <h4 className="font-black text-brand-navy text-sm mb-3 uppercase tracking-tight">
       {title}
     </h4>
-    <p className="text-slate-500 text-[13px] font-medium leading-relaxed">
+    <p className="text-slate-500 text-sm font-medium leading-relaxed">
       {desc}
     </p>
   </div>

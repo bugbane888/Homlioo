@@ -35,7 +35,7 @@ const ListingCard = ({ pg }) => {
 
         {/* Room Inventory Alert */}
         {pg.roomsLeft <= 2 && pg.roomsLeft > 0 && (
-          <div className="absolute top-4 left-4 bg-orange-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-tighter shadow-lg">
+          <div className="absolute top-4 left-4 bg-orange-500 text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-tighter shadow-lg">
             🔥 {pg.roomsLeft} left
           </div>
         )}
@@ -56,8 +56,8 @@ const ListingCard = ({ pg }) => {
 
         {/* Verification Pill */}
         {pg.verified && (
-          <div className="absolute bottom-4 left-4 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-[10px] font-black px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-md">
-            <CheckCircle size={12} className="text-emerald-500" /> Verified
+          <div className="absolute bottom-4 left-4 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-black px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-md">
+            <CheckCircle size={14} className="text-emerald-500" /> Verified
           </div>
         )}
       </div>
@@ -71,23 +71,23 @@ const ListingCard = ({ pg }) => {
         </div>
 
         {/* Title & Area */}
-        <h3 className="text-xl font-[900] text-brand-navy dark:text-white mb-1 tracking-tight leading-none italic">
+        <h3 className="text-lg font-[900] text-brand-navy dark:text-white mb-1 tracking-tight leading-snug">
           {pg.name}
         </h3>
-        <p className="flex items-center gap-1 text-slate-400 text-xs font-bold mb-5 italic">
-          <MapPin size={12} className="text-brand-purple" /> {pg.locality}
+        <p className="flex items-center gap-1 text-slate-400 text-xs font-bold mb-5">
+          <MapPin size={14} className="text-brand-purple" /> {pg.locality}
         </p>
 
         {/* --- PROXIMITY DETAILS (RESTORED) --- */}
-        <div className="space-y-2.5 mb-6">
-          <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-[11px] font-black uppercase tracking-wide">
-            <Clock size={14} /> {pg.college}
+        <div className="space-y-3 mb-6">
+          <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-xs font-black uppercase tracking-wide">
+            <Clock size={15} /> {pg.college}
           </div>
-          <div className="flex items-center gap-2 text-blue-500 dark:text-blue-400 text-[11px] font-black uppercase tracking-wide">
-            <Train size={14} /> {pg.metro}
+          <div className="flex items-center gap-2 text-blue-500 dark:text-blue-400 text-xs font-black uppercase tracking-wide">
+            <Train size={15} /> {pg.metro}
           </div>
-          <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500 text-[11px] font-black uppercase tracking-wide opacity-80 italic">
-            <Building2 size={14} /> {pg.hospital}
+          <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500 text-xs font-black uppercase tracking-wide opacity-80">
+            <Building2 size={15} /> {pg.hospital}
           </div>
         </div>
 
@@ -96,19 +96,19 @@ const ListingCard = ({ pg }) => {
           <div>
             <div className="text-2xl font-[900] text-brand-navy dark:text-white tracking-tighter">
               ₹{pg.total.toLocaleString()}
-              <span className="text-xs text-slate-400 font-black ml-1 uppercase tracking-widest italic">
+              <span className="text-xs text-slate-400 font-black ml-1 uppercase tracking-widest">
                 /mo
               </span>
             </div>
-            <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mt-1">
+            <p className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mt-1">
               {pg.sharing}
             </p>
           </div>
           <div className="text-right">
-            <div className="flex items-center gap-1 text-[#F59E0B] font-black text-sm">
-              <Star size={15} fill="currentColor" /> {pg.rating}
+            <div className="flex items-center gap-1 text-[#F59E0B] font-black text-base">
+              <Star size={16} fill="currentColor" /> {pg.rating}
             </div>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">
+            <p className="text-xs text-slate-400 font-bold uppercase tracking-tight">
               {pg.reviews} reviews
             </p>
           </div>
@@ -118,7 +118,7 @@ const ListingCard = ({ pg }) => {
         <div className="mt-7 flex gap-2">
           <button
             onClick={() => navigate(`/property/${pg.id}`)}
-            className="flex-[2.5] bg-[#F59E0B] hover:bg-amber-500 text-[#0F172A] py-3.5 rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-amber-500/20 active:scale-95 transition-all"
+            className="flex-[2.5] bg-[#F59E0B] hover:bg-amber-500 text-[#0F172A] py-3.5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg shadow-amber-500/20 active:scale-95 transition-all"
           >
             View Details
           </button>
@@ -128,7 +128,7 @@ const ListingCard = ({ pg }) => {
               e.stopPropagation();
               toggleCompare(pg);
             }}
-            className={`flex-1 py-3.5 rounded-2xl border-2 font-black text-[11px] uppercase tracking-widest transition-all active:scale-95 ${
+            className={`flex-1 py-3.5 rounded-2xl border-2 font-black text-sm uppercase tracking-widest transition-all active:scale-95 ${
               isCompared
                 ? "bg-brand-purple border-brand-purple text-white shadow-lg shadow-purple-500/20"
                 : "border-slate-100 dark:border-slate-700 text-slate-400 hover:border-brand-purple hover:text-brand-purple"
