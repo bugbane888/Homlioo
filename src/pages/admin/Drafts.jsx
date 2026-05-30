@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useToast } from "../../context/ToastContext";
-import { FileText, Trash2, Edit3, Plus } from "lucide-react";
+import { Trash2, Edit3, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button";
 

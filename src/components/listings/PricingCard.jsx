@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import {
-  Phone,
   MessageCircle,
-  ChevronDown,
-  ChevronUp,
   Send,
   BarChart3,
 } from "lucide-react";

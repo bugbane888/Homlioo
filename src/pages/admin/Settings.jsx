@@ -4,8 +4,6 @@ import { useTheme } from "../../context/ThemeContext";
 import { useToast } from "../../context/ToastContext";
 import {
   User,
-  Mail,
-  Phone,
   Camera,
   Save,
   Moon,
@@ -15,7 +13,7 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import Button from "../../components/common/Button";
+
 
 const Settings = () => {
   const { user, updateProfile, logout } = useAuth();
@@ -291,12 +289,12 @@ const Settings = () => {
               For support or additional assistance, please contact the HOMLiOO
               support team.
             </p>
-            <a
-              href="#"
-              className="text-brand-purple font-bold text-sm hover:underline"
+            <button
+              onClick={() => window.open('mailto:support@homlioo.com', '_blank')}
+              className="text-brand-purple font-bold text-sm hover:underline cursor-pointer bg-none border-none p-0"
             >
               Contact Support →
-            </a>
+            </button>
           </div>
         </div>
       </div>

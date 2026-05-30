@@ -1,10 +1,10 @@
 import React from "react";
 import { useEnquiries } from "../../context/EnquiryContext";
 import { Phone, CheckCircle, Clock, Trash2 } from "lucide-react";
-import Badge from "../../components/common/Badge";
+
 
 const Enquiries = () => {
-  const { enquiries, updateStatus, deleteEnquiry, isLoading } = useEnquiries();
+  const { enquiries, updateStatus, deleteEnquiry } = useEnquiries();
 
   // Helper for status styling
   const getStatusStyle = (status) => {
