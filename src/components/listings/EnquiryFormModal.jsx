@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { useEnquiries } from "../../context/EnquiryContext";
 import { useAuth } from "../../context/AuthContext";
-import { X, Phone, Send } from "lucide-react";
-import Button from "../common/Button";
+import { X, Send } from "lucide-react";
 
 const EnquiryFormModal = ({ isOpen, onClose, pgName, pgId }) => {
   const { user } = useAuth();

@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useSaved } from "../context/SavedContext";
 import { useNotifications } from "../context/NotificationContext";
-import { LogOut, Menu, X, Heart, Bell, CheckCircle, AlertCircle, Info } from "lucide-react";
+import { Menu, X, Heart, Bell, CheckCircle, AlertCircle, Info } from "lucide-react";
 import Button from "../components/common/Button";
 import ThemeToggle from "../components/common/ThemeToggle";
 import CompareBar from "../components/listings/CompareBar";

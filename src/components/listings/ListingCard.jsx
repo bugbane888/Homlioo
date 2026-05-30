@@ -12,7 +12,6 @@ import { useNavigate } from "react-router-dom";
 import { useCompare } from "../../context/CompareContext";
 import { useSaved } from "../../context/SavedContext";
 import Badge from "../common/Badge";
-import { motion } from "framer-motion";
 
 const ListingCard = ({ pg }) => {
   const navigate = useNavigate();
