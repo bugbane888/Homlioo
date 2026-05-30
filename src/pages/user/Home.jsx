@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   Search,
-  MapPin,
   ArrowRight,
-  Clock,
-  Train,
-  Building2,
-  Heart,
-  CheckCircle,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useProperties } from "../../context/PropertyContext";

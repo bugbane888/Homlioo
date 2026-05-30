@@ -187,9 +187,9 @@ const PropertyDetail = () => {
                   <MapIcon size={40} />
                 </div>
                 <div className="absolute inset-0 bg-brand-navy/5 group-hover:bg-transparent transition-colors"></div>
-                <button className="absolute bottom-4 bg-white px-6 py-2 rounded-full shadow-xl font-black text-[10px] uppercase tracking-widest group-hover:bg-brand-purple group-hover:text-white transition-all">
+                <a href={pg.mapUrl} target="_blank" rel="noopener noreferrer" className="absolute bottom-4 bg-white px-6 py-2 rounded-full shadow-xl font-black text-[10px] uppercase tracking-widest group-hover:bg-brand-purple group-hover:text-white transition-all inline-block">
                   View in Maps →
-                </button>
+                </a>
               </div>
             </div>
           </div>
