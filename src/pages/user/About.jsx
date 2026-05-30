@@ -1,5 +1,4 @@
 import React from "react";
-import { motion } from "framer-motion";
 import PageTransition from "../../components/common/PageTransition";
 import { ABOUT_STATS, FOUNDERS } from "../../constants/data";
 
