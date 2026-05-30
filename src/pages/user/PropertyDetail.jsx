@@ -5,7 +5,6 @@ import { useCompare } from "../../context/CompareContext";
 import PricingCard from "../../components/listings/PricingCard";
 import EnquiryFormModal from "../../components/listings/EnquiryFormModal";
 import Badge from "../../components/common/Badge";
-import Button from "../../components/common/Button";
 import {
   MapPin,
   Clock,
@@ -21,7 +20,6 @@ import {
   Dumbbell,
   Zap,
   Map as MapIcon,
-  Send,
 } from "lucide-react";
 
 const PropertyDetail = () => {
@@ -70,12 +68,12 @@ const PropertyDetail = () => {
             {/* Image Placeholder */}
             <div className="aspect-video bg-blue-500 rounded-2xl sm:rounded-3xl relative flex items-center justify-center overflow-hidden">
               <div className="text-6xl sm:text-8xl">🏠</div>
-              <div className="absolute bottom-2 sm:bottom-4 text-white/70 text-[10px] sm:text-xs px-2">
+              <div className="absolute bottom-2 sm:bottom-4 text-white/70 text-xs px-2">
                 5 verified photos · 1 video walkthrough
               </div>
               <div className="absolute top-3 sm:top-6 left-3 sm:left-6 bg-[#10B981] text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full text-[8px] sm:text-[10px] font-black flex items-center gap-2">
                 <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>{" "}
-                HOMLiOO VERIFIED
+                HOMLIOO VERIFIED
               </div>
             </div>
 
@@ -90,10 +88,10 @@ const PropertyDetail = () => {
                 </Badge>
                 <Badge variant="amber" className="text-xs">Power Backup</Badge>
               </div>
-              <h1 className="text-xl sm:text-3xl font-black text-brand-navy dark:text-white mb-2">
+              <h1 className="text-2xl sm:text-3xl font-black text-brand-navy dark:text-white mb-2">
                 {pg.name}
               </h1>
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-slate-400 text-xs sm:text-sm font-bold">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-slate-400 text-sm font-bold">
                 <span className="flex items-center gap-1">
                   <MapPin size={14} /> {pg.locality}
                 </span>
@@ -123,7 +121,7 @@ const PropertyDetail = () => {
                   <div className="text-brand-purple">
                     {amenityIcons[a] || <Home size={18} />}
                   </div>
-                  <span className="text-[10px] font-black uppercase text-slate-400">
+                  <span className="text-xs font-black uppercase text-slate-400">
                     {a}
                   </span>
                 </div>

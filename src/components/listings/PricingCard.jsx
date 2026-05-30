@@ -30,7 +30,7 @@ const PricingCard = ({ pg, onEnquiry, isInCompare, onCompareToggle }) => {
   return (
     <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-xl sticky top-24">
       <div className="mb-6">
-        <span className="text-[10px] font-black text-brand-purple uppercase tracking-widest">
+        <span className="text-xs font-black text-brand-purple uppercase tracking-widest">
           Select Room Type
         </span>
       </div>
@@ -47,10 +47,10 @@ const PricingCard = ({ pg, onEnquiry, isInCompare, onCompareToggle }) => {
           >
             <div className="flex justify-between items-center">
               <div>
-                <h4 className="font-bold text-brand-navy text-sm">
+                <h4 className="font-bold text-brand-navy text-base">
                   {room.label}
                 </h4>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-tight">
                   {room.sub}
                 </p>
               </div>
@@ -58,7 +58,7 @@ const PricingCard = ({ pg, onEnquiry, isInCompare, onCompareToggle }) => {
                 <span className="text-lg font-black text-brand-navy">
                   ₹{room.rent.toLocaleString()}
                 </span>
-                <span className="text-[10px] text-slate-400 ml-1">/mo</span>
+                <span className="text-xs text-slate-400 ml-1">/mo</span>
               </div>
             </div>
 
@@ -111,7 +111,7 @@ const PricingCard = ({ pg, onEnquiry, isInCompare, onCompareToggle }) => {
         </button>
       </div>
 
-      <p className="text-[10px] text-slate-400 text-center mt-4 font-medium">
+      <p className="text-xs text-slate-400 text-center mt-4 font-medium">
         Mention <b>HOMLiOO</b> to get the best price guarantee.
       </p>
     </div>

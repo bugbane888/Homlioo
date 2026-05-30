@@ -410,19 +410,19 @@ const UserLayout = ({ children }) => {
               </ul>
             </div>
             <div className="text-left lg:pl-10">
-              <h4 className="text-brand-amber text-[10px] font-black uppercase tracking-[0.4em] mb-8">
+              <h4 className="text-brand-amber text-xs font-black uppercase tracking-[0.4em] mb-8">
                 Support
               </h4>
-              <ul className="space-y-5 text-slate-400 text-[12px] font-bold uppercase tracking-widest">
+              <ul className="space-y-5 text-slate-400 text-xs font-bold uppercase tracking-widest">
                 <li>e: support@homlioo.in</li>
                 <li>p: +91 98765 43210</li>
-                <li className="text-slate-500 text-[10px] tracking-widest font-medium">
+                <li className="text-slate-500 text-xs tracking-widest font-medium">
                   Greater Noida, Uttar Pradesh
                 </li>
               </ul>
             </div>
           </div>
-          <div className="pt-10 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-[9px] font-black uppercase tracking-[0.3em]">
+          <div className="pt-10 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-xs font-black uppercase tracking-[0.3em]">
             <span>
               © {new Date().getFullYear()} HOMLiOO TECHNOLOGY PRIVATE LIMITED.
             </span>

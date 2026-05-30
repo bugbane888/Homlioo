@@ -1,6 +1,5 @@
 import React, { useReducer, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { motion } from "framer-motion";
 import { useProperties } from "../../context/PropertyContext";
 import { useDebounce } from "../../hooks/useDebounce";
 import ListingCard from "../../components/listings/ListingCard";
@@ -86,11 +85,11 @@ const Listings = () => {
           <main className="flex-1">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 sm:mb-10 gap-4 sm:gap-6">
               <div className="text-left">
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-[900] text-brand-navy dark:text-white tracking-tighter italic">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-[900] text-brand-navy dark:text-white tracking-tight">
                   Found {filteredListings.length} Sanctuaries
                 </h1>
-                <p className="text-slate-400 font-[900] text-[8px] sm:text-[10px] uppercase tracking-widest mt-1 italic flex items-center gap-2">
-                  <MapPin size={10} className="sm:w-3 sm:h-3" /> Verified Stays in{" "}
+                <p className="text-slate-400 font-[900] text-xs uppercase tracking-widest mt-2 flex items-center gap-2">
+                  <MapPin size={14} className="sm:w-4 sm:h-4" /> Verified Stays in{" "}
                   {filters.search || "All Locations"}
                 </p>
               </div>
