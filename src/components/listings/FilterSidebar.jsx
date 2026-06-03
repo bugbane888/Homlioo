@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Filter, RotateCcw, X } from "lucide-react";
+import { Filter, RotateCcw, X, Utensils, Wind, BarChart3, Sofa, Car } from "lucide-react";
 
 const FilterSidebar = ({ filters, dispatch }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,16 +25,16 @@ const FilterSidebar = ({ filters, dispatch }) => {
 
       {/* Sidebar Content */}
       <div
-        className={`bg-white rounded-3xl p-6 border border-slate-100 shadow-sm transition-all ${
+        className={`bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-slate-700 shadow-lg dark:shadow-xl transition-all ${
           isOpen
             ? "fixed inset-x-4 bottom-4 top-auto rounded-2xl z-50 lg:relative lg:inset-auto lg:sticky lg:rounded-3xl lg:top-24 max-h-[80vh] overflow-y-auto"
             : "hidden lg:block sticky top-24 h-fit"
         }`}
       >
         <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-2 font-black text-brand-navy">
-            <Filter size={18} />
-            <span>Filters</span>
+          <div className="flex items-center gap-2 font-black text-brand-navy dark:text-white text-lg">
+            <Filter size={20} />
+            <span>Refine Search</span>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -53,9 +53,9 @@ const FilterSidebar = ({ filters, dispatch }) => {
         </div>
 
         {/* Budget Range */}
-        <div className="mb-8">
-          <label className="block text-sm font-bold text-brand-navy mb-4">
-            Max Budget: ₹{filters.maxBudget.toLocaleString()}
+        <div className="mb-8 pb-8 border-b border-slate-100 dark:border-slate-700">
+          <label className="block text-sm font-bold text-brand-navy dark:text-white mb-4">
+            Price Range: ₹{filters.maxBudget.toLocaleString()}
           </label>
           <input
             type="range"
@@ -74,12 +74,57 @@ const FilterSidebar = ({ filters, dispatch }) => {
           </div>
         </div>
 
-        {/* Gender Selection */}
-        <div className="mb-8">
-          <label className="block text-sm font-bold text-brand-navy mb-4">
-            Gender Preference
+        {/* Facilities Grid */}
+        <div className="mb-8 pb-8 border-b border-slate-100 dark:border-slate-700">
+          <label className="block text-sm font-bold text-brand-navy dark:text-white mb-4">
+            Facilities
           </label>
-          <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-3">
+            {/* WiFi */}
+            <button
+              className="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-all flex flex-col items-center gap-2"
+            >
+              <div className="text-2xl text-blue-500">📶</div>
+              <span className="text-xs font-bold text-slate-600">WiFi</span>
+            </button>
+
+            {/* AC */}
+            <button
+              className="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-all flex flex-col items-center gap-2"
+            >
+              <div className="text-2xl text-cyan-400">❄️</div>
+              <span className="text-xs font-bold text-slate-600">AC</span>
+            </button>
+
+            {/* Food */}
+            <button
+              onClick={() => dispatch({ type: "TOGGLE_FOOD" })}
+              className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${
+                filters.food
+                  ? "border-brand-purple bg-brand-purple/5"
+                  : "border-slate-100 hover:border-slate-200"
+              }`}
+            >
+              <div className="text-2xl">🍽️</div>
+              <span className="text-xs font-bold text-slate-600">Food</span>
+            </button>
+
+            {/* Parking */}
+            <button
+              className="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-all flex flex-col items-center gap-2"
+            >
+              <div className="text-2xl">🚗</div>
+              <span className="text-xs font-bold text-slate-600">Parking</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Gender Selection */}
+        <div className="mb-8 pb-8 border-b border-slate-100 dark:border-slate-700">
+          <label className="block text-sm font-bold text-brand-navy dark:text-white mb-4">
+            Gender
+          </label>
+          <div className="space-y-3">
             {["All", "Boys", "Girls", "Co-ed"].map((g) => (
               <label
                 key={g}
@@ -93,7 +138,7 @@ const FilterSidebar = ({ filters, dispatch }) => {
                   className="w-4 h-4 text-brand-purple focus:ring-brand-purple"
                 />
                 <span
-                  className={`text-sm font-medium ${filters.gender === g ? "text-brand-purple font-bold" : "text-slate-500 group-hover:text-brand-navy"}`}
+                  className={`text-sm font-medium ${filters.gender === g ? "text-brand-purple font-bold" : "text-slate-600 group-hover:text-brand-navy"}`}
                 >
                   {g}
                 </span>
@@ -102,56 +147,32 @@ const FilterSidebar = ({ filters, dispatch }) => {
           </div>
         </div>
 
-        {/* Facilities Toggle */}
-        <div className="space-y-4">
-          <label className="block text-sm font-bold text-brand-navy mb-2">
-            Essential Facilities
-          </label>
-
-          <label className="flex items-center justify-between p-3 rounded-2xl border border-slate-50 cursor-pointer hover:bg-slate-50 transition-colors">
-            <span className="text-sm font-medium text-slate-600">
-              Include Food
-            </span>
-            <input
-              type="checkbox"
-              checked={filters.food}
-              onChange={() => dispatch({ type: "TOGGLE_FOOD" })}
-              className="w-4 h-4 rounded text-brand-purple"
-            />
-          </label>
-
-          <label className="flex items-center justify-between p-3 rounded-2xl border border-slate-50 cursor-pointer hover:bg-slate-50 transition-colors">
-            <span className="text-sm font-medium text-slate-600">
-              Air Conditioning (AC)
-            </span>
-            <input
-              type="checkbox"
-              checked={filters.ac}
-              onChange={() => dispatch({ type: "TOGGLE_AC" })}
-              className="w-4 h-4 rounded text-brand-purple"
-            />
-          </label>
-
-          <label className="flex items-center justify-between p-3 rounded-2xl border border-slate-50 cursor-pointer hover:bg-slate-50 transition-colors">
-            <span className="text-sm font-medium text-slate-600">
+        {/* Verified Only Toggle */}
+        <div className="mb-8">
+          <label className="flex items-center justify-between p-4 rounded-2xl border border-slate-100 cursor-pointer hover:bg-slate-50 transition-all">
+            <span className="text-sm font-bold text-brand-navy">
               Verified Only
             </span>
+            <div className={`w-12 h-7 rounded-full transition-all ${filters.verified ? "bg-brand-purple" : "bg-slate-300"}`}>
+              <div className={`w-6 h-6 bg-white rounded-full transition-all ${filters.verified ? "translate-x-6" : "translate-x-0.5"} mt-0.5`}></div>
+            </div>
             <input
               type="checkbox"
               checked={filters.verified}
               onChange={() => dispatch({ type: "TOGGLE_VERIFIED" })}
-              className="w-4 h-4 rounded text-brand-purple"
+              className="hidden"
             />
           </label>
         </div>
 
-        {/* Mobile Close Button */}
+        {/* Reset Filters Button */}
         <button
-          onClick={() => setIsOpen(false)}
-          className="w-full mt-8 lg:hidden bg-brand-navy text-white py-3 rounded-2xl font-bold hover:bg-slate-800 transition-colors"
+          onClick={() => dispatch({ type: "RESET" })}
+          className="w-full py-3 rounded-2xl border border-slate-100 text-slate-600 font-bold hover:bg-slate-50 transition-colors"
         >
-          Apply Filters
+          Reset Filters
         </button>
+
       </div>
     </>
   );

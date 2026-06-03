@@ -74,67 +74,69 @@ const Listings = () => {
 
   return (
     <PageTransition>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 lg:py-12 transition-colors">
-        <div className="flex flex-col lg:flex-row gap-4 sm:gap-8 lg:gap-10">
-          {/* SIDEBAR (Stacks on top on mobile) */}
-          <aside className="w-full lg:w-72 shrink-0">
-            <FilterSidebar filters={filters} dispatch={dispatch} />
-          </aside>
+      <div className="w-full bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900 min-h-screen transition-colors">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
+            {/* SIDEBAR (Stacks on top on mobile) */}
+            <aside className="w-full lg:w-80 shrink-0 lg:sticky lg:top-24 lg:h-fit">
+              <FilterSidebar filters={filters} dispatch={dispatch} />
+            </aside>
 
-          {/* RESULTS AREA */}
-          <main className="flex-1">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 sm:mb-10 gap-4 sm:gap-6">
-              <div className="text-left">
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-[900] text-brand-navy dark:text-white tracking-tight">
-                  Found {filteredListings.length} Sanctuaries
-                </h1>
-                <p className="text-slate-400 font-[900] text-xs uppercase tracking-widest mt-2 flex items-center gap-2">
-                  <MapPin size={14} className="sm:w-4 sm:h-4" /> Verified Stays in{" "}
-                  {filters.search || "All Locations"}
-                </p>
-              </div>
-
-              <div className="relative w-full md:w-80 group">
-                <Search
-                  className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-brand-purple transition-colors"
-                  size={18}
-                />
-                <input
-                  type="text"
-                  value={filters.search}
-                  placeholder="Change area or college..."
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    dispatch({ type: "SET_SEARCH", payload: val });
-                    setSearchParams({ location: val });
-                  }}
-                  className="w-full pl-14 pr-6 py-4 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-[1.5rem] lg:rounded-full outline-none shadow-sm font-bold text-sm dark:text-white"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-              {isLoading ? (
-                [...Array(6)].map((_, i) => <ListingCardSkeleton key={i} />)
-              ) : filteredListings.length > 0 ? (
-                filteredListings.map((pg) => (
-                  <ListingCard key={pg.id} pg={pg} />
-                ))
-              ) : (
-                <div className="col-span-full py-24 text-center bg-white dark:bg-slate-800/50 rounded-[3rem] border-2 border-dashed border-slate-100 dark:border-slate-700">
-                  <div className="w-16 h-16 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl shadow-inner">
-                    📍
-                  </div>
-                  <h3 className="text-xl font-[900] dark:text-white mb-2 tracking-tight">
-                    No matching sanctuaries
-                  </h3>
-                  <p className="text-slate-400 text-sm font-medium">
-                    Try adjusting your budget or gender preference.
+            {/* RESULTS AREA */}
+            <main className="flex-1 min-w-0">
+              <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-6 lg:gap-8">
+                <div className="flex-1">
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-[900] text-brand-navy dark:text-white tracking-tight leading-tight">
+                    Found {filteredListings.length} <span className="text-brand-purple">Sanctuaries</span>
+                  </h1>
+                  <p className="text-slate-500 dark:text-slate-400 font-bold text-xs uppercase tracking-widest mt-3 flex items-center gap-2">
+                    <MapPin size={14} className="text-brand-purple shrink-0" /> Verified Stays in{" "}
+                    <span className="text-brand-purple font-[900]">{filters.search || "All Locations"}</span>
                   </p>
                 </div>
-              )}
-            </div>
-          </main>
+
+                <div className="relative w-full lg:w-96 group shrink-0">
+                  <Search
+                    className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-brand-purple transition-colors"
+                    size={18}
+                  />
+                  <input
+                    type="text"
+                    value={filters.search}
+                    placeholder="Search area or college..."
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      dispatch({ type: "SET_SEARCH", payload: val });
+                      setSearchParams({ location: val });
+                    }}
+                    className="w-full pl-14 pr-6 py-3 sm:py-4 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-[1.5rem] lg:rounded-full outline-none shadow-sm hover:shadow-md focus:shadow-lg focus:border-brand-purple dark:focus:border-brand-purple font-bold text-sm dark:text-white transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 lg:gap-8 auto-rows-max">
+                {isLoading ? (
+                  [...Array(6)].map((_, i) => <ListingCardSkeleton key={i} />)
+                ) : filteredListings.length > 0 ? (
+                  filteredListings.map((pg) => (
+                    <ListingCard key={pg.id} pg={pg} />
+                  ))
+                ) : (
+                  <div className="col-span-full py-24 text-center bg-white dark:bg-slate-800/50 rounded-[3rem] border-2 border-dashed border-slate-100 dark:border-slate-700">
+                    <div className="w-16 h-16 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl shadow-inner">
+                      📍
+                    </div>
+                    <h3 className="text-xl font-[900] dark:text-white mb-2 tracking-tight">
+                      No matching sanctuaries
+                    </h3>
+                    <p className="text-slate-400 dark:text-slate-500 text-sm font-medium">
+                      Try adjusting your filters or search criteria.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </main>
+          </div>
         </div>
       </div>
     </PageTransition>

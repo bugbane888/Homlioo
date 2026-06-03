@@ -96,11 +96,12 @@ const Home = () => {
             <select
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
-              className="flex-1 bg-transparent px-4 sm:px-6 py-3 md:py-2 text-slate-500 font-black text-sm outline-none cursor-pointer appearance-none text-center md:text-left"
+              className="flex-1 px-4 sm:px-6 py-3 md:py-2 text-slate-500 font-black text-sm outline-none cursor-pointer text-center md:text-left appearance-none bg-transparent"
             >
               <option>Any Budget</option>
               <option value="6000">Under ₹6,000</option>
               <option value="9000">₹6,000 - ₹9,000</option>
+              <option value="9000+">More than ₹9,000</option>
             </select>
 
             {/* Divider */}
@@ -110,7 +111,7 @@ const Home = () => {
             <select
               value={gender}
               onChange={(e) => setGender(e.target.value)}
-              className="flex-1 bg-transparent px-6 py-2 text-slate-500 font-black text-sm outline-none cursor-pointer appearance-none text-center md:text-left"
+              className="flex-1 px-4 sm:px-6 py-3 md:py-2 text-slate-500 font-black text-sm outline-none cursor-pointer text-center md:text-left appearance-none bg-transparent"
             >
               <option>Any Gender</option>
               <option>Boys</option>
