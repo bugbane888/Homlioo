@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
 import PageTransition from "../../components/common/PageTransition";
@@ -16,7 +17,8 @@ import {
 } from "lucide-react";
 
 const UserSettings = () => {
-  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const { user, logout, changePassword } = useAuth();
   const { isDark, toggleDark } = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -48,15 +50,28 @@ const UserSettings = () => {
     setTimeout(() => setSaveSuccess(false), 2000);
   };
 
-  const handleSavePassword = () => {
+  const handleSavePassword = async () => {
     if (passwords.new !== passwords.confirm) {
       alert("Passwords do not match");
       return;
     }
-    setSaveSuccess(true);
-    setPasswords({ current: "", new: "", confirm: "" });
-    setShowPasswordChange(false);
-    setTimeout(() => setSaveSuccess(false), 2000);
+    
+    if (passwords.new.length < 6) {
+      alert("Password must be at least 6 characters");
+      return;
+    }
+
+    const result = await changePassword(passwords.new);
+    
+    if (result.success) {
+      setSaveSuccess(true);
+      setPasswords({ current: "", new: "", confirm: "" });
+      setShowPasswordChange(false);
+      setTimeout(() => setSaveSuccess(false), 2000);
+      alert("Password changed successfully!");
+    } else {
+      alert(result.error || "Failed to update password");
+    }
   };
 
   const handleSaveSettings = () => {
@@ -64,9 +79,10 @@ const UserSettings = () => {
     setTimeout(() => setSaveSuccess(false), 2000);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (window.confirm("Are you sure you want to logout?")) {
-      logout();
+      await logout();
+      navigate("/");
     }
   };
 

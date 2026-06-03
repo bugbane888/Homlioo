@@ -69,9 +69,7 @@ const AdminSidebar = () => {
             <div className="flex items-center gap-3 min-w-0">
               <img src="https://cdn.builder.io/api/v1/image/assets%2F4846259389164835959d1e308a688d73%2F55c8651b8f72480dbe6db518c3a923d6?format=webp&width=100&height=100" alt="HOMLiOO" className="w-9 h-9 object-contain shrink-0" />
               <div className="min-w-0">
-                <span className="font-[900] text-lg tracking-tight block">
-                  <span className="text-[#003D82]">HOM</span><span className="text-[#52C77C]">LiOO</span>
-                </span>
+                <Logo size="sm" showIcon={false} />
                 <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest">
                   Admin Panel
                 </p>

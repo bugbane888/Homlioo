@@ -11,7 +11,8 @@ import {
   Eye,
   MessageSquare,
 } from "lucide-react";
-import { LISTINGS_DATA } from "../../constants/data";
+import { useProperties } from "../../context/PropertyContext";
+import { useEnquiries } from "../../context/EnquiryContext";
 import Button from "../../components/common/Button";
 
 /**
@@ -45,9 +46,13 @@ const StatCard = ({ title, value, icon, trend, color, bgColor, subtitle }) => (
 const Dashboard = () => {
   const navigate = useNavigate();
 
+  const { properties } = useProperties();
+  const { enquiries } = useEnquiries();
+
   // Logic: Get the 4 most recent listings
-  const recentListings = LISTINGS_DATA.slice(0, 4);
-  const totalProperties = LISTINGS_DATA.length;
+  const recentListings = properties.slice(0, 4);
+  const totalProperties = properties.length;
+  const totalEnquiries = enquiries.length;
 
   return (
     <div className="animate-in fade-in duration-500">
@@ -105,8 +110,8 @@ const Dashboard = () => {
         />
         <StatCard
           title="Enquiries"
-          value="1,204"
-          subtitle="This month"
+          value={totalEnquiries}
+          subtitle="All time"
           icon={<MessageSquare size={24} />}
           trend="+18.7%"
           color="text-amber-500"

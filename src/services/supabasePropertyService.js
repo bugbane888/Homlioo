@@ -24,6 +24,28 @@ export const propertyService = {
     return data;
   },
 
+  // Upload an image to Supabase Storage
+  uploadImage: async (file) => {
+    if (!file) return null;
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+    const filePath = `images/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('property-images')
+      .upload(filePath, file);
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+    const { data } = supabase.storage
+      .from('property-images')
+      .getPublicUrl(filePath);
+
+    return data.publicUrl;
+  },
+
   // Create new property (admin only)
   create: async (propertyData) => {
     const { data, error } = await supabase
@@ -47,6 +69,9 @@ export const propertyService = {
         hospital: propertyData.hospital,
         map_url: propertyData.mapUrl,
         description: propertyData.description,
+        owner_phone: propertyData.ownerPhone,
+        cover_image: propertyData.coverImage,
+        gallery_images: propertyData.galleryImages || [],
       }])
       .select()
       .single();
@@ -77,6 +102,9 @@ export const propertyService = {
     if (updates.hospital !== undefined) dbUpdates.hospital = updates.hospital;
     if (updates.mapUrl !== undefined) dbUpdates.map_url = updates.mapUrl;
     if (updates.description !== undefined) dbUpdates.description = updates.description;
+    if (updates.ownerPhone !== undefined) dbUpdates.owner_phone = updates.ownerPhone;
+    if (updates.coverImage !== undefined) dbUpdates.cover_image = updates.coverImage;
+    if (updates.galleryImages !== undefined) dbUpdates.gallery_images = updates.galleryImages;
 
     const { data, error } = await supabase
       .from('properties')
@@ -137,8 +165,9 @@ export const propertyService = {
 
   // Subscribe to real-time changes
   subscribeToChanges: (callback) => {
+    const channelId = `properties-changes-${Math.random().toString(36).substring(7)}`;
     return supabase
-      .channel('properties-changes')
+      .channel(channelId)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'properties' },
@@ -169,6 +198,9 @@ export const mapPropertyFromDB = (row) => ({
   hospital: row.hospital,
   mapUrl: row.map_url,
   description: row.description,
+  ownerPhone: row.owner_phone,
+  coverImage: row.cover_image,
+  galleryImages: row.gallery_images || [],
 });
 
 export default propertyService;

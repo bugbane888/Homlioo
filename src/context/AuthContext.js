@@ -147,8 +147,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const changePassword = async (newPassword) => {
+    try {
+      if (user?.id === "admin_temp_id") return { success: true };
+      await authService.updatePassword(newPassword);
+      return { success: true };
+    } catch (error) {
+      console.error("Change password error:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, loading, updateProfile }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, loading, updateProfile, changePassword }}>
       {!loading && children}
     </AuthContext.Provider>
   );

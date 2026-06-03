@@ -13,6 +13,8 @@ const FILTER_INIT = {
   maxBudget: 20000,
   food: false,
   ac: false,
+  wifi: false,
+  parking: false,
   verified: false,
   search: "",
 };
@@ -27,6 +29,10 @@ function filterReducer(state, action) {
       return { ...state, food: !state.food };
     case "TOGGLE_AC":
       return { ...state, ac: !state.ac };
+    case "TOGGLE_WIFI":
+      return { ...state, wifi: !state.wifi };
+    case "TOGGLE_PARKING":
+      return { ...state, parking: !state.parking };
     case "TOGGLE_VERIFIED":
       return { ...state, verified: !state.verified };
     case "SET_SEARCH":
@@ -62,6 +68,8 @@ const Listings = () => {
       if (p.total > filters.maxBudget) return false;
       if (filters.food && !p.amenities?.includes("Food")) return false;
       if (filters.ac && !p.amenities?.includes("AC")) return false;
+      if (filters.wifi && !p.amenities?.includes("WiFi")) return false;
+      if (filters.parking && !p.amenities?.includes("Parking")) return false;
       if (filters.verified && !p.verified) return false;
       const s = debouncedSearch.toLowerCase();
       return (

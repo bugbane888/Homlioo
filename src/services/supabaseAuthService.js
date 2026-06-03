@@ -3,6 +3,16 @@ import { supabase } from '../lib/supabase';
 export const authService = {
   // Sign up with email and password
   signUp: async (email, password, name) => {
+    // 1. First, reliably check if the email exists using a secure RPC call
+    const { data: emailExists } = await supabase.rpc('check_email_exists', {
+      check_email: email
+    });
+
+    if (emailExists) {
+      throw new Error("User already registered");
+    }
+
+    // 2. If it doesn't exist, proceed with normal sign up
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -11,10 +21,12 @@ export const authService = {
           name: name,
           role: 'user',
         },
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
 
     if (error) throw error;
+    
     return data;
   },
 
@@ -23,6 +35,36 @@ export const authService = {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
+    });
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Request password reset
+  resetPasswordForEmail: async (email) => {
+    // 1. First check if the email exists using our secure RPC
+    const { data: emailExists } = await supabase.rpc('check_email_exists', {
+      check_email: email
+    });
+
+    if (!emailExists) {
+      throw new Error("User does not exist");
+    }
+
+    // 2. If it exists, send the reset link
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
+    });
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Update password (after user clicks reset link and gets authenticated)
+  updatePassword: async (newPassword) => {
+    const { data, error } = await supabase.auth.updateUser({
+      password: newPassword
     });
 
     if (error) throw error;
