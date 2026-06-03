@@ -7,13 +7,14 @@ export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
 
   const showToast = useCallback((message, type = "success") => {
-    const id = Date.now();
+    const id = Date.now() + Math.random();
     setToasts((prev) => [...prev, { id, message, type }]);
 
-    // Auto-remove after 3 seconds
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setToasts((prev) => prev.filter((toast) => toast.id !== id));
     }, 3000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const removeToast = (id) => {
@@ -24,7 +25,7 @@ export const ToastProvider = ({ children }) => {
     <ToastContext.Provider value={{ showToast }}>
       {children}
       {/* Toast Container - Floating on the screen */}
-      <div className="fixed bottom-8 right-8 z-[999] flex flex-col gap-3">
+      <div className="fixed bottom-24 sm:bottom-8 right-4 sm:right-8 z-[200] flex flex-col gap-3 pointer-events-none">
         {toasts.map((toast) => (
           <ToastItem
             key={toast.id}
@@ -53,11 +54,11 @@ const ToastItem = ({ toast, onClose }) => {
 
   return (
     <div
-      className={`${styles[toast.type]} px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-in slide-in-from-right-10 duration-300 min-w-[300px]`}
+      className={`${styles[toast.type]} px-4 sm:px-6 py-3 sm:py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-in slide-in-from-right-10 duration-300 min-w-[280px] sm:min-w-[300px] pointer-events-auto`}
     >
       {icons[toast.type]}
-      <p className="text-sm font-bold flex-1">{toast.message}</p>
-      <button onClick={onClose} className="opacity-70 hover:opacity-100">
+      <p className="text-xs sm:text-sm font-bold flex-1">{toast.message}</p>
+      <button onClick={onClose} className="opacity-70 hover:opacity-100 shrink-0">
         <X size={16} />
       </button>
     </div>

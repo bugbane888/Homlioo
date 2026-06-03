@@ -6,6 +6,7 @@ import { useNotifications } from "../context/NotificationContext";
 import { Menu, X, Heart, Bell, CheckCircle, AlertCircle, Info } from "lucide-react";
 import Button from "../components/common/Button";
 import ThemeToggle from "../components/common/ThemeToggle";
+import Logo from "../components/common/Logo";
 import CompareBar from "../components/listings/CompareBar";
 
 const UserLayout = ({ children }) => {
@@ -39,12 +40,10 @@ const UserLayout = ({ children }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full flex items-center justify-between">
           {/* 1. Left: Logo */}
           <div className="flex items-center gap-8 lg:gap-12">
-            <Link to="/" className="flex items-center gap-2 group shrink-0">
-              <div className="bg-[#0F172A] dark:bg-brand-purple text-[#F59E0B] dark:text-white w-8 sm:w-9 h-8 sm:h-9 rounded-lg flex items-center justify-center font-black text-sm sm:text-lg shadow-lg group-hover:scale-105 transition-transform shrink-0">
-                H
-              </div>
-              <span className="font-[900] text-sm sm:text-xl tracking-tighter dark:text-white uppercase hidden sm:inline">
-                HOMLiOO
+            <Link to="/" className="flex items-center gap-2 group shrink-0 hover:opacity-80 transition-opacity">
+              <img src="https://cdn.builder.io/api/v1/image/assets%2F4846259389164835959d1e308a688d73%2F55c8651b8f72480dbe6db518c3a923d6?format=webp&width=100&height=100" alt="HOMLiOO" className="w-8 sm:w-9 h-8 sm:h-9 object-contain group-hover:scale-105 transition-transform shrink-0" />
+              <span className="font-[900] text-sm sm:text-lg tracking-tighter uppercase hidden sm:inline">
+                <span className="text-[#003D82]">HOM</span><span className="text-[#52C77C]">LiOO</span>
               </span>
             </Link>
 
@@ -353,11 +352,9 @@ const UserLayout = ({ children }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 pb-20 border-b border-slate-800">
             <div className="space-y-6">
               <div className="flex items-center gap-2">
-                <div className="bg-[#F59E0B] text-[#0F172A] w-10 h-10 rounded-xl flex items-center justify-center font-black text-xl">
-                  H
-                </div>
-                <span className="font-black text-2xl tracking-tighter italic uppercase">
-                  HOMLiOO
+                <img src="https://cdn.builder.io/api/v1/image/assets%2F4846259389164835959d1e308a688d73%2F55c8651b8f72480dbe6db518c3a923d6?format=webp&width=100&height=100" alt="HOMLiOO" className="w-12 h-12 object-contain" />
+                <span className="font-black text-2xl tracking-tighter uppercase">
+                  <span className="text-white">HOM</span><span className="text-emerald-500">LiOO</span>
                 </span>
               </div>
               <p className="text-slate-400 text-sm leading-relaxed font-medium max-w-xs">
