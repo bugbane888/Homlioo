@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 import Button from "../../components/common/Button";
 import PageTransition from "../../components/common/PageTransition";
+import Logo from "../../components/common/Logo";
 import { Mail, Lock, ArrowRight, ShieldCheck } from "lucide-react";
 
 const Login = () => {
@@ -18,15 +19,11 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-
-    // Call the global login function
     const result = await login(email, password);
-
     setIsLoading(false);
 
     if (result?.success) {
       showToast(`Welcome back, ${result.name}!`, "success");
-      // Redirect based on the role returned by AuthContext
       navigate(result.role === "admin" ? "/admin" : "/");
     } else {
       showToast(result?.error || "Invalid credentials. Please check your email and password.", "error");
@@ -35,39 +32,71 @@ const Login = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-[#F8F7F4] dark:bg-slate-900 flex items-center justify-center p-6 transition-colors">
-        <div className="max-w-md w-full">
-          {/* --- LOGIN CARD --- */}
-          <form
-            onSubmit={handleSubmit}
-            className="bg-white dark:bg-slate-800 rounded-[3rem] shadow-2xl p-10 lg:p-12 border border-slate-100 dark:border-slate-700 relative overflow-hidden"
-          >
-            {/* Brand Logo */}
-            <div className="bg-brand-navy dark:bg-brand-purple text-brand-amber dark:text-white w-14 h-14 rounded-2xl flex items-center justify-center font-[900] text-2xl mx-auto mb-8 shadow-xl">
-              H
+      <div className="min-h-screen flex bg-white dark:bg-slate-900 transition-colors">
+        
+        {/* LEFT COLUMN - BRANDING (Hidden on Mobile) */}
+        <div className="hidden lg:flex w-1/2 bg-[#0F2133] text-white flex-col justify-between p-12 relative overflow-hidden">
+          {/* Decorative Elements */}
+          <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-brand-purple rounded-full mix-blend-multiply filter blur-[128px] opacity-40 animate-blob"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-brand-amber rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-blob animation-delay-2000"></div>
+          
+          <div className="relative z-10">
+            <Link to="/" className="inline-block hover:scale-105 transition-transform">
+              <Logo size="lg" />
+            </Link>
+          </div>
+
+          <div className="relative z-10 max-w-lg mb-20">
+            <span className="text-brand-amber text-xs font-black uppercase tracking-[0.4em] mb-4 block">
+              Welcome Back
+            </span>
+            <h1 className="text-5xl lg:text-6xl font-[900] mb-6 leading-tight tracking-tighter">
+              Manage your <br/> <span className="text-brand-purple">sanctuaries.</span>
+            </h1>
+            <p className="text-slate-400 font-medium text-lg leading-relaxed">
+              Log in to access your personalized dashboard, manage property listings, and track student enquiries in real-time.
+            </p>
+          </div>
+
+          <div className="relative z-10 flex items-center gap-4 text-slate-500 text-sm font-bold">
+            <div className="flex -space-x-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="w-10 h-10 rounded-full border-2 border-[#0F2133] bg-slate-800 flex items-center justify-center text-xs text-white">
+                  {i === 1 ? '👨' : i === 2 ? '👩' : '🧑'}
+                </div>
+              ))}
+            </div>
+            <p>Join 10,000+ happy students & owners.</p>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN - FORM */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative">
+          <div className="max-w-md w-full">
+            
+            {/* Mobile Logo Only */}
+            <div className="lg:hidden flex justify-center mb-10">
+              <Logo size="lg" />
             </div>
 
-            <div className="text-center mb-10">
-              <h1 className="text-3xl font-[900] text-brand-navy dark:text-white mb-2 tracking-tighter">
-                Access HOMLiOO
-              </h1>
-              <p className="text-slate-400 text-sm font-medium">
-                Sign in to manage your PG sanctuaries.
+            <div className="mb-10 text-center lg:text-left">
+              <h2 className="text-3xl font-[900] text-brand-navy dark:text-white mb-2 tracking-tight">
+                Sign In to HOMLiOO
+              </h2>
+              <p className="text-slate-500 dark:text-slate-400 font-medium">
+                Enter your credentials to access your account.
               </p>
             </div>
 
-            <div className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5">
               {/* Email Field */}
               <div className="relative group">
-                <Mail
-                  className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-brand-purple transition-colors"
-                  size={18}
-                />
+                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-purple transition-colors" size={20} />
                 <input
                   type="email"
                   required
                   placeholder="Email Address"
-                  className="w-full pl-14 pr-6 py-4 bg-slate-50 dark:bg-slate-900 dark:text-white rounded-2xl border-none outline-none focus:ring-4 ring-brand-purple/5 font-bold text-sm transition-all"
+                  className="w-full pl-14 pr-6 py-4 bg-slate-50 dark:bg-slate-800 dark:text-white rounded-[1.25rem] border border-slate-100 dark:border-slate-700 outline-none focus:border-brand-purple dark:focus:border-brand-purple focus:ring-4 ring-brand-purple/10 font-bold text-sm transition-all"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -75,70 +104,55 @@ const Login = () => {
 
               {/* Password Field */}
               <div className="relative group">
-                <Lock
-                  className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-brand-purple transition-colors"
-                  size={18}
-                />
+                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-purple transition-colors" size={20} />
                 <input
                   type="password"
                   required
-                  placeholder="Access Key"
-                  className="w-full pl-14 pr-6 py-4 bg-slate-50 dark:bg-slate-900 dark:text-white rounded-2xl border-none outline-none focus:ring-4 ring-brand-purple/5 font-bold text-sm transition-all"
+                  placeholder="Password"
+                  className="w-full pl-14 pr-6 py-4 bg-slate-50 dark:bg-slate-800 dark:text-white rounded-[1.25rem] border border-slate-100 dark:border-slate-700 outline-none focus:border-brand-purple dark:focus:border-brand-purple focus:ring-4 ring-brand-purple/10 font-bold text-sm transition-all"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
 
-              <Button
-                type="submit"
-                variant="secondary"
-                className="w-full py-4 text-sm font-black shadow-xl shadow-navy-900/10"
-                disabled={isLoading}
-              >
-                {isLoading ? "Signing in..." : "Sign In to Dashboard"}
-              </Button>
-            </div>
+              <div className="flex justify-end -mt-2">
+                <Link to="/forgot-password" className="text-xs font-black text-brand-purple hover:text-brand-navy dark:hover:text-white transition-colors">
+                  Forgot Password?
+                </Link>
+              </div>
 
-            {/* --- INFO BOX --- */}
-            <div className="mt-8 p-6 bg-purple-50 dark:bg-purple-900/10 rounded-[2rem] border border-purple-100 dark:border-purple-800/30">
+              <Button type="submit" variant="primary" className="w-full py-4 text-sm font-black rounded-[1.25rem]" disabled={isLoading}>
+                {isLoading ? "Signing in..." : "Sign In Securely"}
+              </Button>
+            </form>
+
+            {/* INFO BOX */}
+            <div className="mt-8 p-6 bg-slate-50 dark:bg-slate-800/50 rounded-[1.5rem] border border-slate-100 dark:border-slate-700">
               <div className="flex items-center gap-2 mb-3">
                 <ShieldCheck size={16} className="text-brand-purple" />
-                <span className="text-xs font-black uppercase tracking-widest text-brand-purple">
-                  Test Credentials (Temporary)
+                <span className="text-xs font-black uppercase tracking-widest text-slate-500">
+                  Demo Admin Credentials
                 </span>
               </div>
-              <p className="text-xs text-slate-500 font-bold mb-2">
-                Admin Demo:
-              </p>
-              <div className="text-xs text-slate-600 font-mono space-y-1 bg-white/50 p-2 rounded">
+              <div className="text-xs text-slate-600 dark:text-slate-400 font-mono space-y-1 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
                 <p><strong>Email:</strong> admin@homlioo.com</p>
-                <p><strong>Password:</strong> admin123</p>
+                <p><strong>Pass:</strong> admin123</p>
               </div>
             </div>
 
-            <div className="mt-8 flex flex-col gap-4 text-center">
+            <div className="mt-8 flex flex-col gap-4 text-center lg:text-left">
               <p className="text-sm text-slate-500 font-medium">
                 Don't have an account?{" "}
-                <Link
-                  to="/signup"
-                  className="text-brand-purple font-black hover:underline"
-                >
-                  Sign Up
+                <Link to="/signup" className="text-brand-purple font-[900] hover:underline">
+                  Create one now
                 </Link>
               </p>
-              <button
-                type="button"
-                onClick={() => navigate("/")}
-                className="text-slate-300 text-xs font-black uppercase tracking-[0.3em] hover:text-brand-navy dark:hover:text-white transition-colors"
-              >
-                Skip for now <ArrowRight size={10} className="inline ml-1" />
+              <button onClick={() => navigate("/")} className="text-slate-400 text-xs font-black uppercase tracking-[0.2em] hover:text-brand-navy dark:hover:text-white transition-colors lg:justify-start flex items-center justify-center gap-1">
+                Skip for now <ArrowRight size={12} />
               </button>
             </div>
-          </form>
-
-          <p className="text-center mt-8 text-xs text-slate-400 font-bold uppercase tracking-[0.4em]">
-            © {new Date().getFullYear()} HOMLiOO Technology
-          </p>
+            
+          </div>
         </div>
       </div>
     </PageTransition>

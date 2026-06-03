@@ -1,5 +1,6 @@
 import React from "react";
 import PageTransition from "../../components/common/PageTransition";
+import Logo from "../../components/common/Logo";
 import { ABOUT_STATS, FOUNDERS } from "../../constants/data";
 
 const About = () => {
@@ -39,7 +40,7 @@ const About = () => {
               </h2>
               <div className="space-y-6 text-slate-500 dark:text-slate-400 text-sm md:text-base font-medium leading-relaxed">
                 <p>
-                  HOMLiOO was born from a simple observation: the transition to
+                  <span className="inline-block translate-y-1"><Logo size="sm" showIcon={false} /></span> was born from a simple observation: the transition to
                   a new city is often marred by the stress of finding a living
                   space that truly feels like home.
                 </p>
@@ -49,7 +50,7 @@ const About = () => {
                   cheated before they even unpacked.
                 </p>
                 <p>
-                  Today, HOMLiOO stands as Greater Noida's most trusted smart PG
+                  Today, <span className="inline-block translate-y-1"><Logo size="sm" showIcon={false} /></span> stands as Greater Noida's most trusted smart PG
                   search platform — where every listing is a promise, not just a
                   post.
                 </p>
@@ -136,8 +137,8 @@ const About = () => {
         <section className="max-w-7xl mx-auto px-6 py-24">
           <div className="bg-brand-amber rounded-[3rem] p-12 lg:p-20 text-center relative overflow-hidden shadow-2xl shadow-amber-500/20">
             <div className="relative z-10">
-              <h2 className="text-3xl md:text-4xl font-[900] text-brand-navy mb-6 tracking-tighter leading-tight">
-                HOMLiOO is not just a platform.
+              <h2 className="text-3xl md:text-4xl font-[900] text-brand-navy mb-6 tracking-tighter leading-tight flex items-center justify-center gap-3">
+                <Logo size="lg" showIcon={false} /> is not just a platform.
               </h2>
               <p className="text-amber-900/70 text-base md:text-lg font-bold mb-10 max-w-xl mx-auto">
                 It is a commitment — to transparency, to quality, and to you.
@@ -146,8 +147,8 @@ const About = () => {
                 <p className="text-brand-navy font-black text-xl italic tracking-tighter">
                   Welcome home. 🏡
                 </p>
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-amber-900/40">
-                  HOMLiOO — Smart PG Search · India
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-amber-900/40 flex items-center justify-center gap-1">
+                  <Logo size="sm" showIcon={false} /> — Smart PG Search · India
                 </p>
               </div>
             </div>

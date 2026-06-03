@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import Button from "../common/Button";
 
-const PricingCard = ({ pg, onEnquiry, isInCompare, onCompareToggle }) => {
+const PricingCard = ({ pg, onEnquiry, isInCompare, onCompareToggle, onWhatsAppClick }) => {
   const [selectedRoom, setSelectedRoom] = useState(0);
   const [isOpen, setIsOpen] = useState(null);
 
@@ -93,9 +93,12 @@ const PricingCard = ({ pg, onEnquiry, isInCompare, onCompareToggle }) => {
         <Button onClick={onEnquiry} className="w-full" variant="primary">
           <Send size={18} /> Send Enquiry
         </Button>
-        <Button className="w-full" variant="secondary">
-          <MessageCircle size={18} /> WhatsApp
-        </Button>
+        <button
+          onClick={onWhatsAppClick}
+          className="w-full py-3 rounded-xl font-bold text-sm bg-[#25D366] text-white hover:bg-[#20bd5a] flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#25D366]/20"
+        >
+          <MessageCircle size={18} fill="currentColor" /> Chat with Owner
+        </button>
         <button
           onClick={onCompareToggle}
           className={`w-full py-3 px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all duration-200 ${

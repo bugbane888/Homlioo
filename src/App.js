@@ -30,6 +30,9 @@ import ErrorBoundary from "./components/common/ErrorBoundary";
 // --- PAGES: AUTH ---
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
+import Callback from "./pages/auth/Callback";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 
 // --- PAGES: USER / STUDENT ---
 import Home from "./pages/user/Home";
@@ -41,6 +44,11 @@ import Help from "./pages/user/Help";
 import UserSettings from "./pages/user/UserSettings";
 import Favorites from "./pages/user/Favorites"; // FIXED: Import is here
 import About from "./pages/user/About";
+
+// --- PAGES: LEGAL ---
+import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
+import TermsAndConditions from "./pages/legal/TermsAndConditions";
+import CookiePolicy from "./pages/legal/CookiePolicy";
 
 // --- PAGES: ADMIN ---
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -86,6 +94,9 @@ const AnimatedRoutes = () => {
         {/* --- AUTHENTICATION (Isolated Layout) --- */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/auth/callback" element={<Callback />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* --- PUBLIC STUDENT SITE --- */}
         <Route
@@ -144,6 +155,38 @@ const AnimatedRoutes = () => {
             <UserLayout>
               <PageTransition>
                 <Help />
+              </PageTransition>
+            </UserLayout>
+          }
+        />
+        
+        {/* --- LEGAL PAGES --- */}
+        <Route
+          path="/privacy"
+          element={
+            <UserLayout>
+              <PageTransition>
+                <PrivacyPolicy />
+              </PageTransition>
+            </UserLayout>
+          }
+        />
+        <Route
+          path="/terms"
+          element={
+            <UserLayout>
+              <PageTransition>
+                <TermsAndConditions />
+              </PageTransition>
+            </UserLayout>
+          }
+        />
+        <Route
+          path="/cookies"
+          element={
+            <UserLayout>
+              <PageTransition>
+                <CookiePolicy />
               </PageTransition>
             </UserLayout>
           }

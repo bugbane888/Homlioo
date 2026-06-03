@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { X, Save, FileText, Plus, Trash2 } from "lucide-react";
+import { X, Save, FileText } from "lucide-react";
 import Button from "../common/Button";
+import propertyService from "../../services/supabasePropertyService";
 
 const AdminPropertyForm = ({
   isOpen,
@@ -10,6 +11,9 @@ const AdminPropertyForm = ({
 }) => {
   const [validationErrors, setValidationErrors] = useState({});
   const [selectedRoomType, setSelectedRoomType] = useState("single");
+  const [isUploading, setIsUploading] = useState(false);
+  const [coverImageFile, setCoverImageFile] = useState(null);
+  const [galleryImageFiles, setGalleryImageFiles] = useState([]);
 
   const [formData, setFormData] = useState({
     // Basic Info
@@ -21,6 +25,7 @@ const AdminPropertyForm = ({
     state: "",
     pincode: "",
     mapUrl: "",
+    ownerPhone: "",
     
     // Room Configurations (Dynamic)
     rooms: {
@@ -131,7 +136,7 @@ const AdminPropertyForm = ({
     if (!formData.pincode.trim() || !/^\d{6}$/.test(formData.pincode))
       errors.pincode = "Valid 6-digit pincode required";
     if (!formData.description.trim()) errors.description = "Description is required";
-    if (!formData.coverImage.trim()) errors.coverImage = "Cover image is required";
+    if (!formData.coverImage && !coverImageFile) errors.coverImage = "Cover image is required";
     if (!formData.mapUrl.trim() || !formData.mapUrl.includes("maps"))
       errors.mapUrl = "Valid Google Maps link required";
     if (!formData.college.trim()) errors.college = "College name is required";
@@ -165,7 +170,7 @@ const AdminPropertyForm = ({
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
@@ -173,20 +178,37 @@ const AdminPropertyForm = ({
       return;
     }
     setValidationErrors({});
+    setIsUploading(true);
 
-    const submittedData = {
-      ...formData,
-      id: initialData?.id || Date.now(),
-      price: parseInt(formData.rooms.single.rent || 0),
-      total: parseInt(formData.rooms.single.rent || 0),
-      reviews: 0,
-      roomsLeft: 3,
-      tags: ["New Listing"],
-      verified: formData.isVerified,
-      sharing: formData.rooms.single.label,
-      status: "published",
-      publishedAt: new Date().toISOString(),
-    };
+    try {
+      let finalCoverImage = formData.coverImage;
+      if (coverImageFile) {
+        finalCoverImage = await propertyService.uploadImage(coverImageFile);
+      }
+
+      let finalGalleryImages = [...formData.galleryImages];
+      if (galleryImageFiles.length > 0) {
+        const uploadedUrls = await Promise.all(
+          galleryImageFiles.map(file => propertyService.uploadImage(file))
+        );
+        finalGalleryImages = [...finalGalleryImages, ...uploadedUrls].filter(Boolean);
+      }
+
+      const submittedData = {
+        ...formData,
+        coverImage: finalCoverImage,
+        galleryImages: finalGalleryImages,
+        id: initialData?.id || Date.now(),
+        price: parseInt(formData.rooms.single.rent || 0),
+        total: parseInt(formData.rooms.single.rent || 0),
+        reviews: 0,
+        roomsLeft: 3,
+        tags: ["New Listing"],
+        verified: formData.isVerified,
+        sharing: formData.rooms.single.label,
+        status: "published",
+        publishedAt: new Date().toISOString(),
+      };
 
     // Save to localStorage for persistence
     const properties = JSON.parse(localStorage.getItem("homlioo_properties") || "[]");
@@ -201,6 +223,12 @@ const AdminPropertyForm = ({
     alert("Property published successfully!");
     onSubmit(submittedData);
     onClose();
+    } catch (error) {
+      console.error("Upload error", error);
+      alert("Failed to upload images or submit form: " + error.message);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleSaveDraft = () => {
@@ -289,6 +317,18 @@ const AdminPropertyForm = ({
                       <option>Co-ed</option>
                     </select>
                   </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase text-slate-400">
+                      Owner WhatsApp <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                      value={formData.ownerPhone}
+                      onChange={(e) => setFormData({ ...formData, ownerPhone: e.target.value })}
+                      placeholder="e.g. 919876543210"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -318,56 +358,32 @@ const AdminPropertyForm = ({
               <div className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase text-slate-400">
-                    Cover Image URL <span className="text-red-500">*</span>
+                    Cover Image <span className="text-red-500">*</span>
                   </label>
                   <input
-                    type="text"
+                    type="file"
+                    accept="image/jpeg, image/png, image/webp"
                     className={`w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border outline-none focus:ring-2 ring-brand-purple/20 font-medium ${
                       validationErrors.coverImage ? "border-red-500" : "border-slate-200 dark:border-slate-700"
                     }`}
-                    value={formData.coverImage}
-                    onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-                    placeholder="https://example.com/cover.jpg"
+                    onChange={(e) => setCoverImageFile(e.target.files[0])}
                   />
+                  {formData.coverImage && !coverImageFile && <p className="text-xs text-brand-purple mt-1">Current: {formData.coverImage.substring(0, 40)}...</p>}
                   {validationErrors.coverImage && <p className="text-xs text-red-500 font-bold">{validationErrors.coverImage}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase text-slate-400">Gallery Images (URLs)</label>
-                  <div className="space-y-2">
-                    {formData.galleryImages.map((img, idx) => (
-                      <div key={idx} className="flex gap-2">
-                        <input
-                          type="text"
-                          className="flex-1 px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium text-sm"
-                          value={img}
-                          onChange={(e) => {
-                            const updated = [...formData.galleryImages];
-                            updated[idx] = e.target.value;
-                            setFormData({ ...formData, galleryImages: updated });
-                          }}
-                          placeholder="Image URL"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const updated = formData.galleryImages.filter((_, i) => i !== idx);
-                            setFormData({ ...formData, galleryImages: updated });
-                          }}
-                          className="p-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, galleryImages: [...formData.galleryImages, ""] })}
-                    className="text-xs font-bold text-brand-purple hover:text-brand-purple/80 flex items-center gap-1 mt-2"
-                  >
-                    <Plus size={14} /> Add Gallery Image
-                  </button>
+                  <label className="text-xs font-bold uppercase text-slate-400">Gallery Images</label>
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/jpeg, image/png, image/webp"
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium text-sm"
+                    onChange={(e) => setGalleryImageFiles(Array.from(e.target.files))}
+                  />
+                  {formData.galleryImages?.length > 0 && galleryImageFiles.length === 0 && (
+                    <p className="text-xs text-brand-purple mt-1">Current: {formData.galleryImages.length} images saved.</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -836,8 +852,9 @@ const AdminPropertyForm = ({
             variant="primary"
             onClick={handleSubmit}
             className="min-w-[150px] py-3 shadow-xl shadow-amber-500/20"
+            disabled={isUploading}
           >
-            <Save size={18} /> Publish
+            {isUploading ? "Uploading..." : <><Save size={18} /> Publish</>}
           </Button>
         </div>
       </div>

@@ -75,8 +75,9 @@ export const enquiryService = {
 
   // Subscribe to real-time changes
   subscribeToChanges: (callback) => {
+    const channelId = `enquiries-changes-${Math.random().toString(36).substring(7)}`;
     return supabase
-      .channel('enquiries-changes')
+      .channel(channelId)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'enquiries' },

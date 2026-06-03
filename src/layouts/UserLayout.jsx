@@ -42,9 +42,9 @@ const UserLayout = ({ children }) => {
           <div className="flex items-center gap-8 lg:gap-12">
             <Link to="/" className="flex items-center gap-2 group shrink-0 hover:opacity-80 transition-opacity">
               <img src="https://cdn.builder.io/api/v1/image/assets%2F4846259389164835959d1e308a688d73%2F55c8651b8f72480dbe6db518c3a923d6?format=webp&width=100&height=100" alt="HOMLiOO" className="w-8 sm:w-9 h-8 sm:h-9 object-contain group-hover:scale-105 transition-transform shrink-0" />
-              <span className="font-[900] text-sm sm:text-lg tracking-tighter uppercase hidden sm:inline">
-                <span className="text-[#003D82]">HOM</span><span className="text-[#52C77C]">LiOO</span>
-              </span>
+              <div className="hidden sm:block">
+                <Logo size="md" showIcon={false} />
+              </div>
             </Link>
 
             {/* 2. Center: Navigation Links */}
@@ -343,6 +343,7 @@ const UserLayout = ({ children }) => {
         </div>
       )}
 
+
       {/* --- CONTENT --- */}
       <main className="flex-1">{children}</main>
 
@@ -395,14 +396,20 @@ const UserLayout = ({ children }) => {
                 Legal
               </h4>
               <ul className="space-y-5 text-slate-400 text-[12px] font-bold uppercase tracking-widest">
-                <li className="hover:text-white cursor-pointer">
-                  Terms & Conditions
+                <li>
+                  <Link to="/terms" className="hover:text-white">
+                    Terms & Conditions
+                  </Link>
                 </li>
-                <li className="hover:text-white cursor-pointer">
-                  Privacy Policy
+                <li>
+                  <Link to="/privacy" className="hover:text-white">
+                    Privacy Policy
+                  </Link>
                 </li>
-                <li className="hover:text-white cursor-pointer">
-                  Cookie Policy
+                <li>
+                  <Link to="/cookies" className="hover:text-white">
+                    Cookie Policy
+                  </Link>
                 </li>
               </ul>
             </div>

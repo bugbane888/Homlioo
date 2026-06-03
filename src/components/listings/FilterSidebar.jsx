@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Filter, RotateCcw, X, Utensils, Wind, BarChart3, Sofa, Car } from "lucide-react";
+import { Filter, RotateCcw, X } from "lucide-react";
 
 const FilterSidebar = ({ filters, dispatch }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -82,7 +82,12 @@ const FilterSidebar = ({ filters, dispatch }) => {
           <div className="grid grid-cols-2 gap-3">
             {/* WiFi */}
             <button
-              className="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-all flex flex-col items-center gap-2"
+              onClick={() => dispatch({ type: "TOGGLE_WIFI" })}
+              className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${
+                filters.wifi
+                  ? "border-brand-purple bg-brand-purple/5"
+                  : "border-slate-100 hover:border-slate-200"
+              }`}
             >
               <div className="text-2xl text-blue-500">📶</div>
               <span className="text-xs font-bold text-slate-600">WiFi</span>
@@ -90,7 +95,12 @@ const FilterSidebar = ({ filters, dispatch }) => {
 
             {/* AC */}
             <button
-              className="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-all flex flex-col items-center gap-2"
+              onClick={() => dispatch({ type: "TOGGLE_AC" })}
+              className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${
+                filters.ac
+                  ? "border-brand-purple bg-brand-purple/5"
+                  : "border-slate-100 hover:border-slate-200"
+              }`}
             >
               <div className="text-2xl text-cyan-400">❄️</div>
               <span className="text-xs font-bold text-slate-600">AC</span>
@@ -111,7 +121,12 @@ const FilterSidebar = ({ filters, dispatch }) => {
 
             {/* Parking */}
             <button
-              className="p-4 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-all flex flex-col items-center gap-2"
+              onClick={() => dispatch({ type: "TOGGLE_PARKING" })}
+              className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${
+                filters.parking
+                  ? "border-brand-purple bg-brand-purple/5"
+                  : "border-slate-100 hover:border-slate-200"
+              }`}
             >
               <div className="text-2xl">🚗</div>
               <span className="text-xs font-bold text-slate-600">Parking</span>

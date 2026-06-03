@@ -1,29 +1,11 @@
-import React, { createContext, useState, useContext, useCallback } from "react";
+import React, { createContext, useState, useContext, useCallback, useEffect } from "react";
+
+import { enquiryService } from "../services/supabaseEnquiryService";
 
 const NotificationContext = createContext(null);
 
 export const NotificationProvider = ({ children }) => {
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      type: "enquiry",
-      title: "New Enquiry",
-      message: "Rahul Sharma enquired about Sunrise Girls PG",
-      read: false,
-      timestamp: new Date(Date.now() - 5 * 60000),
-      pgName: "Sunrise Girls PG",
-      studentName: "Rahul Sharma",
-    },
-    {
-      id: 2,
-      type: "issue_resolved",
-      title: "Issue Resolved",
-      message: "Your enquiry for Dev Residency has been approved",
-      read: false,
-      timestamp: new Date(Date.now() - 15 * 60000),
-      pgName: "Dev Residency",
-    },
-  ]);
+  const [notifications, setNotifications] = useState([]);
 
   const addNotification = useCallback((notification) => {
     const newNotification = {
@@ -34,6 +16,23 @@ export const NotificationProvider = ({ children }) => {
     };
     setNotifications((prev) => [newNotification, ...prev]);
   }, []);
+
+  useEffect(() => {
+    const subscription = enquiryService.subscribeToChanges((payload) => {
+      if (payload.eventType === "INSERT") {
+        addNotification({
+          type: "enquiry",
+          title: "New Lease Request",
+          message: `${payload.new.student_name} enquired about ${payload.new.pg_name}`,
+          pgName: payload.new.pg_name,
+          studentName: payload.new.student_name,
+        });
+      }
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [addNotification]);
 
   const markAsRead = useCallback((id) => {
     setNotifications((prev) =>

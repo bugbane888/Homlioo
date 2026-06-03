@@ -70,6 +70,9 @@ export const PropertyProvider = ({ children }) => {
         roomsLeft: 3,
         tags: ["New Listing"],
         amenities: newPg.amenities || ["WiFi", "AC", "CCTV"],
+        ownerPhone: newPg.ownerPhone || "",
+        coverImage: newPg.coverImage || "",
+        galleryImages: newPg.galleryImages || [],
       };
       setProperties((prev) => [formattedPg, ...prev]);
       return formattedPg;
