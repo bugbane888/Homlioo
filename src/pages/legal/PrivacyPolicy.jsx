@@ -202,11 +202,11 @@ const PrivacyPolicy = () => {
             <section>
               <h2 className="text-xl font-[900] text-brand-navy dark:text-white mb-4">13. GRIEVANCE OFFICER</h2>
               <div className="bg-slate-50 dark:bg-slate-700/50 p-6 rounded-xl border border-slate-100 dark:border-slate-700">
-                <p><strong>Grievance Officer:</strong> [Name — To Be Designated]</p>
-                <p><strong>Platform:</strong> HOMLiOO</p>
-                <p><strong>Email:</strong> grievance@homliooo.com</p>
-                <p><strong>Address:</strong> Greater Noida, Uttar Pradesh, India</p>
-                <p><strong>Response Time:</strong> Acknowledgement within 24 hours. Resolution within 30 days.</p>
+                <p><strong>Designated Grievance Officer:</strong> Neeraj Kumar</p>
+                <p><strong>Platform Operator:</strong> HOMLiOO</p>
+                <p><strong>Official Intake Email:</strong> <a href="mailto:homlioopg@gmail.com" className="text-brand-purple hover:underline">homlioopg@gmail.com</a></p>
+                <p><strong>Corporate Address:</strong> Greater Noida, Uttar Pradesh, India</p>
+                <p><strong>Regulated Response Timeline:</strong> Acknowledgment within 72 Hours. Resolution within 1 week.</p>
               </div>
             </section>
           </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { X, Save, FileText } from "lucide-react";
 import Button from "../common/Button";
 import propertyService from "../../services/supabasePropertyService";
+import { useToast } from "../../context/ToastContext";
 
 const AdminPropertyForm = ({
   isOpen,
@@ -9,6 +10,7 @@ const AdminPropertyForm = ({
   onSubmit,
   initialData = null,
 }) => {
+  const { showToast } = useToast();
   const [validationErrors, setValidationErrors] = useState({});
   const [selectedRoomType, setSelectedRoomType] = useState("single");
   const [isUploading, setIsUploading] = useState(false);
@@ -18,6 +20,7 @@ const AdminPropertyForm = ({
   const [formData, setFormData] = useState({
     // Basic Info
     name: "",
+    ownerName: "",
     description: "",
     gender: "Boys",
     locality: "",
@@ -99,6 +102,7 @@ const AdminPropertyForm = ({
     
     // Verification
     isVerified: true,
+    isPremium: false,
   });
 
   const amenityList = [
@@ -121,25 +125,46 @@ const AdminPropertyForm = ({
 
   useEffect(() => {
     if (initialData) {
-      setFormData(initialData);
+      setFormData({
+        ...initialData,
+        rooms: initialData.rooms || {
+          single: { label: "Single Bed", subtitle: "Private Sanctuary", rent: initialData.price || "", maintenance: "", security: "", availableBeds: "1", attachedBathroom: false, acRoom: false },
+          double: { label: "Double Sharing", subtitle: "Social Living", rent: "", maintenance: "", security: "", availableBeds: "2", attachedBathroom: false, acRoom: false },
+          triple: { label: "Triple Sharing", subtitle: "Budget Friendly", rent: "", maintenance: "", security: "", availableBeds: "3", attachedBathroom: false, acRoom: false },
+          quad: { label: "Quad Sharing", subtitle: "Economy Option", rent: "", maintenance: "", security: "", availableBeds: "4", attachedBathroom: false, acRoom: false },
+        }
+      });
     }
   }, [initialData, isOpen]);
 
   if (!isOpen) return null;
 
+  const handleCoverImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setCoverImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, coverImage: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const validateForm = () => {
     const errors = {};
-    if (!formData.name.trim()) errors.name = "Property name is required";
-    if (!formData.locality.trim()) errors.locality = "Locality is required";
+    if (!formData.name?.trim()) errors.name = "Property name is required";
+    if (!formData.ownerName?.trim()) errors.ownerName = "Owner name is required";
+    if (!formData.locality?.trim()) errors.locality = "Locality is required";
     if (!formData.city) errors.city = "City is required";
     if (!formData.state) errors.state = "State is required";
-    if (!formData.pincode.trim() || !/^\d{6}$/.test(formData.pincode))
+    if (!formData.pincode?.trim() || !/^\d{6}$/.test(formData.pincode))
       errors.pincode = "Valid 6-digit pincode required";
-    if (!formData.description.trim()) errors.description = "Description is required";
+    if (!formData.description?.trim()) errors.description = "Description is required";
     if (!formData.coverImage && !coverImageFile) errors.coverImage = "Cover image is required";
-    if (!formData.mapUrl.trim() || !formData.mapUrl.includes("maps"))
+    if (!formData.mapUrl?.trim() || !formData.mapUrl?.includes("maps"))
       errors.mapUrl = "Valid Google Maps link required";
-    if (!formData.college.trim()) errors.college = "College name is required";
+    if (!formData.college?.trim()) errors.college = "College name is required";
     
     // Check at least one room type has rent
     const hasAnyRoom = Object.values(formData.rooms).some(r => r.rent);
@@ -175,6 +200,12 @@ const AdminPropertyForm = ({
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
+      setTimeout(() => {
+        const firstError = document.querySelector('.border-red-500');
+        if (firstError) {
+          firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
       return;
     }
     setValidationErrors({});
@@ -183,15 +214,24 @@ const AdminPropertyForm = ({
     try {
       let finalCoverImage = formData.coverImage;
       if (coverImageFile) {
-        finalCoverImage = await propertyService.uploadImage(coverImageFile);
+        try {
+          finalCoverImage = await propertyService.uploadImage(coverImageFile);
+        } catch (uploadError) {
+          console.warn("Storage upload failed, falling back to base64", uploadError);
+          // keep formData.coverImage which contains the base64 from handleCoverImageUpload
+        }
       }
 
       let finalGalleryImages = [...formData.galleryImages];
       if (galleryImageFiles.length > 0) {
-        const uploadedUrls = await Promise.all(
-          galleryImageFiles.map(file => propertyService.uploadImage(file))
-        );
-        finalGalleryImages = [...finalGalleryImages, ...uploadedUrls].filter(Boolean);
+        try {
+          const uploadedUrls = await Promise.all(
+            galleryImageFiles.map(file => propertyService.uploadImage(file))
+          );
+          finalGalleryImages = [...finalGalleryImages, ...uploadedUrls].filter(Boolean);
+        } catch (uploadError) {
+          console.warn("Gallery storage upload failed", uploadError);
+        }
       }
 
       const submittedData = {
@@ -205,27 +245,25 @@ const AdminPropertyForm = ({
         roomsLeft: 3,
         tags: ["New Listing"],
         verified: formData.isVerified,
+        isPremium: formData.isPremium,
         sharing: formData.rooms.single.label,
         status: "published",
         publishedAt: new Date().toISOString(),
       };
 
-    // Save to localStorage for persistence
-    const properties = JSON.parse(localStorage.getItem("homlioo_properties") || "[]");
-    const existingIndex = properties.findIndex(p => p.id === submittedData.id);
-    if (existingIndex >= 0) {
-      properties[existingIndex] = submittedData;
-    } else {
-      properties.push(submittedData);
-    }
-    localStorage.setItem("homlioo_properties", JSON.stringify(properties));
+      // Wait for backend submission
+      await onSubmit(submittedData);
 
-    alert("Property published successfully!");
-    onSubmit(submittedData);
-    onClose();
+      // Remove from drafts if it was published from a draft
+      const drafts = JSON.parse(localStorage.getItem("homlioo_drafts") || "[]");
+      const updatedDrafts = drafts.filter(d => d.id !== submittedData.id);
+      localStorage.setItem("homlioo_drafts", JSON.stringify(updatedDrafts));
+
+      showToast("Property published successfully!", "success");
+      onClose();
     } catch (error) {
       console.error("Upload error", error);
-      alert("Failed to upload images or submit form: " + error.message);
+      showToast("Failed to submit form: " + error.message, "error");
     } finally {
       setIsUploading(false);
     }
@@ -245,7 +283,7 @@ const AdminPropertyForm = ({
     }
     
     localStorage.setItem("homlioo_drafts", JSON.stringify(drafts));
-    alert("Draft saved successfully!");
+    showToast("Draft saved successfully!", "success");
   };
 
   return (
@@ -319,18 +357,51 @@ const AdminPropertyForm = ({
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase text-slate-400">
+                      Owner Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className={`w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border outline-none focus:ring-2 ring-brand-purple/20 font-medium ${
+                        validationErrors.ownerName ? "border-red-500" : "border-slate-200 dark:border-slate-700"
+                      }`}
+                      value={formData.ownerName || ""}
+                      onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
+                      placeholder="e.g. Ramesh Kumar"
+                    />
+                    {validationErrors.ownerName && <p className="text-xs text-red-500 font-bold">{validationErrors.ownerName}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase text-slate-400">
                       Owner WhatsApp <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
-                      className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                      className={`w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border outline-none focus:ring-2 ring-brand-purple/20 font-medium ${
+                        validationErrors.ownerPhone ? "border-red-500" : "border-slate-200 dark:border-slate-700"
+                      }`}
                       value={formData.ownerPhone}
                       onChange={(e) => setFormData({ ...formData, ownerPhone: e.target.value })}
                       placeholder="e.g. 919876543210"
                     />
                   </div>
                 </div>
-
+                <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase text-slate-400">
+                      Visibility Options
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer w-full p-3 bg-brand-amber/10 rounded-xl border border-brand-amber/20">
+                      <input
+                        type="checkbox"
+                        checked={formData.isPremium}
+                        onChange={(e) => setFormData({ ...formData, isPremium: e.target.checked })}
+                        className="w-4 h-4 rounded text-brand-amber"
+                      />
+                      <span className="text-xs font-black text-brand-navy dark:text-white uppercase tracking-tight">
+                        Premium PG (Show on Homepage)
+                      </span>
+                    </label>
+                  </div>
+                
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase text-slate-400">
                     Overview/Description <span className="text-red-500">*</span>
@@ -366,9 +437,17 @@ const AdminPropertyForm = ({
                     className={`w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border outline-none focus:ring-2 ring-brand-purple/20 font-medium ${
                       validationErrors.coverImage ? "border-red-500" : "border-slate-200 dark:border-slate-700"
                     }`}
-                    onChange={(e) => setCoverImageFile(e.target.files[0])}
+                    onChange={handleCoverImageUpload}
                   />
-                  {formData.coverImage && !coverImageFile && <p className="text-xs text-brand-purple mt-1">Current: {formData.coverImage.substring(0, 40)}...</p>}
+                  {formData.coverImage && (
+                    <div className="relative mt-2">
+                      <img
+                        src={formData.coverImage}
+                        alt="Cover preview"
+                        className="w-full h-48 object-cover rounded-xl border border-slate-200 dark:border-slate-700"
+                      />
+                    </div>
+                  )}
                   {validationErrors.coverImage && <p className="text-xs text-red-500 font-bold">{validationErrors.coverImage}</p>}
                 </div>
 
@@ -848,11 +927,11 @@ const AdminPropertyForm = ({
             <FileText size={18} /> Save Draft
           </Button>
           <Button
-            type="submit"
+            type="button"
             variant="primary"
-            onClick={handleSubmit}
             className="min-w-[150px] py-3 shadow-xl shadow-amber-500/20"
             disabled={isUploading}
+            onClick={handleSubmit}
           >
             {isUploading ? "Uploading..." : <><Save size={18} /> Publish</>}
           </Button>

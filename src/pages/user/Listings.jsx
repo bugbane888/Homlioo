@@ -5,7 +5,8 @@ import { useDebounce } from "../../hooks/useDebounce";
 import ListingCard from "../../components/listings/ListingCard";
 import ListingCardSkeleton from "../../components/listings/ListingCardSkeleton";
 import FilterSidebar from "../../components/listings/FilterSidebar";
-import { Search, MapPin } from "lucide-react";
+import SmartSearchBar from "../../components/common/SmartSearchBar";
+import { MapPin } from "lucide-react";
 import PageTransition from "../../components/common/PageTransition";
 
 const FILTER_INIT = {
@@ -103,21 +104,19 @@ const Listings = () => {
                   </p>
                 </div>
 
-                <div className="relative w-full lg:w-96 group shrink-0">
-                  <Search
-                    className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-brand-purple transition-colors"
-                    size={18}
-                  />
-                  <input
-                    type="text"
+                <div className="relative w-full lg:w-96 shrink-0">
+                  <SmartSearchBar
                     value={filters.search}
-                    placeholder="Search area or college..."
-                    onChange={(e) => {
-                      const val = e.target.value;
+                    onChange={(val) => {
+                      dispatch({ type: "SET_SEARCH", payload: val });
+                    }}
+                    onSearch={(val) => {
                       dispatch({ type: "SET_SEARCH", payload: val });
                       setSearchParams({ location: val });
                     }}
-                    className="w-full pl-14 pr-6 py-3 sm:py-4 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-[1.5rem] lg:rounded-full outline-none shadow-sm hover:shadow-md focus:shadow-lg focus:border-brand-purple dark:focus:border-brand-purple font-bold text-sm dark:text-white transition-all"
+                    placeholder="Search area or college…"
+                    compact
+                    className="w-full"
                   />
                 </div>
               </div>

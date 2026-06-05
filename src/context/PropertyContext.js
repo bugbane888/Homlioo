@@ -20,12 +20,20 @@ export const PropertyProvider = ({ children }) => {
       try {
         const data = await propertyService.getAll();
         // Map database rows to frontend format
-        const mappedData = data.map(mapPropertyFromDB);
-        setProperties(mappedData);
+        let mappedData = data.map(mapPropertyFromDB);
+        
+        // Merge with local storage fallback items
+        const localProps = JSON.parse(localStorage.getItem("homlioo_properties") || "[]");
+        // Only add local properties that don't exist in Supabase (by ID)
+        const dbIds = new Set(mappedData.map(p => p.id));
+        const mergedLocal = localProps.filter(p => !dbIds.has(p.id));
+        
+        setProperties([...mergedLocal, ...mappedData]);
       } catch (error) {
         console.error("Error loading properties:", error);
-        // Fallback to mock data if Supabase fails
-        setProperties(LISTINGS_DATA);
+        // Fallback to mock data + local storage if Supabase fails completely
+        const localProps = JSON.parse(localStorage.getItem("homlioo_properties") || "[]");
+        setProperties([...localProps, ...LISTINGS_DATA]);
       } finally {
         setIsLoading(false);
       }
@@ -74,6 +82,12 @@ export const PropertyProvider = ({ children }) => {
         coverImage: newPg.coverImage || "",
         galleryImages: newPg.galleryImages || [],
       };
+      
+      // Save to local storage
+      const localProps = JSON.parse(localStorage.getItem("homlioo_properties") || "[]");
+      localProps.unshift(formattedPg);
+      localStorage.setItem("homlioo_properties", JSON.stringify(localProps));
+      
       setProperties((prev) => [formattedPg, ...prev]);
       return formattedPg;
     }
@@ -90,6 +104,10 @@ export const PropertyProvider = ({ children }) => {
     } catch (error) {
       console.error("Error updating property:", error);
       // Fallback to local state
+      const localProps = JSON.parse(localStorage.getItem("homlioo_properties") || "[]");
+      const updatedLocalProps = localProps.map((p) => (p.id === id ? { ...p, ...updatedData } : p));
+      localStorage.setItem("homlioo_properties", JSON.stringify(updatedLocalProps));
+
       setProperties((prev) =>
         prev.map((p) => (p.id === id ? { ...p, ...updatedData } : p))
       );
@@ -103,6 +121,10 @@ export const PropertyProvider = ({ children }) => {
     } catch (error) {
       console.error("Error deleting property:", error);
       // Fallback to local state
+      const localProps = JSON.parse(localStorage.getItem("homlioo_properties") || "[]");
+      const updatedLocalProps = localProps.filter((p) => p.id !== id);
+      localStorage.setItem("homlioo_properties", JSON.stringify(updatedLocalProps));
+
       setProperties((prev) => prev.filter((p) => p.id !== id));
     }
   }, []);

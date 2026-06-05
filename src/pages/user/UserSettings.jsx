@@ -19,7 +19,8 @@ import {
 const UserSettings = () => {
   const navigate = useNavigate();
   const { user, logout, changePassword } = useAuth();
-  const { isDark, toggleDark } = useTheme();
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === "dark";
   const [showPassword, setShowPassword] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [showPasswordChange, setShowPasswordChange] = useState(false);
@@ -80,10 +81,8 @@ const UserSettings = () => {
   };
 
   const handleLogout = async () => {
-    if (window.confirm("Are you sure you want to logout?")) {
-      await logout();
-      navigate("/");
-    }
+    await logout();
+    navigate("/");
   };
 
   return (
@@ -261,7 +260,7 @@ const UserSettings = () => {
                 </p>
               </div>
               <button
-                onClick={toggleDark}
+                onClick={toggleTheme}
                 className={`relative w-14 h-7 rounded-full transition-colors ${
                   isDark ? "bg-brand-purple" : "bg-slate-300"
                 }`}

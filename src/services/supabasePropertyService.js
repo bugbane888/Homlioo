@@ -61,6 +61,7 @@ export const propertyService = {
         rating: propertyData.rating || 5.0,
         reviews: propertyData.reviews || 0,
         verified: propertyData.verified ?? true,
+        is_premium: propertyData.isPremium ?? false,
         rooms_left: propertyData.roomsLeft || 3,
         amenities: propertyData.amenities || ['WiFi', 'AC', 'CCTV'],
         tags: propertyData.tags || ['New Listing'],
@@ -69,6 +70,7 @@ export const propertyService = {
         hospital: propertyData.hospital,
         map_url: propertyData.mapUrl,
         description: propertyData.description,
+        owner_name: propertyData.ownerName,
         owner_phone: propertyData.ownerPhone,
         cover_image: propertyData.coverImage,
         gallery_images: propertyData.galleryImages || [],
@@ -94,6 +96,7 @@ export const propertyService = {
     if (updates.rating !== undefined) dbUpdates.rating = updates.rating;
     if (updates.reviews !== undefined) dbUpdates.reviews = updates.reviews;
     if (updates.verified !== undefined) dbUpdates.verified = updates.verified;
+    if (updates.isPremium !== undefined) dbUpdates.is_premium = updates.isPremium;
     if (updates.roomsLeft !== undefined) dbUpdates.rooms_left = updates.roomsLeft;
     if (updates.amenities !== undefined) dbUpdates.amenities = updates.amenities;
     if (updates.tags !== undefined) dbUpdates.tags = updates.tags;
@@ -102,6 +105,7 @@ export const propertyService = {
     if (updates.hospital !== undefined) dbUpdates.hospital = updates.hospital;
     if (updates.mapUrl !== undefined) dbUpdates.map_url = updates.mapUrl;
     if (updates.description !== undefined) dbUpdates.description = updates.description;
+    if (updates.ownerName !== undefined) dbUpdates.owner_name = updates.ownerName;
     if (updates.ownerPhone !== undefined) dbUpdates.owner_phone = updates.ownerPhone;
     if (updates.coverImage !== undefined) dbUpdates.cover_image = updates.coverImage;
     if (updates.galleryImages !== undefined) dbUpdates.gallery_images = updates.galleryImages;
@@ -190,6 +194,7 @@ export const mapPropertyFromDB = (row) => ({
   rating: parseFloat(row.rating),
   reviews: row.reviews,
   verified: row.verified,
+  isPremium: row.is_premium || false,
   roomsLeft: row.rooms_left,
   amenities: row.amenities || [],
   tags: row.tags || [],
@@ -198,6 +203,7 @@ export const mapPropertyFromDB = (row) => ({
   hospital: row.hospital,
   mapUrl: row.map_url,
   description: row.description,
+  ownerName: row.owner_name || "Owner",
   ownerPhone: row.owner_phone,
   coverImage: row.cover_image,
   galleryImages: row.gallery_images || [],

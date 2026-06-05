@@ -4,6 +4,27 @@ import authService from "../services/supabaseAuthService";
 
 const AuthContext = createContext(null);
 
+/**
+ * Shared timeout helper — wraps any promise and rejects if it takes longer
+ * than `ms` milliseconds. Used on every Supabase call so the UI never hangs
+ * indefinitely when the backend is slow, paused, or unreachable.
+ */
+const withTimeout = (promise, ms = 12000) =>
+  Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(
+        () =>
+          reject(
+            new Error(
+              "Connection timed out. The server is not responding. Please try again."
+            )
+          ),
+        ms
+      )
+    ),
+  ]);
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -12,17 +33,28 @@ export const AuthProvider = ({ children }) => {
     // Check for existing session on mount
     const initAuth = async () => {
       try {
-        const session = await authService.getSession();
+        const session = await withTimeout(authService.getSession());
         if (session?.user) {
-          const profile = await authService.getProfile(session.user.id);
-          setUser({
-            id: session.user.id,
-            name: profile?.name || session.user.email.split("@")[0],
-            email: session.user.email,
-            role: profile?.role || "user",
-            phone: profile?.phone || "",
-            photo: profile?.photo_url || null,
-          });
+          try {
+            const profile = await withTimeout(authService.getProfile(session.user.id));
+            setUser({
+              id: session.user.id,
+              name: profile?.name || session.user.email.split("@")[0],
+              email: session.user.email,
+              role: profile?.role || "user",
+              phone: profile?.phone || "",
+              photo: profile?.photo_url || null,
+            });
+          } catch {
+            setUser({
+              id: session.user.id,
+              name: session.user.user_metadata?.name || session.user.email.split("@")[0],
+              email: session.user.email,
+              role: session.user.user_metadata?.role || "user",
+              phone: "",
+              photo: null,
+            });
+          }
         }
       } catch (error) {
         console.error("Auth init error:", error);
@@ -33,12 +65,17 @@ export const AuthProvider = ({ children }) => {
 
     initAuth();
 
-    // Listen for auth state changes
+    // Listen for auth state changes (covers email verification, token refresh, etc.)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (event === "SIGNED_IN" && session?.user) {
+        if (
+          (event === "SIGNED_IN" ||
+            event === "TOKEN_REFRESHED" ||
+            event === "USER_UPDATED") &&
+          session?.user
+        ) {
           try {
-            const profile = await authService.getProfile(session.user.id);
+            const profile = await withTimeout(authService.getProfile(session.user.id));
             setUser({
               id: session.user.id,
               name: profile?.name || session.user.email.split("@")[0],
@@ -47,11 +84,13 @@ export const AuthProvider = ({ children }) => {
               phone: profile?.phone || "",
               photo: profile?.photo_url || null,
             });
-          } catch (error) {
-            // Profile might not exist yet, use basic info
+          } catch {
+            // Profile might not exist yet — use metadata from token
             setUser({
               id: session.user.id,
-              name: session.user.user_metadata?.name || session.user.email.split("@")[0],
+              name:
+                session.user.user_metadata?.name ||
+                session.user.email.split("@")[0],
               email: session.user.email,
               role: session.user.user_metadata?.role || "user",
               phone: "",
@@ -61,6 +100,7 @@ export const AuthProvider = ({ children }) => {
         } else if (event === "SIGNED_OUT") {
           setUser(null);
         }
+        // PASSWORD_RECOVERY: no user state change — ResetPassword page handles it
       }
     );
 
@@ -68,7 +108,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    // Temporary admin credentials for testing
+    // Temporary admin bypass for testing — REMOVE before final production release
     if (email === "admin@homlioo.com" && password === "admin123") {
       const userData = {
         id: "admin_temp_id",
@@ -83,19 +123,32 @@ export const AuthProvider = ({ children }) => {
     }
 
     try {
-      const { user: authUser } = await authService.signIn(email, password);
+      const { user: authUser } = await withTimeout(authService.signIn(email, password));
       if (authUser) {
-        const profile = await authService.getProfile(authUser.id);
-        const userData = {
-          id: authUser.id,
-          name: profile?.name || authUser.email.split("@")[0],
-          email: authUser.email,
-          role: profile?.role || "user",
-          phone: profile?.phone || "",
-          photo: profile?.photo_url || null,
-        };
-        setUser(userData);
-        return { success: true, role: userData.role, name: userData.name };
+        try {
+          const profile = await withTimeout(authService.getProfile(authUser.id));
+          const userData = {
+            id: authUser.id,
+            name: profile?.name || authUser.email.split("@")[0],
+            email: authUser.email,
+            role: profile?.role || "user",
+            phone: profile?.phone || "",
+            photo: profile?.photo_url || null,
+          };
+          setUser(userData);
+          return { success: true, role: userData.role, name: userData.name };
+        } catch {
+          const userData = {
+            id: authUser.id,
+            name: authUser.user_metadata?.name || authUser.email.split("@")[0],
+            email: authUser.email,
+            role: authUser.user_metadata?.role || "user",
+            phone: "",
+            photo: null,
+          };
+          setUser(userData);
+          return { success: true, role: userData.role, name: userData.name };
+        }
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -105,7 +158,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (email, password, name) => {
     try {
-      await authService.signUp(email, password, name);
+      await withTimeout(authService.signUp(email, password, name));
       return { success: true };
     } catch (error) {
       console.error("Signup error:", error);
@@ -116,11 +169,13 @@ export const AuthProvider = ({ children }) => {
   const updateProfile = async (updatedData) => {
     if (!user?.id) return;
     try {
-      const profile = await authService.updateProfile(user.id, {
-        name: updatedData.name,
-        phone: updatedData.phone,
-        photo_url: updatedData.photo,
-      });
+      const profile = await withTimeout(
+        authService.updateProfile(user.id, {
+          name: updatedData.name,
+          phone: updatedData.phone,
+          photo_url: updatedData.photo,
+        })
+      );
       setUser((prev) => ({
         ...prev,
         name: profile.name,
@@ -134,12 +189,11 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      // Clear temp admin session
       if (user?.id === "admin_temp_id") {
         setUser(null);
         return;
       }
-      await authService.signOut();
+      await withTimeout(authService.signOut());
       setUser(null);
     } catch (error) {
       console.error("Logout error:", error);
@@ -150,7 +204,7 @@ export const AuthProvider = ({ children }) => {
   const changePassword = async (newPassword) => {
     try {
       if (user?.id === "admin_temp_id") return { success: true };
-      await authService.updatePassword(newPassword);
+      await withTimeout(authService.updatePassword(newPassword));
       return { success: true };
     } catch (error) {
       console.error("Change password error:", error);
@@ -159,8 +213,19 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, loading, updateProfile, changePassword }}>
-      {!loading && children}
+    <AuthContext.Provider
+      value={{ user, login, signup, logout, loading, updateProfile, changePassword }}
+    >
+      {loading ? (
+        <div className="h-screen flex flex-col items-center justify-center bg-[#F8F7F4] dark:bg-slate-900">
+          <div className="w-10 h-10 border-4 border-brand-purple border-t-transparent rounded-full animate-spin"></div>
+          <p className="mt-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] animate-pulse">
+            HOMLiOO Security Loading...
+          </p>
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 };

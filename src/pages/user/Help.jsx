@@ -81,10 +81,10 @@ const Help = () => {
               Email Us
             </h3>
             <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">
-              support@homiloo.com
+              homlioopg@gmail.com
             </p>
             <a
-              href="mailto:support@homiloo.com"
+              href="mailto:homlioopg@gmail.com"
               className="text-brand-purple hover:underline font-bold text-sm"
             >
               Send Email
@@ -97,10 +97,10 @@ const Help = () => {
               Call Us
             </h3>
             <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">
-              +91 9876543210
+              +91 9179193522
             </p>
             <a
-              href="tel:+919876543210"
+              href="tel:+919179193522"
               className="text-brand-purple hover:underline font-bold text-sm"
             >
               Call Now
@@ -116,7 +116,7 @@ const Help = () => {
               Live chat support
             </p>
             <a
-              href="https://wa.me/919876543210"
+              href="https://wa.me/919179193522"
               target="_blank"
               rel="noopener noreferrer"
               className="text-brand-purple hover:underline font-bold text-sm"
@@ -177,7 +177,7 @@ const Help = () => {
             Our support team is here to help. Reach out to us anytime!
           </p>
           <a
-            href="mailto:support@homiloo.com"
+            href="mailto:homlioopg@gmail.com"
             className="inline-block bg-brand-amber hover:bg-amber-500 text-brand-navy px-8 py-3 rounded-2xl font-bold transition-all"
           >
             Contact Support

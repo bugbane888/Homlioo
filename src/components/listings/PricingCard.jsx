@@ -9,6 +9,7 @@ import Button from "../common/Button";
 const PricingCard = ({ pg, onEnquiry, isInCompare, onCompareToggle, onWhatsAppClick }) => {
   const [selectedRoom, setSelectedRoom] = useState(0);
   const [isOpen, setIsOpen] = useState(null);
+  const [showContact, setShowContact] = useState(false);
 
   const rooms = [
     { label: "Single Bed", rent: pg.price, sub: "Private Sanctuary" },
@@ -93,12 +94,34 @@ const PricingCard = ({ pg, onEnquiry, isInCompare, onCompareToggle, onWhatsAppCl
         <Button onClick={onEnquiry} className="w-full" variant="primary">
           <Send size={18} /> Send Enquiry
         </Button>
-        <button
-          onClick={onWhatsAppClick}
-          className="w-full py-3 rounded-xl font-bold text-sm bg-[#25D366] text-white hover:bg-[#20bd5a] flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#25D366]/20"
-        >
-          <MessageCircle size={18} fill="currentColor" /> Chat with Owner
-        </button>
+        <div className="border border-[#25D366]/30 rounded-xl overflow-hidden bg-white shadow-sm">
+          <button
+            onClick={() => setShowContact(!showContact)}
+            className="w-full py-3 px-4 font-bold text-sm bg-[#25D366] text-white hover:bg-[#20bd5a] flex items-center justify-center gap-2 transition-all"
+          >
+            <MessageCircle size={18} fill="currentColor" /> {showContact ? "Hide Contact Details" : "Contact Owner"}
+          </button>
+          
+          {showContact && (
+            <div className="p-4 bg-emerald-50/50 animate-in slide-in-from-top-2 duration-300 border-t border-[#25D366]/20">
+              <div className="space-y-3 mb-4 text-center">
+                <div className="w-12 h-12 bg-[#25D366]/20 text-[#25D366] rounded-full flex items-center justify-center mx-auto text-xl">
+                  👤
+                </div>
+                <div>
+                  <h4 className="font-black text-brand-navy text-sm">{pg.ownerName || "Shubham"}</h4>
+                  <p className="text-xs font-bold text-slate-500 tracking-wider mt-1">{pg.ownerPhone || "+91 8881329192"}</p>
+                </div>
+              </div>
+              <button
+                onClick={onWhatsAppClick}
+                className="w-full py-2.5 rounded-lg font-black text-xs uppercase tracking-widest bg-[#25D366] text-white hover:bg-[#20bd5a] flex items-center justify-center gap-2 transition-all shadow-md shadow-[#25D366]/30"
+              >
+                Message on WhatsApp
+              </button>
+            </div>
+          )}
+        </div>
         <button
           onClick={onCompareToggle}
           className={`w-full py-3 px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all duration-200 ${

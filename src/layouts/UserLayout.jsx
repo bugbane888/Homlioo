@@ -40,11 +40,8 @@ const UserLayout = ({ children }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full flex items-center justify-between">
           {/* 1. Left: Logo */}
           <div className="flex items-center gap-8 lg:gap-12">
-            <Link to="/" className="flex items-center gap-2 group shrink-0 hover:opacity-80 transition-opacity">
-              <img src="https://cdn.builder.io/api/v1/image/assets%2F4846259389164835959d1e308a688d73%2F55c8651b8f72480dbe6db518c3a923d6?format=webp&width=100&height=100" alt="HOMLiOO" className="w-8 sm:w-9 h-8 sm:h-9 object-contain group-hover:scale-105 transition-transform shrink-0" />
-              <div className="hidden sm:block">
-                <Logo size="md" showIcon={false} />
-              </div>
+            <Link to="/" className="flex items-center group shrink-0 hover:opacity-80 transition-opacity">
+              <Logo size="md" showImage={true} showText={true} />
             </Link>
 
             {/* 2. Center: Navigation Links */}
@@ -233,8 +230,8 @@ const UserLayout = ({ children }) => {
                           Settings
                         </Link>
                         <button
-                          onClick={() => {
-                            logout();
+                          onClick={async () => {
+                            await logout();
                             navigate("/");
                             setIsProfileDropdownOpen(false);
                           }}
@@ -330,8 +327,8 @@ const UserLayout = ({ children }) => {
             </div>
           ) : (
             <button
-              onClick={() => {
-                logout();
+              onClick={async () => {
+                await logout();
                 navigate("/");
                 setIsMenuOpen(false);
               }}
@@ -353,10 +350,7 @@ const UserLayout = ({ children }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 pb-20 border-b border-slate-800">
             <div className="space-y-6">
               <div className="flex items-center gap-2">
-                <img src="https://cdn.builder.io/api/v1/image/assets%2F4846259389164835959d1e308a688d73%2F55c8651b8f72480dbe6db518c3a923d6?format=webp&width=100&height=100" alt="HOMLiOO" className="w-12 h-12 object-contain" />
-                <span className="font-black text-2xl tracking-tighter uppercase">
-                  <span className="text-white">HOM</span><span className="text-emerald-500">LiOO</span>
-                </span>
+                <Logo size="md" showImage={true} showText={true} />
               </div>
               <p className="text-slate-400 text-sm leading-relaxed font-medium max-w-xs">
                 India's most trusted smart PG search platform. Verified
@@ -418,8 +412,8 @@ const UserLayout = ({ children }) => {
                 Support
               </h4>
               <ul className="space-y-5 text-slate-400 text-xs font-bold uppercase tracking-widest">
-                <li>e: support@homlioo.in</li>
-                <li>p: +91 98765 43210</li>
+                <li>e: homlioopg@gmail.com</li>
+                <li>m: +91 9179193522</li>
                 <li className="text-slate-500 text-xs tracking-widest font-medium">
                   Greater Noida, Uttar Pradesh
                 </li>

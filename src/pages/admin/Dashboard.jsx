@@ -1,14 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Users,
   Building,
-  FileText,
   ArrowUpRight,
-  TrendingUp,
-  Clock,
   ChevronRight,
-  Eye,
   MessageSquare,
 } from "lucide-react";
 import { useProperties } from "../../context/PropertyContext";
@@ -89,16 +84,7 @@ const Dashboard = () => {
       </div>
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        <StatCard
-          title="Total Students"
-          value="12,840"
-          subtitle="Registered users"
-          icon={<Users size={24} />}
-          trend="+12.5%"
-          color="text-blue-500"
-          bgColor="bg-blue-500"
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
         <StatCard
           title="Active PGs"
           value={totalProperties}
@@ -117,21 +103,12 @@ const Dashboard = () => {
           color="text-amber-500"
           bgColor="bg-amber-500"
         />
-        <StatCard
-          title="Page Views"
-          value="52.4K"
-          subtitle="Weekly average"
-          icon={<Eye size={24} />}
-          trend="+8.3%"
-          color="text-purple-500"
-          bgColor="bg-purple-500"
-        />
       </div>
 
       {/* Quick Actions & Recent Listings */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
-        {/* Recent Listings Table - 2/3 Width */}
-        <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+      <div className="mb-12">
+        {/* Recent Listings Table - Full Width */}
+        <div className="w-full bg-white dark:bg-slate-800 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
           <div className="p-6 sm:p-8 border-b border-slate-50 dark:border-slate-700 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
             <div>
               <h3 className="text-lg sm:text-xl font-[900] text-brand-navy dark:text-white tracking-tight">
@@ -206,96 +183,9 @@ const Dashboard = () => {
             </table>
           </div>
         </div>
-
-        {/* Quick Actions & Activity - 1/3 Width */}
-        <div className="lg:col-span-1 space-y-6">
-          {/* Growth Target Card */}
-          <div className="bg-gradient-to-br from-brand-navy to-brand-purple dark:from-slate-800 dark:to-slate-700 rounded-[2rem] p-6 sm:p-8 text-white relative overflow-hidden shadow-lg">
-            <div className="relative z-10">
-              <TrendingUp className="text-brand-amber mb-4" size={28} />
-              <h4 className="text-lg sm:text-xl font-[900] mb-2 tracking-tight">
-                Growth Target
-              </h4>
-              <p className="text-slate-200 text-xs sm:text-sm mb-6 leading-relaxed">
-                85% of monthly student signup goal reached.
-              </p>
-              <div className="w-full bg-white/10 h-2.5 rounded-full overflow-hidden mb-3">
-                <div className="bg-brand-amber h-full w-[85%] rounded-full"></div>
-              </div>
-              <p className="text-[10px] font-bold text-brand-amber uppercase tracking-widest">
-                15% remaining
-              </p>
-            </div>
-            {/* Decoration */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
-          </div>
-
-          {/* Recent Activity Card */}
-          <div className="bg-white dark:bg-slate-800 rounded-[2rem] border border-slate-100 dark:border-slate-700 p-6 sm:p-8 shadow-sm">
-            <h3 className="text-lg font-[900] text-brand-navy dark:text-white mb-6 tracking-tight">
-              Recent Activity
-            </h3>
-            <div className="space-y-6">
-              {[
-                {
-                  title: "New Enquiry",
-                  time: "2 mins ago",
-                  icon: <FileText size={14} />,
-                  color: "text-amber-500",
-                },
-                {
-                  title: "Property Approved",
-                  time: "45 mins ago",
-                  icon: <CheckCircleIcon />,
-                  color: "text-emerald-500",
-                },
-                {
-                  title: "Admin Login",
-                  time: "3 hours ago",
-                  icon: <Clock size={14} />,
-                  color: "text-brand-purple",
-                },
-              ].map((activity, i) => (
-                <div key={i} className="flex gap-4 items-start">
-                  <div className={`mt-1 ${activity.color}`}>
-                    {activity.icon}
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-brand-navy leading-none mb-1">
-                      {activity.title}
-                    </p>
-                    <p className="text-[10px] text-slate-400 font-medium">
-                      {activity.time}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <button className="w-full mt-8 py-3 border border-slate-100 rounded-2xl text-xs font-bold text-slate-500 hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
-              View System Logs <ChevronRight size={14} />
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );
 };
-
-// Internal Helper Icon
-const CheckCircleIcon = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="3"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-    <polyline points="22 4 12 14.01 9 11.01" />
-  </svg>
-);
 
 export default Dashboard;

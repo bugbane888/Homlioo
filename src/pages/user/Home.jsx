@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
-import {
-  Search,
-  ArrowRight,
-} from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useProperties } from "../../context/PropertyContext";
 import { STATS } from "../../constants/data";
 import ListingCard from "../../components/listings/ListingCard";
 import Button from "../../components/common/Button";
 import PageTransition from "../../components/common/PageTransition";
+import SmartSearchBar from "../../components/common/SmartSearchBar";
 import { motion } from "framer-motion";
 
 const Home = () => {
@@ -21,7 +19,9 @@ const Home = () => {
   const [budget, setBudget] = useState("Any Budget");
   const [gender, setGender] = useState("Any Gender");
 
-  const featured = properties.slice(0, 3);
+  const premium = properties.filter((p) => p.isPremium);
+  const featured =
+    premium.length > 0 ? premium.slice(0, 3) : properties.slice(0, 3);
 
   // LOGIC: Scroll to "How It Works" if user clicks from Navbar on another page
   useEffect(() => {
@@ -34,24 +34,28 @@ const Home = () => {
     }
   }, [urlSearch]);
 
-  const isSearchDisabled = !search.trim() || budget === "Any Budget" || gender === "Any Gender";
+  const isSearchDisabled = !search.trim();
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (isSearchDisabled) return;
+  const handleSearchCommit = (term) => {
     const params = new URLSearchParams();
-    if (search) params.append("location", search);
+    if (term) params.append("location", term);
     if (budget !== "Any Budget") params.append("budget", budget);
     if (gender !== "Any Gender") params.append("gender", gender);
     navigate(`/listings?${params.toString()}`);
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (isSearchDisabled) return;
+    handleSearchCommit(search);
+  };
+
   return (
     <PageTransition>
       {/* --- HERO SECTION: DEEP NAVY PIXEL-PERFECT --- */}
-      <section className="bg-[#0F2133] pt-12 sm:pt-20 md:pt-24 pb-12 sm:pb-16 md:pb-20 px-4 sm:px-6 relative text-center overflow-hidden">
+      <section className="bg-[#0F2133] pt-12 sm:pt-20 md:pt-24 pb-12 sm:pb-16 md:pb-20 px-4 sm:px-6 relative text-center">
         {/* Subtle Gradient Glows */}
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_20%_50%,#F59E0B,transparent_50%)]"></div>
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_20%_50%,#F59E0B,transparent_50%)] pointer-events-none"></div>
 
         <div className="max-w-6xl mx-auto relative z-10">
           {/* Main Tagline */}
@@ -66,71 +70,71 @@ const Home = () => {
             Verified listings. Transparent pricing. Zero broker fees.
             <br />
             On a mission to empower{" "}
-            <span className="text-[#F59E0B] font-bold">
-              10,000+ students
-            </span>{" "}
+            <span className="text-[#F59E0B] font-bold">10,000+ students</span>{" "}
             across India.
           </p>
 
-          {/* --- PILL-SHAPED SEARCH BAR (AS PER SCREENSHOT) --- */}
-          <form
-            onSubmit={handleSearch}
-            className="bg-white rounded-2xl md:rounded-full p-2 sm:p-1.5 flex flex-col md:flex-row items-stretch md:items-center max-w-4xl mx-auto mb-6 sm:mb-10 shadow-2xl transition-all gap-2 md:gap-0"
-          >
-            {/* 1. Location Input */}
-            <div className="flex-[1.5] flex items-center gap-3 px-4 sm:px-6 py-3 md:py-2 w-full">
-              <Search size={16} className="text-slate-300 shrink-0" />
-              <input
-                type="text"
-                placeholder="Search by area, college..."
-                className="bg-transparent border-none outline-none w-full text-slate-700 font-bold text-sm placeholder:text-slate-300"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
+          {/* --- SMART SEARCH BAR --- */}
+          <form onSubmit={handleSearch} className="max-w-4xl mx-auto mb-6 sm:mb-10">
+            {/* Outer pill card */}
+            <div className="bg-white/95 backdrop-blur-sm rounded-2xl md:rounded-full p-1.5 sm:p-2 flex flex-col md:flex-row items-stretch md:items-center shadow-2xl shadow-black/30 gap-2 md:gap-0 transition-all">
+
+              {/* 1. Smart Location Search */}
+              <div className="flex-[2] md:min-w-0">
+                <SmartSearchBar
+                  value={search}
+                  onChange={setSearch}
+                  onSearch={handleSearchCommit}
+                  placeholder="Search area, college, metro…"
+                  className="w-full"
+                  darkDropdown
+                />
+              </div>
+
+              {/* Divider */}
+              <div className="hidden md:block w-[1.5px] h-8 bg-slate-100 mx-1 shrink-0" />
+
+              {/* 2. Budget Select */}
+              <select
+                value={budget}
+                onChange={(e) => setBudget(e.target.value)}
+                className="flex-1 px-4 sm:px-6 py-3 md:py-2 text-slate-500 font-black text-sm outline-none cursor-pointer text-center md:text-left appearance-none bg-transparent"
+              >
+                <option>Any Budget</option>
+                <option value="6000">Under ₹6,000</option>
+                <option value="9000">₹6,000 – ₹9,000</option>
+                <option value="9000+">More than ₹9,000</option>
+              </select>
+
+              {/* Divider */}
+              <div className="hidden md:block w-[1.5px] h-8 bg-slate-100 mx-1 shrink-0" />
+
+              {/* 3. Gender Select */}
+              <select
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                className="flex-1 px-4 sm:px-6 py-3 md:py-2 text-slate-500 font-black text-sm outline-none cursor-pointer text-center md:text-left appearance-none bg-transparent"
+              >
+                <option>Any Gender</option>
+                <option>Boys</option>
+                <option>Girls</option>
+                <option>Co-ed</option>
+              </select>
+
+              {/* 4. Search Button */}
+              <button
+                type="submit"
+                disabled={isSearchDisabled}
+                className={`px-6 sm:px-10 py-3 md:py-3.5 rounded-xl md:rounded-full font-[900] text-sm flex items-center justify-center gap-2 transition-all shadow-lg md:ml-2 w-full md:w-auto shrink-0 ${
+                  isSearchDisabled
+                    ? "bg-slate-300 text-slate-500 cursor-not-allowed shadow-none"
+                    : "bg-[#F59E0B] hover:bg-amber-500 text-[#0F2133] shadow-amber-500/20 active:scale-95"
+                }`}
+              >
+                <Search size={16} strokeWidth={3} />
+                <span className="hidden sm:inline">Search</span>
+              </button>
             </div>
-
-            {/* Divider */}
-            <div className="hidden md:block w-[1.5px] h-8 bg-slate-100"></div>
-
-            {/* 2. Budget Select */}
-            <select
-              value={budget}
-              onChange={(e) => setBudget(e.target.value)}
-              className="flex-1 px-4 sm:px-6 py-3 md:py-2 text-slate-500 font-black text-sm outline-none cursor-pointer text-center md:text-left appearance-none bg-transparent"
-            >
-              <option>Any Budget</option>
-              <option value="6000">Under ₹6,000</option>
-              <option value="9000">₹6,000 - ₹9,000</option>
-              <option value="9000+">More than ₹9,000</option>
-            </select>
-
-            {/* Divider */}
-            <div className="hidden md:block w-[1.5px] h-8 bg-slate-100"></div>
-
-            {/* 3. Gender Select */}
-            <select
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-              className="flex-1 px-4 sm:px-6 py-3 md:py-2 text-slate-500 font-black text-sm outline-none cursor-pointer text-center md:text-left appearance-none bg-transparent"
-            >
-              <option>Any Gender</option>
-              <option>Boys</option>
-              <option>Girls</option>
-              <option>Co-ed</option>
-            </select>
-
-            {/* 4. Search Button */}
-            <button
-              type="submit"
-              disabled={isSearchDisabled}
-              className={`px-6 sm:px-10 py-3 md:py-3.5 rounded-xl md:rounded-full font-[900] text-sm flex items-center justify-center gap-2 transition-all shadow-lg md:ml-2 w-full md:w-auto shrink-0 ${
-                isSearchDisabled
-                  ? "bg-slate-300 text-slate-500 cursor-not-allowed shadow-none"
-                  : "bg-[#F59E0B] hover:bg-amber-500 text-[#0F2133] shadow-amber-500/20"
-              }`}
-            >
-              <Search size={16} strokeWidth={3} /> <span className="hidden sm:inline">Search</span>
-            </button>
           </form>
 
           {/* UNIVERSITY PILLS (Tabs behind search) */}
@@ -363,9 +367,7 @@ const CategoryCard = ({ title, sub, emoji, bg, accent, border, onClick }) => (
       {emoji}
     </div>
     <div>
-      <span
-        className={`${accent} text-xs font-black uppercase tracking-[0.3em]`}
-      >
+      <span className={`${accent} text-xs font-black uppercase tracking-[0.3em]`}>
         PG For
       </span>
       <h3 className="text-3xl lg:text-4xl font-[900] text-white mt-1 leading-snug tracking-tight">
@@ -389,9 +391,7 @@ const FeatureCard = ({ title, desc, bg, icon }) => (
     <h4 className="font-black text-brand-navy text-sm mb-3 uppercase tracking-tight">
       {title}
     </h4>
-    <p className="text-slate-500 text-sm font-medium leading-relaxed">
-      {desc}
-    </p>
+    <p className="text-slate-500 text-sm font-medium leading-relaxed">{desc}</p>
   </div>
 );
 
