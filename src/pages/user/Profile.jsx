@@ -3,8 +3,11 @@ import { useAuth } from "../../context/AuthContext";
 import PageTransition from "../../components/common/PageTransition";
 import { Mail, Phone, MapPin, LogOut, Edit2, Save } from "lucide-react";
 
+import { useNavigate } from "react-router-dom";
+
 const Profile = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || "",
@@ -23,8 +26,9 @@ const Profile = () => {
     setIsEditing(false);
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
   };
 
   return (

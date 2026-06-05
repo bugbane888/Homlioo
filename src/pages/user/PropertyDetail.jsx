@@ -27,8 +27,8 @@ import {
 const PropertyDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { properties } = useProperties();
-  const { compareList, addToCompare, removeFromCompare } = useCompare();
+  const { properties, isLoading } = useProperties();
+  const { compareList, toggleCompare } = useCompare();
   const { user } = useAuth();
   const { showToast } = useToast();
   const pg = properties.find((p) => p.id === parseInt(id));
@@ -52,12 +52,25 @@ const PropertyDetail = () => {
     window.scrollTo(0, 0);
   }, [id]);
 
+  if (!pg && !isLoading)
+    return (
+      <div className="h-screen flex flex-col items-center justify-center gap-4 bg-[#F8F7F4] dark:bg-slate-900">
+        <div className="text-6xl">🏠</div>
+        <h2 className="text-2xl font-black text-brand-navy dark:text-white">Property Not Found</h2>
+        <p className="text-slate-500 dark:text-slate-400 font-medium">This listing may have been removed or is unavailable.</p>
+        <button onClick={() => navigate("/listings")} className="mt-4 px-8 py-3 bg-brand-purple text-white font-bold rounded-2xl hover:bg-purple-700 transition-colors">
+          Browse All PGs
+        </button>
+      </div>
+    );
+
   if (!pg)
     return (
       <div className="h-screen flex items-center justify-center font-bold">
-        Loading...
+        <div className="w-10 h-10 border-4 border-brand-purple border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
+
 
   const amenityIcons = {
     WiFi: <Wifi size={18} />,
@@ -237,13 +250,7 @@ const PropertyDetail = () => {
                 pg={pg}
                 onEnquiry={() => setIsEnquiryOpen(true)}
                 isInCompare={isInCompare}
-                onCompareToggle={() => {
-                  if (isInCompare) {
-                    removeFromCompare(pg.id);
-                  } else {
-                    addToCompare(pg);
-                  }
-                }}
+                onCompareToggle={() => toggleCompare(pg)}
                 onWhatsAppClick={handleWhatsAppClick}
               />
             </div>

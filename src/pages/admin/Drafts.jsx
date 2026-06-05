@@ -42,7 +42,7 @@ const Drafts = () => {
           </p>
         </div>
         <Button
-          onClick={() => navigate("/admin/properties")}
+          onClick={() => navigate("/admin/properties", { state: { openAddModal: true } })}
           className="py-2.5 px-8 shadow-xl shadow-amber-500/20"
         >
           <Plus size={18} /> Create New PG
@@ -59,7 +59,7 @@ const Drafts = () => {
             Start creating a new property and save it as draft to see it here
           </p>
           <Button
-            onClick={() => navigate("/admin/properties")}
+            onClick={() => navigate("/admin/properties", { state: { openAddModal: true } })}
             className="shadow-xl shadow-amber-500/20"
           >
             <Plus size={18} /> Add New PG

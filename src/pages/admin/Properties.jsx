@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useProperties } from "../../context/PropertyContext";
 import { useToast } from "../../context/ToastContext";
 import { Plus, Search, Edit3, Trash2, ExternalLink } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../../components/common/Button";
 import Badge from "../../components/common/Badge";
 import AdminPropertyForm from "../../components/admin/AdminPropertyForm";
@@ -17,6 +17,28 @@ const Properties = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProperty, setEditingProperty] = useState(null);
+  const location = useLocation();
+
+  React.useEffect(() => {
+    // 1. Check if we navigated here with intent to open Add PG modal
+    if (location.state?.openAddModal) {
+      setEditingProperty(null);
+      setIsModalOpen(true);
+      window.history.replaceState({}, document.title);
+    }
+
+    // 2. Check if there's a draft to continue editing
+    const draft = localStorage.getItem("editingDraft");
+    if (draft) {
+      try {
+        setEditingProperty(JSON.parse(draft));
+        setIsModalOpen(true);
+        localStorage.removeItem("editingDraft");
+      } catch (e) {
+        console.error("Failed to parse draft", e);
+      }
+    }
+  }, [location]);
 
   // Filter Logic
   const filteredProperties = properties.filter(
@@ -36,25 +58,24 @@ const Properties = () => {
     setIsModalOpen(true);
   };
 
-  const handleFormSubmit = (formData) => {
-    if (editingProperty) {
-      updateProperty(editingProperty.id, formData);
-      showToast(`${formData.name} updated successfully.`, "success");
-    } else {
-      addProperty(formData);
-      showToast(`${formData.name} published to site!`, "success");
+  const handleFormSubmit = async (formData) => {
+    try {
+      if (editingProperty) {
+        await updateProperty(editingProperty.id, formData);
+        showToast(`${formData.name} updated successfully.`, "success");
+      } else {
+        await addProperty(formData);
+        showToast(`${formData.name} published to site!`, "success");
+      }
+    } catch (error) {
+      console.error("Form submit error:", error);
+      throw error;
     }
   };
 
   const handleDelete = (id, name) => {
-    if (
-      window.confirm(
-        `Permanent Action: Are you sure you want to delete ${name}?`,
-      )
-    ) {
-      deleteProperty(id);
-      showToast(`${name} removed from database.`, "info");
-    }
+    deleteProperty(id);
+    showToast(`${name} removed from database.`, "info");
   };
 
   return (

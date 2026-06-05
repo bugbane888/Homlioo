@@ -97,6 +97,8 @@ const AnimatedRoutes = () => {
         <Route path="/auth/callback" element={<Callback />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/verify" element={<Callback />} />
+        <Route path="/auth/v1/verify" element={<Callback />} />
 
         {/* --- PUBLIC STUDENT SITE --- */}
         <Route

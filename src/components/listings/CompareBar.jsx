@@ -21,7 +21,7 @@ const CompareBar = () => {
           className="fixed bottom-4 sm:bottom-8 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 z-[100] sm:w-[90%] sm:max-w-2xl"
         >
           <div className="bg-brand-navy dark:bg-slate-800 text-white rounded-2xl sm:rounded-[2rem] p-3 sm:p-4 shadow-2xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 border border-white/10 backdrop-blur-xl">
-            <div className="flex items-center gap-2 sm:gap-4 flex-1 overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0 overflow-x-auto no-scrollbar">
               <div className="bg-brand-amber text-brand-navy p-2 sm:p-2.6 rounded-lg sm:rounded-xl hidden sm:flex items-center justify-center shrink-0">
                 <BarChart3 size={16} className="sm:w-5 sm:h-5" />
               </div>

@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 import Button from "../../components/common/Button";
 import PageTransition from "../../components/common/PageTransition";
-import Logo from "../../components/common/Logo";
+
 import { User, Mail, Lock, ArrowRight, ShieldCheck } from "lucide-react";
 
 const Signup = () => {
@@ -56,9 +56,15 @@ const Signup = () => {
           <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-brand-purple rounded-full mix-blend-multiply filter blur-[128px] opacity-40 animate-blob"></div>
           <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-brand-amber rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-blob animation-delay-2000"></div>
           
-          <div className="relative z-10">
+          <div className="relative z-10 flex flex-col items-center gap-3">
             <Link to="/" className="inline-block hover:scale-105 transition-transform">
-              <Logo size="lg" />
+              <div className="flex flex-col items-center gap-2">
+                <img src="/homlioo-logo.png" alt="HOMLiOO" className="w-28 h-28 object-contain drop-shadow-2xl" />
+                <span className="text-3xl font-[900] tracking-tight leading-none">
+                  <span className="text-blue-400">HOM</span><span className="text-green-400">LiOO</span>
+                </span>
+                <span className="text-white/50 text-xs font-bold tracking-widest uppercase">Smart PG Search</span>
+              </div>
             </Link>
           </div>
 
@@ -91,8 +97,11 @@ const Signup = () => {
           <div className="max-w-md w-full">
             
             {/* Mobile Logo Only */}
-            <div className="lg:hidden flex justify-center mb-10">
-              <Logo size="lg" />
+            <div className="lg:hidden flex flex-col items-center gap-1 mb-10">
+              <img src="/homlioo-logo.png" alt="HOMLiOO" className="w-16 h-16 object-contain drop-shadow-md" />
+              <span className="text-2xl font-[900] tracking-tight">
+                <span className="text-blue-700">HOM</span><span className="text-green-500">LiOO</span>
+              </span>
             </div>
 
             <div className="mb-10 text-center lg:text-left">
