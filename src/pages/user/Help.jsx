@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChevronDown, Mail, Phone, MessageSquare, HelpCircle } from "lucide-react";
+import { ChevronDown, Mail, HelpCircle } from "lucide-react";
 import PageTransition from "../../components/common/PageTransition";
 
 const Help = () => {
@@ -14,15 +14,15 @@ const Help = () => {
     },
     {
       id: 2,
-      question: "Are all listings verified by Homiloo?",
+      question: "Are all listings verified by HOMLiOO?",
       answer:
-        "Yes! Every PG on Homiloo is physically verified by our team before listing. You'll see a 'Homiloo Verified' badge on all listings for your peace of mind.",
+        "Yes! Every PG on HOMLiOO is physically verified by our team before listing. You'll see a 'HOMLiOO Verified' badge on all listings for your peace of mind.",
     },
     {
       id: 3,
       question: "How can I contact a PG owner?",
       answer:
-        "Click on any PG listing to view the detail page. You'll find options to call or WhatsApp the owner directly. There's no brokerage fee for students.",
+        "Click on any PG listing to view the detail page. You'll find options to contact the owner directly. There's no brokerage fee for students.",
     },
     {
       id: 4,
@@ -32,9 +32,9 @@ const Help = () => {
     },
     {
       id: 5,
-      question: "Is Homiloo free to use?",
+      question: "Is HOMLiOO free to use?",
       answer:
-        "Yes, Homiloo is completely free for students. We only charge PG owners a listing fee. Students pay zero brokerage.",
+        "Yes, HOMLiOO is completely free for students. We only charge PG owners a listing fee. Students pay zero brokerage.",
     },
     {
       id: 6,
@@ -69,13 +69,13 @@ const Help = () => {
             How Can We Help?
           </h1>
           <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base font-medium max-w-2xl mx-auto">
-            Find answers to common questions about Homiloo and how to make the most of our platform.
+            Find answers to common questions about HOMLiOO and how to make the most of our platform.
           </p>
         </div>
 
-        {/* Contact Options */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 text-center">
+        {/* Contact Options — Email only */}
+        <div className="flex justify-center mb-16">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 text-center w-full max-w-sm">
             <Mail size={32} className="text-brand-amber mx-auto mb-4" />
             <h3 className="font-bold text-brand-navy dark:text-white mb-2">
               Email Us
@@ -88,40 +88,6 @@ const Help = () => {
               className="text-brand-purple hover:underline font-bold text-sm"
             >
               Send Email
-            </a>
-          </div>
-
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 text-center">
-            <Phone size={32} className="text-brand-amber mx-auto mb-4" />
-            <h3 className="font-bold text-brand-navy dark:text-white mb-2">
-              Call Us
-            </h3>
-            <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">
-              +91 9179193522
-            </p>
-            <a
-              href="tel:+919179193522"
-              className="text-brand-purple hover:underline font-bold text-sm"
-            >
-              Call Now
-            </a>
-          </div>
-
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 text-center">
-            <MessageSquare size={32} className="text-brand-amber mx-auto mb-4" />
-            <h3 className="font-bold text-brand-navy dark:text-white mb-2">
-              WhatsApp
-            </h3>
-            <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">
-              Live chat support
-            </p>
-            <a
-              href="https://wa.me/919179193522"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-brand-purple hover:underline font-bold text-sm"
-            >
-              Message Us
             </a>
           </div>
         </div>

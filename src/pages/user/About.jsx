@@ -102,15 +102,7 @@ const About = () => {
                 >
                   <div className="flex items-start gap-6 mb-8">
                     <div className="w-24 h-24 flex-shrink-0 rounded-2xl overflow-hidden bg-brand-purple/10 dark:bg-brand-purple/20 flex items-center justify-center text-5xl group-hover:scale-110 transition-transform">
-                      {f.photo ? (
-                        <img
-                          src={f.photo}
-                          alt={f.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        f.icon
-                      )}
+                      {f.icon}
                     </div>
                     <div className="flex-1">
                       <h4 className="text-xl font-[900] text-brand-navy dark:text-white tracking-tight">
