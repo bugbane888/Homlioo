@@ -129,7 +129,7 @@ const TermsAndConditions = () => {
                     India's Verified PG Accommodation Discovery Platform
                   </p>
                   <p className="text-slate-400 text-xs mt-2 font-medium">
-                    Effective Date: June 1, 2025 &nbsp;|&nbsp; Version 1.0
+                    Effective Date: June 1, 2026 &nbsp;|&nbsp; Version 1.0
                   </p>
                 </div>
               </div>

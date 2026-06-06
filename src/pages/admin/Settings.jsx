@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
 import { useToast } from "../../context/ToastContext";
+import { supabase } from "../../lib/supabase";
 import {
   User,
   Camera,
@@ -11,9 +12,9 @@ import {
   Globe,
   LogOut,
   ChevronLeft,
+  Lock,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
 
 const Settings = () => {
   const { user, updateProfile, logout } = useAuth();
@@ -30,9 +31,21 @@ const Settings = () => {
   const [photoPreview, setPhotoPreview] = useState(user?.photo || null);
   const [isSaving, setIsSaving] = useState(false);
 
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [isSavingPassword, setIsSavingPassword] = useState(false);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePasswordInputChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handlePhotoChange = (e) => {
@@ -65,6 +78,39 @@ const Settings = () => {
     }, 500);
   };
 
+  const handleSavePassword = async () => {
+    if (!passwordForm.newPassword) {
+      showToast("Please enter a new password", "error");
+      return;
+    }
+    if (passwordForm.newPassword.length < 6) {
+      showToast("New password must be at least 6 characters", "error");
+      return;
+    }
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      showToast("New passwords do not match", "error");
+      return;
+    }
+
+    setIsSavingPassword(true);
+    try {
+      // Direct update — works on any active Supabase session
+      const { error } = await supabase.auth.updateUser({
+        password: passwordForm.newPassword,
+      });
+
+      if (error) {
+        showToast(error.message || "Failed to change password", "error");
+      } else {
+        showToast("Password changed successfully!", "success");
+        setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      }
+    } catch (err) {
+      showToast("Something went wrong. Please try again.", "error");
+    }
+    setIsSavingPassword(false);
+  };
+
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to log out?")) {
       logout();
@@ -84,7 +130,7 @@ const Settings = () => {
           <ChevronLeft size={18} /> Back to Dashboard
         </button>
         <h1 className="text-3xl font-black text-brand-navy dark:text-white tracking-tight">
-          Settings & Preferences
+          Settings &amp; Preferences
         </h1>
         <p className="text-slate-500 dark:text-slate-400 font-medium">
           Manage your account, preferences, and system settings.
@@ -194,10 +240,59 @@ const Settings = () => {
             </div>
           </div>
 
+          {/* Change Password Section */}
+          <div className="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm">
+            <h2 className="text-xl font-black text-brand-navy dark:text-white mb-6 flex items-center gap-3">
+              <Lock size={24} /> Change Password
+            </h2>
+
+            <div className="space-y-6">
+
+
+
+              <div>
+                <label className="block text-sm font-bold text-brand-navy dark:text-white mb-2">
+                  New Password
+                </label>
+                <input
+                  type="password"
+                  name="newPassword"
+                  value={passwordForm.newPassword}
+                  onChange={handlePasswordInputChange}
+                  className="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-xl text-sm font-medium dark:text-white outline-none focus:ring-2 ring-brand-purple/50 transition-all"
+                  placeholder="Enter new password (min. 6 characters)"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-brand-navy dark:text-white mb-2">
+                  Confirm New Password
+                </label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={passwordForm.confirmPassword}
+                  onChange={handlePasswordInputChange}
+                  className="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-xl text-sm font-medium dark:text-white outline-none focus:ring-2 ring-brand-purple/50 transition-all"
+                  placeholder="Re-enter new password"
+                />
+              </div>
+
+              <button
+                onClick={handleSavePassword}
+                disabled={isSavingPassword}
+                className="w-full bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 disabled:opacity-50 text-white px-6 py-4 rounded-2xl font-black flex items-center justify-center gap-2 transition-all"
+              >
+                <Lock size={18} />
+                {isSavingPassword ? "Changing..." : "Change Password"}
+              </button>
+            </div>
+          </div>
+
           {/* Theme & Preferences Section */}
           <div className="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm">
             <h2 className="text-xl font-black text-brand-navy dark:text-white mb-6 flex items-center gap-3">
-              <Globe size={24} /> Appearance & Preferences
+              <Globe size={24} /> Appearance &amp; Preferences
             </h2>
 
             <div className="space-y-6">
@@ -222,16 +317,12 @@ const Settings = () => {
                 </div>
                 <button
                   onClick={toggleTheme}
-                  className={`relative w-14 h-8 rounded-full transition-colors ${
-                    theme === "dark"
-                      ? "bg-brand-purple"
-                      : "bg-slate-300"
-                  }`}
+                  className={`relative w-14 h-8 rounded-full transition-colors ${theme === "dark" ? "bg-brand-purple" : "bg-slate-300"
+                    }`}
                 >
                   <div
-                    className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform ${
-                      theme === "dark" ? "translate-x-7" : "translate-x-1"
-                    }`}
+                    className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform ${theme === "dark" ? "translate-x-7" : "translate-x-1"
+                      }`}
                   ></div>
                 </button>
               </div>
@@ -255,7 +346,7 @@ const Settings = () => {
                       Member Since
                     </p>
                     <p className="font-black text-brand-navy dark:text-white">
-                      2024
+                      2026
                     </p>
                   </div>
                 </div>
@@ -290,8 +381,8 @@ const Settings = () => {
               support team.
             </p>
             <button
-              onClick={() => window.open('mailto:support@homlioo.com', '_blank')}
-              className="text-brand-purple font-bold text-sm hover:underline cursor-pointer bg-none border-none p-0"
+              onClick={() => window.open("mailto:homlioopg@gmail.com", "_blank")}
+              className="text-brand-purple font-bold text-sm hover:underline cursor-pointer bg-transparent border-none p-0"
             >
               Contact Support →
             </button>

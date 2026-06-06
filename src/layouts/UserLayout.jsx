@@ -413,7 +413,6 @@ const UserLayout = ({ children }) => {
               </h4>
               <ul className="space-y-5 text-slate-400 text-xs font-bold uppercase tracking-widest">
                 <li>e: homlioopg@gmail.com</li>
-                <li>m: +91 9179193522</li>
                 <li className="text-slate-500 text-xs tracking-widest font-medium">
                   Greater Noida, Uttar Pradesh
                 </li>

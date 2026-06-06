@@ -23,7 +23,7 @@ const PrivacyPolicy = () => {
               India's Verified PG Accommodation Discovery Platform
             </p>
             <p className="text-slate-400 text-xs mt-2 relative z-10">
-              Effective Date: June 1, 2025 | Version 1.0
+              Effective Date: June 1, 2026 | Version 1.0
             </p>
           </div>
 
