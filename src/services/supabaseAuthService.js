@@ -13,6 +13,8 @@ export const authService = {
     }
 
     // 2. If it doesn't exist, proceed with normal sign up
+    // Use REACT_APP_SITE_URL for production; fall back to current origin for local dev
+    const siteUrl = process.env.REACT_APP_SITE_URL || window.location.origin;
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -21,7 +23,7 @@ export const authService = {
           name: name,
           role: 'user',
         },
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `${siteUrl}/auth/callback`,
       },
     });
 
@@ -53,8 +55,9 @@ export const authService = {
     }
 
     // 2. If it exists, send the reset link
+    const siteUrl = process.env.REACT_APP_SITE_URL || window.location.origin;
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
+      redirectTo: `${siteUrl}/auth/callback?next=/reset-password`,
     });
 
     if (error) throw error;

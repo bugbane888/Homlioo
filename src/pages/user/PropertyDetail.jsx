@@ -148,8 +148,7 @@ const PropertyDetail = () => {
                   <Clock size={14} /> {pg.college}
                 </span>
                 <span className="flex items-center gap-1 text-brand-amber">
-                  <Star size={14} fill="currentColor" /> {pg.rating} (34
-                  reviews)
+                  <Star size={14} fill="currentColor" /> {pg.rating}
                 </span>
               </div>
               <div className="mt-6 pt-6 border-t border-slate-50">

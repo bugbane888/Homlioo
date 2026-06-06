@@ -17,6 +17,7 @@ const Properties = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProperty, setEditingProperty] = useState(null);
+  const [deletingId, setDeletingId] = useState(null); // tracks which delete is in-flight
   const location = useLocation();
 
   React.useEffect(() => {
@@ -73,9 +74,26 @@ const Properties = () => {
     }
   };
 
-  const handleDelete = (id, name) => {
-    deleteProperty(id);
-    showToast(`${name} removed from database.`, "info");
+  const handleDelete = async (id, name) => {
+    // Show a native confirm dialog — prevents accidental deletes
+    const confirmed = window.confirm(
+      `Are you sure you want to permanently delete "${name}"? This cannot be undone.`
+    );
+    if (!confirmed) return;
+
+    setDeletingId(id);
+    try {
+      await deleteProperty(id);
+      showToast(`"${name}" deleted successfully.`, "success");
+    } catch (error) {
+      console.error("Delete failed:", error);
+      showToast(
+        `Failed to delete "${name}". ${error?.message || "Please try again."}`,
+        "error"
+      );
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
@@ -183,10 +201,18 @@ const Properties = () => {
                       </button>
                       <button
                         onClick={() => handleDelete(pg.id, pg.name)}
-                        className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all"
+                        disabled={deletingId === pg.id}
+                        className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         title="Delete Property"
                       >
-                        <Trash2 size={16} />
+                        {deletingId === pg.id ? (
+                          <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                          </svg>
+                        ) : (
+                          <Trash2 size={16} />
+                        )}
                       </button>
                     </div>
                   </td>

@@ -107,33 +107,35 @@ const ListingCard = ({ pg }) => {
             <div className="flex items-center gap-1 text-[#F59E0B] font-black text-base">
               <Star size={16} fill="currentColor" /> {pg.rating}
             </div>
-            <p className="text-xs text-slate-400 font-bold uppercase tracking-tight">
-              {pg.reviews} reviews
-            </p>
           </div>
         </div>
 
         {/* --- ACTION BUTTONS --- */}
-        <div className="mt-7 flex gap-2">
+        <div className="mt-6 flex items-center gap-3">
           <button
-            onClick={() => navigate(`/property/${pg.id}`)}
-            className="flex-[2.5] bg-[#F59E0B] hover:bg-amber-500 text-[#0F172A] py-3.5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg shadow-amber-500/20 active:scale-95 transition-all"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              navigate(`/property/${pg.id}`);
+            }}
+            className="flex-1 bg-[#F59E0B] hover:bg-amber-500 text-[#0F172A] py-3 rounded-xl font-bold text-sm shadow-sm active:scale-95 transition-all"
           >
             View Details
           </button>
 
           <button
             onClick={(e) => {
+              e.preventDefault();
               e.stopPropagation();
               toggleCompare(pg);
             }}
-            className={`flex-1 py-3.5 rounded-2xl border-2 font-black text-sm uppercase tracking-widest transition-all active:scale-95 ${
+            className={`flex-1 py-3 rounded-xl border font-bold text-sm transition-all active:scale-95 ${
               isCompared
-                ? "bg-brand-purple border-brand-purple text-white shadow-lg shadow-purple-500/20"
-                : "border-slate-100 dark:border-slate-700 text-slate-400 hover:border-brand-purple hover:text-brand-purple"
+                ? "bg-brand-purple border-brand-purple text-white shadow-sm"
+                : "bg-transparent border-slate-200 dark:border-slate-700 text-slate-500 hover:border-brand-purple hover:text-brand-purple"
             }`}
           >
-            {isCompared ? "Added" : "Compare"}
+            {isCompared ? "Compared" : "Compare"}
           </button>
         </div>
       </div>

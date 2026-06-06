@@ -115,18 +115,31 @@ export const PropertyProvider = ({ children }) => {
   }, []);
 
   const deleteProperty = useCallback(async (id) => {
+    // Check if this is a localStorage-only property (numeric/local ID)
+    const localProps = JSON.parse(localStorage.getItem("homlioo_properties") || "[]");
+    const isLocalOnly = localProps.some((p) => p.id === id);
+
+    // Always try to delete from Supabase first
     try {
       await propertyService.delete(id);
-      setProperties((prev) => prev.filter((p) => p.id !== id));
     } catch (error) {
-      console.error("Error deleting property:", error);
-      // Fallback to local state
-      const localProps = JSON.parse(localStorage.getItem("homlioo_properties") || "[]");
-      const updatedLocalProps = localProps.filter((p) => p.id !== id);
-      localStorage.setItem("homlioo_properties", JSON.stringify(updatedLocalProps));
-
-      setProperties((prev) => prev.filter((p) => p.id !== id));
+      // Only allow silent fallback if the property is purely local (not in DB)
+      if (!isLocalOnly) {
+        // Re-throw so the UI can show the real error to the admin
+        throw error;
+      }
+      // It's a local-only property — just remove it from localStorage
+      console.warn("Supabase delete skipped (local-only property):", id);
     }
+
+    // Remove from localStorage regardless
+    if (isLocalOnly) {
+      const updated = localProps.filter((p) => p.id !== id);
+      localStorage.setItem("homlioo_properties", JSON.stringify(updated));
+    }
+
+    // Always update local React state immediately
+    setProperties((prev) => prev.filter((p) => p.id !== id));
   }, []);
 
   return (
