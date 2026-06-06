@@ -33,7 +33,7 @@ const CompareBar = () => {
                     className="bg-white/10 rounded-lg px-2 py-1 sm:px-3 sm:py-2 flex items-center gap-1 sm:gap-2 whitespace-nowrap border border-white/5 group shrink-0"
                   >
                     <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-tight line-clamp-1">
-                      {pg.name.substring(0, 8)}
+                      {String(pg?.name || "Property").substring(0, 8)}
                     </span>
                     <button
                       onClick={() => toggleCompare(pg)}

@@ -76,26 +76,24 @@ export const AuthProvider = ({ children }) => {
         ) {
           try {
             const profile = await withTimeout(authService.getProfile(session.user.id));
-            setUser({
+            setUser((prev) => ({
               id: session.user.id,
-              name: profile?.name || session.user.email.split("@")[0],
+              name: profile?.name || prev?.name || session.user.email.split("@")[0],
               email: session.user.email,
-              role: profile?.role || "user",
-              phone: profile?.phone || "",
-              photo: profile?.photo_url || null,
-            });
+              role: profile?.role || prev?.role || "user",
+              phone: profile?.phone || prev?.phone || "",
+              photo: profile?.photo_url || prev?.photo || null,
+            }));
           } catch {
-            // Profile might not exist yet — use metadata from token
-            setUser({
+            // Profile might not exist yet or network failed — preserve existing role
+            setUser((prev) => ({
               id: session.user.id,
-              name:
-                session.user.user_metadata?.name ||
-                session.user.email.split("@")[0],
+              name: prev?.name || session.user.user_metadata?.name || session.user.email.split("@")[0],
               email: session.user.email,
-              role: session.user.user_metadata?.role || "user",
-              phone: "",
-              photo: null,
-            });
+              role: prev?.role || session.user.user_metadata?.role || "user",
+              phone: prev?.phone || "",
+              photo: prev?.photo || null,
+            }));
           }
         } else if (event === "SIGNED_OUT") {
           setUser(null);
@@ -108,20 +106,6 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    // Temporary admin bypass for testing — REMOVE before final production release
-    if (email === "admin@homlioo.com" && password === "admin123") {
-      const userData = {
-        id: "admin_temp_id",
-        name: "Admin",
-        email: "admin@homlioo.com",
-        role: "admin",
-        phone: "",
-        photo: null,
-      };
-      setUser(userData);
-      return { success: true, role: userData.role, name: userData.name };
-    }
-
     try {
       const { user: authUser } = await withTimeout(authService.signIn(email, password));
       if (authUser) {
@@ -189,10 +173,6 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      if (user?.id === "admin_temp_id") {
-        setUser(null);
-        return;
-      }
       await withTimeout(authService.signOut());
       setUser(null);
     } catch (error) {
@@ -203,7 +183,6 @@ export const AuthProvider = ({ children }) => {
 
   const changePassword = async (newPassword) => {
     try {
-      if (user?.id === "admin_temp_id") return { success: true };
       await withTimeout(authService.updatePassword(newPassword));
       return { success: true };
     } catch (error) {

@@ -24,7 +24,7 @@ const Compare = () => {
     { key: "college", label: "Hospital" },
     { key: "gender", label: "Rating" },
     { key: "sharing", label: "Verified" },
-    { key: "rooms", label: "Rooms Left" },
+    { key: "roomsLeft", label: "Rooms Left" },
   ];
 
   return (
@@ -84,7 +84,7 @@ const Compare = () => {
                       </span>
                       <span className="text-sm sm:text-base font-bold text-brand-navy dark:text-white text-right">
                         {f.key === "price" || f.key === "total"
-                          ? `₹${pg[f.key]?.toLocaleString() || "N/A"}`
+                          ? `₹${pg[f.key] ? Number(pg[f.key]).toLocaleString() : "N/A"}`
                           : pg[f.key] || "N/A"}
                       </span>
                     </div>

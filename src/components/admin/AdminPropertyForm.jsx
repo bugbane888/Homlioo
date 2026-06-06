@@ -100,9 +100,10 @@ const AdminPropertyForm = ({
     lockInPeriod: "6 Months",
     foodTiming: "Breakfast, Lunch, Dinner",
     
-    // Verification
+    // Verification & Metrics
     isVerified: true,
     isPremium: false,
+    rating: 5.0,
   });
 
   const amenityList = [
@@ -241,6 +242,7 @@ const AdminPropertyForm = ({
         id: initialData?.id || Date.now(),
         price: parseInt(formData.rooms.single.rent || 0),
         total: parseInt(formData.rooms.single.rent || 0),
+        rating: parseFloat(formData.rating || 5.0),
         reviews: 0,
         roomsLeft: 3,
         tags: ["New Listing"],
@@ -385,7 +387,7 @@ const AdminPropertyForm = ({
                     />
                   </div>
                 </div>
-                <div className="space-y-2">
+                  <div className="space-y-2">
                     <label className="text-xs font-bold uppercase text-slate-400">
                       Visibility Options
                     </label>
@@ -400,6 +402,21 @@ const AdminPropertyForm = ({
                         Premium PG (Show on Homepage)
                       </span>
                     </label>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase text-slate-400">
+                      Rating (Out of 5)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="1.0"
+                      max="5.0"
+                      className="w-full px-4 py-3 bg-white dark:bg-slate-800 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 ring-brand-purple/20 font-medium"
+                      value={formData.rating}
+                      onChange={(e) => setFormData({ ...formData, rating: e.target.value })}
+                      placeholder="e.g. 4.5"
+                    />
                   </div>
                 
                 <div className="space-y-2">

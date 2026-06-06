@@ -9,24 +9,21 @@ export const CompareProvider = ({ children }) => {
 
   const toggleCompare = useCallback(
     (pg) => {
-      setCompareList((prev) => {
-        const isAlreadyAdded = prev.find((item) => item.id === pg.id);
+      const isAlreadyAdded = compareList.find((item) => item.id === pg.id);
 
-        if (isAlreadyAdded) {
-          showToast(`${pg.name} removed from compare.`, "info");
-          return prev.filter((item) => item.id !== pg.id);
-        }
-
-        if (prev.length >= 3) {
+      if (isAlreadyAdded) {
+        showToast(`${pg.name} removed from compare.`, "info");
+        setCompareList((prev) => prev.filter((item) => item.id !== pg.id));
+      } else {
+        if (compareList.length >= 3) {
           showToast("You can only compare up to 3 properties.", "error");
-          return prev;
+          return;
         }
-
         showToast(`${pg.name} added to compare!`, "success");
-        return [...prev, pg];
-      });
+        setCompareList((prev) => [...prev, pg]);
+      }
     },
-    [showToast],
+    [compareList, showToast]
   );
 
   const clearCompare = () => setCompareList([]);
