@@ -5,141 +5,204 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
+import { supabase } from '../lib/supabase';
 import { propertyService, mapPropertyFromDB } from "../services/supabasePropertyService";
 import { LISTINGS_DATA } from "../constants/data";
 
 const PropertyContext = createContext(null);
 
+const isDev = process.env.NODE_ENV === 'development';
+const devLog = (...a) => isDev && console.log(...a);
+const devError = (...a) => isDev && console.error(...a);
+const devWarn = (...a) => isDev && console.warn(...a);
+
 export const PropertyProvider = ({ children }) => {
   const [properties, setProperties] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch properties from Supabase
+  // ── Load properties on mount ─────────────────────────────────────────────
   useEffect(() => {
     const loadData = async () => {
       try {
+        devLog("[PropertyContext] Loading published properties from Supabase...");
+        // Only fetch published properties for the public listing context.
+        // The admin panel uses its own separate fetch via getAllAdmin.
         const data = await propertyService.getAll();
-        // Map database rows to frontend format
-        let mappedData = data.map(mapPropertyFromDB);
-        
-        // Merge with local storage fallback items
+        const mappedData = data.map(mapPropertyFromDB);
+        devLog("[PropertyContext] Loaded", mappedData.length, "published properties");
+
+        // Merge with any local-storage-only properties (fallback data that isn't in Supabase yet)
         const localProps = JSON.parse(localStorage.getItem("homlioo_properties") || "[]");
-        // Only add local properties that don't exist in Supabase (by ID)
-        const dbIds = new Set(mappedData.map(p => p.id));
-        const mergedLocal = localProps.filter(p => !dbIds.has(p.id));
-        
+        const dbIds = new Set(mappedData.map((p) => String(p.id)));
+        const mergedLocal = localProps.filter((p) => !dbIds.has(String(p.id)));
+
         setProperties([...mergedLocal, ...mappedData]);
       } catch (error) {
-        console.error("Error loading properties:", error);
-        // Fallback to mock data + local storage if Supabase fails completely
+        devError("[PropertyContext] Error loading properties:", error);
+        // Full fallback: use localStorage + mock data when Supabase is unavailable
         const localProps = JSON.parse(localStorage.getItem("homlioo_properties") || "[]");
         setProperties([...localProps, ...LISTINGS_DATA]);
       } finally {
         setIsLoading(false);
       }
     };
+
     loadData();
 
-    // Subscribe to real-time changes
+    // ── Real-time subscription ────────────────────────────────────────────
     const subscription = propertyService.subscribeToChanges((payload) => {
+      devLog("[PropertyContext] Real-time event:", payload.eventType, payload.new?.id);
+
       if (payload.eventType === "INSERT") {
-        setProperties((prev) => [mapPropertyFromDB(payload.new), ...prev]);
+        const newProp = mapPropertyFromDB(payload.new);
+        // Only add published properties to the public listing
+        if (newProp.status === "published") {
+          setProperties((prev) => {
+            // Bug 4 fix: deduplicate — if it's already in state (from addProperty optimistic update), replace it
+            const exists = prev.some((p) => String(p.id) === String(newProp.id));
+            if (exists) {
+              return prev.map((p) => (String(p.id) === String(newProp.id) ? newProp : p));
+            }
+            return [newProp, ...prev];
+          });
+        }
       } else if (payload.eventType === "UPDATE") {
-        setProperties((prev) =>
-          prev.map((p) =>
-            p.id === payload.new.id ? mapPropertyFromDB(payload.new) : p
-          )
-        );
+        const updatedProp = mapPropertyFromDB(payload.new);
+        setProperties((prev) => {
+          // If status changed to draft, remove from public listing
+          if (updatedProp.status !== "published") {
+            return prev.filter((p) => String(p.id) !== String(updatedProp.id));
+          }
+          // Otherwise update in place
+          const exists = prev.some((p) => String(p.id) === String(updatedProp.id));
+          if (!exists) return [updatedProp, ...prev]; // newly published
+          return prev.map((p) => (String(p.id) === String(updatedProp.id) ? updatedProp : p));
+        });
       } else if (payload.eventType === "DELETE") {
-        setProperties((prev) => prev.filter((p) => p.id !== payload.old.id));
+        setProperties((prev) =>
+          prev.filter((p) => String(p.id) !== String(payload.old.id))
+        );
       }
     });
 
     return () => {
-      subscription.unsubscribe();
+      // Issue 6 fix: properly remove the channel to prevent leaks on re-subscriptions
+      supabase.removeChannel(subscription);
     };
   }, []);
 
+  // ── addProperty ───────────────────────────────────────────────────────────
   const addProperty = useCallback(async (newPg) => {
     try {
+      devLog("[PropertyContext] Creating property in Supabase...", newPg.name);
       const created = await propertyService.create(newPg);
       const mapped = mapPropertyFromDB(created);
-      setProperties((prev) => [mapped, ...prev]);
+      devLog("[PropertyContext] Property created, id=", mapped.id);
+
+      // Bug 4 fix: DON'T add to state here when Supabase succeeded — the real-time
+      // subscription INSERT event will handle it (with deduplication). This prevents duplicates.
+      // However, if real-time is slow, we do an optimistic update that will be deduped on arrival.
+      if (mapped.status === "published") {
+        setProperties((prev) => {
+          const exists = prev.some((p) => String(p.id) === String(mapped.id));
+          if (exists) return prev;
+          return [mapped, ...prev];
+        });
+      }
+
       return mapped;
     } catch (error) {
-      console.error("Error adding property:", error);
-      // Fallback to local state
+      devError("[PropertyContext] Error adding property to Supabase:", error);
+      // Fallback: save to localStorage so the admin doesn't lose the data
       const formattedPg = {
         ...newPg,
-        id: Date.now(),
-        verified: true,
-        rating: 5.0,
+        id: newPg.id || Date.now(),
+        verified: newPg.isVerified ?? true,
+        rating: parseFloat(newPg.rating) || 5.0,
         reviews: 0,
-        roomsLeft: 3,
-        tags: ["New Listing"],
-        amenities: newPg.amenities || ["WiFi", "AC", "CCTV"],
+        roomsLeft: newPg.roomsLeft || 3,
+        tags: newPg.tags || ["New Listing"],
+        amenities: newPg.amenities || [],
         ownerPhone: newPg.ownerPhone || "",
         coverImage: newPg.coverImage || "",
-        galleryImages: newPg.galleryImages || [],
+        galleryImages: Array.isArray(newPg.galleryImages) ? newPg.galleryImages : [],
+        rooms: newPg.rooms || null,
+        electricity: newPg.electricity ?? null,
+        status: newPg.status || "published",
       };
-      
-      // Save to local storage
+
       const localProps = JSON.parse(localStorage.getItem("homlioo_properties") || "[]");
-      localProps.unshift(formattedPg);
-      localStorage.setItem("homlioo_properties", JSON.stringify(localProps));
-      
-      setProperties((prev) => [formattedPg, ...prev]);
+      // Deduplicate before adding
+      const filtered = localProps.filter((p) => String(p.id) !== String(formattedPg.id));
+      filtered.unshift(formattedPg);
+      localStorage.setItem("homlioo_properties", JSON.stringify(filtered));
+
+      if (formattedPg.status === "published") {
+        setProperties((prev) => {
+          const exists = prev.some((p) => String(p.id) === String(formattedPg.id));
+          if (exists) return prev.map((p) => String(p.id) === String(formattedPg.id) ? formattedPg : p);
+          return [formattedPg, ...prev];
+        });
+      }
+
       return formattedPg;
     }
   }, []);
 
+  // ── updateProperty ────────────────────────────────────────────────────────
   const updateProperty = useCallback(async (id, updatedData) => {
     try {
+      devLog("[PropertyContext] Updating property id=", id, "in Supabase...");
       const updated = await propertyService.update(id, updatedData);
       const mapped = mapPropertyFromDB(updated);
+      devLog("[PropertyContext] Property updated, id=", id);
+
       setProperties((prev) =>
-        prev.map((p) => (p.id === id ? mapped : p))
+        prev.map((p) => (String(p.id) === String(id) ? mapped : p))
       );
       return mapped;
     } catch (error) {
-      console.error("Error updating property:", error);
-      // Fallback to local state
+      devError("[PropertyContext] Error updating property:", error);
+      // Fallback: update localStorage
       const localProps = JSON.parse(localStorage.getItem("homlioo_properties") || "[]");
-      const updatedLocalProps = localProps.map((p) => (p.id === id ? { ...p, ...updatedData } : p));
+      const updatedLocalProps = localProps.map((p) =>
+        String(p.id) === String(id) ? { ...p, ...updatedData } : p
+      );
       localStorage.setItem("homlioo_properties", JSON.stringify(updatedLocalProps));
 
       setProperties((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, ...updatedData } : p))
+        prev.map((p) => (String(p.id) === String(id) ? { ...p, ...updatedData } : p))
       );
+
+      // Re-throw so the admin UI knows it failed in Supabase
+      throw error;
     }
   }, []);
 
+  // ── deleteProperty ────────────────────────────────────────────────────────
   const deleteProperty = useCallback(async (id) => {
-    // Check if this is a localStorage-only property (numeric/local ID)
     const localProps = JSON.parse(localStorage.getItem("homlioo_properties") || "[]");
-    const isLocalOnly = localProps.some((p) => p.id === id);
+    const isLocalOnly = localProps.some((p) => String(p.id) === String(id));
 
-    // Always try to delete from Supabase first
     try {
       await propertyService.delete(id);
+      devLog("[PropertyContext] Deleted property id=", id, "from Supabase");
     } catch (error) {
-      // Only allow silent fallback if the property is purely local (not in DB)
       if (!isLocalOnly) {
-        // Re-throw so the UI can show the real error to the admin
+        // Property exists in Supabase but delete failed — re-throw so UI can show the error
         throw error;
       }
-      // It's a local-only property — just remove it from localStorage
-      console.warn("Supabase delete skipped (local-only property):", id);
+      devWarn("[PropertyContext] Supabase delete skipped (local-only property):", id);
     }
 
-    // Remove from localStorage regardless
+    // Always clean localStorage
     if (isLocalOnly) {
-      const updated = localProps.filter((p) => p.id !== id);
+      const updated = localProps.filter((p) => String(p.id) !== String(id));
       localStorage.setItem("homlioo_properties", JSON.stringify(updated));
     }
 
-    // Always update local React state immediately
-    setProperties((prev) => prev.filter((p) => p.id !== id));
+    // Always remove from React state
+    setProperties((prev) => prev.filter((p) => String(p.id) !== String(id)));
   }, []);
 
   return (

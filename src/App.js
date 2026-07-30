@@ -209,7 +209,7 @@ const AnimatedRoutes = () => {
         <Route
           path="/profile"
           element={
-            <ProtectedRoute role="user">
+            <ProtectedRoute>
               <UserLayout>
                 <PageTransition>
                   <Profile />
@@ -222,7 +222,7 @@ const AnimatedRoutes = () => {
         <Route
           path="/settings"
           element={
-            <ProtectedRoute role="user">
+            <ProtectedRoute>
               <UserLayout>
                 <PageTransition>
                   <UserSettings />
