@@ -20,7 +20,8 @@ const Properties = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProperty, setEditingProperty] = useState(null);
-  const [deletingId, setDeletingId] = useState(null);
+  const [deletingId, setDeletingId] = useState
+    (null);
   const [unpublishingId, setUnpublishingId] = useState(null);
   const location = useLocation();
 

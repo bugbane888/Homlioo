@@ -66,7 +66,7 @@ const ImageGallery = ({ coverImage, galleryImages, propertyName }) => {
           onClick={() => openLightbox(currentIndex)}>
           <img
             src={allImages[currentIndex]}
-            alt={`${propertyName} — Image ${currentIndex + 1}`}
+            alt={`${propertyName} view ${currentIndex + 1}`}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
 
@@ -184,7 +184,7 @@ const ImageGallery = ({ coverImage, galleryImages, propertyName }) => {
 
           <img
             src={allImages[lightboxIndex]}
-            alt={`${propertyName} — photo ${lightboxIndex + 1} of ${allImages.length}`}
+            alt={`${propertyName} — view ${lightboxIndex + 1} of ${allImages.length}`}
             className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           />
