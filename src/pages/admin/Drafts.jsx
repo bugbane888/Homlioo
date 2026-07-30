@@ -8,12 +8,10 @@ import { useProperties } from "../../context/PropertyContext";
 
 const Drafts = () => {
   const [drafts, setDrafts] = useState([]);
-  const [publishingDraftId, setPublishingDraftId] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingDraft, setEditingDraft] = useState(null);
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const { showToast } = useToast();
   const { addProperty, updateProperty } = useProperties();
-  const navigate = useNavigate();
+  const { showToast } = useToast();
 
   // Load drafts from localStorage
   const reloadDrafts = () => {
