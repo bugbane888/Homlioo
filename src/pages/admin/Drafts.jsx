@@ -8,7 +8,7 @@ import { useProperties } from "../../context/PropertyContext";
 
 const Drafts = () => {
   const [drafts, setDrafts] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingDraft, setEditingDraft] = useState(null);
   const { addProperty, updateProperty } = useProperties();
   const { showToast } = useToast();
@@ -205,7 +205,6 @@ const Drafts = () => {
                   </Button>
                   <button
                     onClick={() => handleDelete(draft.id)}
-                    disabled={publishingDraftId === draft.id}
                     className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all disabled:opacity-50"
                     title="Delete draft"
                   >
