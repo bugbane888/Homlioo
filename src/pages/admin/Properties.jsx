@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { useProperties } from "../../context/PropertyContext";
 import { useToast } from "../../context/ToastContext";
-import { Plus, Search, Edit3, Trash2, ExternalLink } from "lucide-react";
+import {
+  Plus, Search, Edit3, Trash2, ExternalLink, EyeOff
+} from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../../components/common/Button";
 import Badge from "../../components/common/Badge";
 import AdminPropertyForm from "../../components/admin/AdminPropertyForm";
+import propertyService from "../../services/supabasePropertyService";
 
 const Properties = () => {
   const { properties, deleteProperty, addProperty, updateProperty } =
@@ -17,7 +20,8 @@ const Properties = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProperty, setEditingProperty] = useState(null);
-  const [deletingId, setDeletingId] = useState(null); // tracks which delete is in-flight
+  const [deletingId, setDeletingId] = useState(null);
+  const [unpublishingId, setUnpublishingId] = useState(null);
   const location = useLocation();
 
   React.useEffect(() => {
@@ -44,8 +48,8 @@ const Properties = () => {
   // Filter Logic
   const filteredProperties = properties.filter(
     (p) =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.locality.toLowerCase().includes(searchTerm.toLowerCase()),
+      p.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.locality?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   // Handlers
@@ -62,20 +66,20 @@ const Properties = () => {
   const handleFormSubmit = async (formData) => {
     try {
       if (editingProperty) {
+        // Issue 3 fix: toast says "updated", not "published"
         await updateProperty(editingProperty.id, formData);
-        showToast(`${formData.name} updated successfully.`, "success");
+        showToast(`"${formData.name}" updated successfully.`, "success");
       } else {
         await addProperty(formData);
-        showToast(`${formData.name} published to site!`, "success");
+        showToast(`"${formData.name}" published to site!`, "success");
       }
     } catch (error) {
       console.error("Form submit error:", error);
-      throw error;
+      throw error; // Re-throw so AdminPropertyForm shows error state
     }
   };
 
   const handleDelete = async (id, name) => {
-    // Show a native confirm dialog — prevents accidental deletes
     const confirmed = window.confirm(
       `Are you sure you want to permanently delete "${name}"? This cannot be undone.`
     );
@@ -96,6 +100,39 @@ const Properties = () => {
     }
   };
 
+  // Issue 18: Unpublish — moves property back to draft status
+  const handleUnpublish = async (id, name) => {
+    const confirmed = window.confirm(
+      `Unpublish "${name}"? It will no longer be visible to students.`
+    );
+    if (!confirmed) return;
+
+    setUnpublishingId(id);
+    try {
+      await propertyService.update(id, { status: "draft" });
+      // Remove from the published list in local context state
+      // (PropertyContext getAll only fetches published, so we trigger a page reload
+      // or remove it manually from state via updateProperty)
+      await updateProperty(id, { status: "draft" });
+      showToast(`"${name}" has been unpublished and moved to Drafts.`, "info");
+    } catch (error) {
+      console.error("Unpublish failed:", error);
+      showToast(
+        `Failed to unpublish "${name}". ${error?.message || "Please try again."}`,
+        "error"
+      );
+    } finally {
+      setUnpublishingId(null);
+    }
+  };
+
+  const SpinnerIcon = () => (
+    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+    </svg>
+  );
+
   return (
     <div className="animate-in fade-in duration-500">
       {/* HEADER SECTION */}
@@ -105,7 +142,7 @@ const Properties = () => {
             Property Manager
           </h1>
           <p className="text-slate-500 dark:text-slate-400 font-medium">
-            Manage your {properties.length} active PG sanctuaries
+            {properties.length} published PG{properties.length !== 1 ? "s" : ""} live on site
           </p>
         </div>
         <Button
@@ -147,7 +184,7 @@ const Properties = () => {
                   Category
                 </th>
                 <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                  Current Rent
+                  From / Month
                 </th>
                 <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
                   Actions
@@ -155,69 +192,107 @@ const Properties = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 dark:divide-slate-700/50">
-              {filteredProperties.map((pg) => (
-                <tr
-                  key={pg.id}
-                  className="hover:bg-slate-50/40 dark:hover:bg-slate-900/20 transition-colors group"
-                >
-                  <td className="px-8 py-6">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-slate-100 dark:bg-slate-900 rounded-2xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
-                        🏠
-                      </div>
-                      <div>
-                        <p className="font-bold text-brand-navy dark:text-white text-sm leading-tight">
-                          {pg.name}
-                        </p>
-                        <p className="text-[10px] text-slate-400 font-black uppercase mt-0.5">
-                          {pg.locality}
-                        </p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <Badge variant={pg.gender?.toLowerCase().replace("-", "")}>
-                      {pg.gender}
-                    </Badge>
-                  </td>
-                  <td className="px-8 py-6 font-black text-brand-navy dark:text-white text-sm tracking-tight">
-                    ₹{pg.total?.toLocaleString()}
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className="flex items-center justify-center gap-2">
+              {/* Issue 20: Empty state when no results */}
+              {filteredProperties.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="px-8 py-20 text-center">
+                    <div className="text-4xl mb-3">🔍</div>
+                    <p className="text-slate-400 dark:text-slate-500 font-medium">
+                      {searchTerm
+                        ? `No properties matching "${searchTerm}"`
+                        : "No published properties yet. Add your first PG!"}
+                    </p>
+                    {!searchTerm && (
                       <button
-                        onClick={() => handleOpenEdit(pg)}
-                        className="p-2.5 text-slate-300 hover:text-brand-purple hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-xl transition-all"
-                        title="Edit Details"
+                        onClick={handleOpenAdd}
+                        className="mt-4 text-brand-purple font-bold hover:underline"
                       >
-                        <Edit3 size={16} />
+                        + Add New PG
                       </button>
-                      <button
-                        onClick={() => navigate(`/property/${pg.id}`)}
-                        className="p-2.5 text-slate-300 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all"
-                        title="View Live Site"
-                      >
-                        <ExternalLink size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(pg.id, pg.name)}
-                        disabled={deletingId === pg.id}
-                        className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                        title="Delete Property"
-                      >
-                        {deletingId === pg.id ? (
-                          <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                          </svg>
-                        ) : (
-                          <Trash2 size={16} />
-                        )}
-                      </button>
-                    </div>
+                    )}
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filteredProperties.map((pg) => (
+                  <tr
+                    key={pg.id}
+                    className="hover:bg-slate-50/40 dark:hover:bg-slate-900/20 transition-colors group"
+                  >
+                    <td className="px-8 py-6">
+                      <div className="flex items-center gap-4">
+                        {/* Show thumbnail if coverImage exists */}
+                        <div className="w-12 h-12 bg-slate-100 dark:bg-slate-900 rounded-2xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform overflow-hidden shrink-0">
+                          {pg.coverImage ? (
+                            <img
+                              src={pg.coverImage}
+                              alt={pg.name}
+                              className="w-full h-full object-cover"
+                              onError={(e) => { e.target.style.display = "none"; }}
+                            />
+                          ) : (
+                            "🏠"
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-bold text-brand-navy dark:text-white text-sm leading-tight">
+                            {pg.name}
+                          </p>
+                          <p className="text-[10px] text-slate-400 font-black uppercase mt-0.5">
+                            {pg.locality}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <Badge variant={pg.gender?.toLowerCase().replace("-", "")}>
+                        {pg.gender}
+                      </Badge>
+                    </td>
+                    <td className="px-8 py-6 font-black text-brand-navy dark:text-white text-sm tracking-tight">
+                      {/* Issue 2 fix: null-safe */}
+                      ₹{(pg.total ?? 0).toLocaleString()}
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="flex items-center justify-center gap-2">
+                        {/* Edit */}
+                        <button
+                          onClick={() => handleOpenEdit(pg)}
+                          className="p-2.5 text-slate-300 hover:text-brand-purple hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-xl transition-all"
+                          title="Edit Details"
+                        >
+                          <Edit3 size={16} />
+                        </button>
+                        {/* View Live */}
+                        <button
+                          onClick={() => navigate(`/property/${pg.id}`)}
+                          className="p-2.5 text-slate-300 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all"
+                          title="View Live Site"
+                        >
+                          <ExternalLink size={16} />
+                        </button>
+                        {/* Issue 18: Unpublish */}
+                        <button
+                          onClick={() => handleUnpublish(pg.id, pg.name)}
+                          disabled={unpublishingId === pg.id}
+                          className="p-2.5 text-slate-300 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Unpublish (Move to Draft)"
+                        >
+                          {unpublishingId === pg.id ? <SpinnerIcon /> : <EyeOff size={16} />}
+                        </button>
+                        {/* Delete */}
+                        <button
+                          onClick={() => handleDelete(pg.id, pg.name)}
+                          disabled={deletingId === pg.id}
+                          className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Delete Property"
+                        >
+                          {deletingId === pg.id ? <SpinnerIcon /> : <Trash2 size={16} />}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -226,7 +301,10 @@ const Properties = () => {
       {/* REUSABLE FORM MODAL */}
       <AdminPropertyForm
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingProperty(null);
+        }}
         onSubmit={handleFormSubmit}
         initialData={editingProperty}
       />

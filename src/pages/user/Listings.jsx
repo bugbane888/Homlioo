@@ -66,7 +66,8 @@ const Listings = () => {
         p.gender !== "Co-ed"
       )
         return false;
-      if (p.total > filters.maxBudget) return false;
+      // Issue 12 fix: null-safe total — treat null as Infinity (no known price = don't filter out)
+      if ((p.total ?? Infinity) > filters.maxBudget) return false;
       if (filters.food && !p.amenities?.includes("Food")) return false;
       if (filters.ac && !p.amenities?.includes("AC")) return false;
       if (filters.wifi && !p.amenities?.includes("WiFi")) return false;

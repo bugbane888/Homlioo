@@ -5,14 +5,21 @@ import { favoritesService } from "../services/supabaseFavoritesService";
 
 const SavedContext = createContext(null);
 
+const isDev = process.env.NODE_ENV === "development";
+const devError = (...a) => isDev && console.error(...a);
+
 export const SavedProvider = ({ children }) => {
   const { showToast } = useToast();
   const { user } = useAuth();
 
-  // Initialize state from LocalStorage for non-authenticated users
+  // Issue 17 fix: normalize all IDs to strings so numeric Supabase bigints
+  // and local Date.now() IDs both match correctly via Array.includes()
+  const normalizeId = (id) => String(id);
+
   const [savedIds, setSavedIds] = useState(() => {
     const localData = localStorage.getItem("homlioo_saved");
-    return localData ? JSON.parse(localData) : [];
+    const parsed = localData ? JSON.parse(localData) : [];
+    return parsed.map(normalizeId); // normalize on load
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -23,11 +30,11 @@ export const SavedProvider = ({ children }) => {
         setIsLoading(true);
         try {
           const favorites = await favoritesService.getAll(user.id);
-          setSavedIds(favorites);
-          // Also update localStorage
-          localStorage.setItem("homlioo_saved", JSON.stringify(favorites));
+          const normalized = favorites.map(normalizeId);
+          setSavedIds(normalized);
+          localStorage.setItem("homlioo_saved", JSON.stringify(normalized));
         } catch (error) {
-          console.error("Error loading favorites:", error);
+          devError("Error loading favorites:", error);
           // Keep localStorage data as fallback
         } finally {
           setIsLoading(false);
@@ -37,20 +44,21 @@ export const SavedProvider = ({ children }) => {
     loadFavorites();
   }, [user?.id]);
 
-  // Sync state to LocalStorage whenever it changes (for non-authenticated users)
+  // Persist to localStorage whenever savedIds changes
   useEffect(() => {
     localStorage.setItem("homlioo_saved", JSON.stringify(savedIds));
   }, [savedIds]);
 
   const toggleSave = useCallback(async (pg) => {
-    const isSaved = savedIds.includes(pg.id);
-    
+    const pgId = normalizeId(pg.id);
+    const isSaved = savedIds.includes(pgId);
+
     // Optimistic update
     if (isSaved) {
-      setSavedIds((prev) => prev.filter((id) => id !== pg.id));
+      setSavedIds((prev) => prev.filter((id) => id !== pgId));
       showToast(`${pg.name} removed from favorites`, "info");
     } else {
-      setSavedIds((prev) => [...prev, pg.id]);
+      setSavedIds((prev) => [...prev, pgId]);
       showToast(`${pg.name} added to favorites! ❤️`, "success");
     }
 
@@ -59,13 +67,14 @@ export const SavedProvider = ({ children }) => {
       try {
         await favoritesService.toggle(user.id, pg.id);
       } catch (error) {
-        console.error("Error syncing favorite:", error);
+        devError("Error syncing favorite:", error);
         // Revert optimistic update on error
         if (isSaved) {
-          setSavedIds((prev) => [...prev, pg.id]);
+          setSavedIds((prev) => [...prev, pgId]);
         } else {
-          setSavedIds((prev) => prev.filter((id) => id !== pg.id));
+          setSavedIds((prev) => prev.filter((id) => id !== pgId));
         }
+        showToast("Failed to update favorites. Please try again.", "error");
       }
     }
   }, [savedIds, user?.id, showToast]);

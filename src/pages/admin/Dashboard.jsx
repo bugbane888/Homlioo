@@ -41,7 +41,7 @@ const StatCard = ({ title, value, icon, trend, color, bgColor, subtitle }) => (
 const Dashboard = () => {
   const navigate = useNavigate();
 
-  const { properties } = useProperties();
+  const { properties, isLoading } = useProperties();
   const { enquiries } = useEnquiries();
 
   // Logic: Get the 4 most recent listings
@@ -87,19 +87,19 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
         <StatCard
           title="Active PGs"
-          value={totalProperties}
-          subtitle="Listed properties"
+          value={isLoading ? "—" : totalProperties}
+          subtitle="Published properties"
           icon={<Building size={24} />}
-          trend="+4.2%"
+          trend="Live"
           color="text-emerald-500"
           bgColor="bg-emerald-500"
         />
         <StatCard
           title="Enquiries"
-          value={totalEnquiries}
+          value={isLoading ? "—" : totalEnquiries}
           subtitle="All time"
           icon={<MessageSquare size={24} />}
-          trend="+18.7%"
+          trend="Live"
           color="text-amber-500"
           bgColor="bg-amber-500"
         />
@@ -143,7 +143,35 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50 dark:divide-slate-700/50">
-                {recentListings.map((pg) => (
+                {isLoading ? (
+                  // Skeleton rows while loading
+                  [...Array(4)].map((_, i) => (
+                    <tr key={i}>
+                      <td className="px-6 sm:px-8 py-4 sm:py-5">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-slate-100 dark:bg-slate-700 rounded-xl animate-pulse" />
+                          <div className="space-y-2">
+                            <div className="h-3 w-32 bg-slate-100 dark:bg-slate-700 rounded animate-pulse" />
+                            <div className="h-2 w-20 bg-slate-100 dark:bg-slate-700 rounded animate-pulse" />
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 sm:px-8 py-4 text-center">
+                        <div className="h-3 w-16 bg-slate-100 dark:bg-slate-700 rounded animate-pulse mx-auto" />
+                      </td>
+                      <td className="px-6 sm:px-8 py-4 text-right">
+                        <div className="h-6 w-20 bg-slate-100 dark:bg-slate-700 rounded-full animate-pulse ml-auto" />
+                      </td>
+                    </tr>
+                  ))
+                ) : recentListings.length === 0 ? (
+                  <tr>
+                    <td colSpan="3" className="px-8 py-16 text-center text-slate-400 font-medium">
+                      No properties yet. <button className="text-brand-purple font-bold hover:underline" onClick={() => navigate('/admin/properties')}>Add your first PG →</button>
+                    </td>
+                  </tr>
+                ) : (
+                recentListings.map((pg) => (
                   <tr
                     key={pg.id}
                     className="hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-colors"
@@ -164,7 +192,7 @@ const Dashboard = () => {
                       </div>
                     </td>
                     <td className="px-6 sm:px-8 py-4 sm:py-5 text-center font-black text-brand-navy dark:text-white text-sm">
-                      ₹{pg.total.toLocaleString()}
+                      ₹{(pg.total ?? 0).toLocaleString()}
                     </td>
                     <td className="px-6 sm:px-8 py-4 sm:py-5 text-right">
                       <span
@@ -178,7 +206,8 @@ const Dashboard = () => {
                       </span>
                     </td>
                   </tr>
-                ))}
+                ))
+                )}
               </tbody>
             </table>
           </div>
