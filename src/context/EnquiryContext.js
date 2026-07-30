@@ -1,8 +1,12 @@
 import React, { createContext, useState, useContext, useCallback, useEffect } from "react";
 import { useToast } from "./ToastContext";
 import { enquiryService, mapEnquiryFromDB } from "../services/supabaseEnquiryService";
+import { supabase } from "../lib/supabase";
 
 const EnquiryContext = createContext(null);
+
+const isDev = process.env.NODE_ENV === 'development';
+const devError = (...a) => isDev && console.error(...a);
 
 export const EnquiryProvider = ({ children }) => {
   const { showToast } = useToast();
@@ -16,7 +20,7 @@ export const EnquiryProvider = ({ children }) => {
         const data = await enquiryService.getAll();
         setEnquiries(data.map(mapEnquiryFromDB));
       } catch (error) {
-        console.error("Error loading enquiries:", error);
+        devError("Error loading enquiries:", error);
         // Fallback to empty array - user might not be admin
         setEnquiries([]);
       } finally {
@@ -28,20 +32,27 @@ export const EnquiryProvider = ({ children }) => {
     // Subscribe to real-time changes
     const subscription = enquiryService.subscribeToChanges((payload) => {
       if (payload.eventType === "INSERT") {
-        setEnquiries((prev) => [mapEnquiryFromDB(payload.new), ...prev]);
+        const newEnquiry = mapEnquiryFromDB(payload.new);
+        // Issue 10 fix: deduplicate — addEnquiry may have already added this optimistically
+        setEnquiries((prev) => {
+          const exists = prev.some((e) => String(e.id) === String(newEnquiry.id));
+          if (exists) return prev;
+          return [newEnquiry, ...prev];
+        });
       } else if (payload.eventType === "UPDATE") {
         setEnquiries((prev) =>
           prev.map((e) =>
-            e.id === payload.new.id ? mapEnquiryFromDB(payload.new) : e
+            String(e.id) === String(payload.new.id) ? mapEnquiryFromDB(payload.new) : e
           )
         );
       } else if (payload.eventType === "DELETE") {
-        setEnquiries((prev) => prev.filter((e) => e.id !== payload.old.id));
+        setEnquiries((prev) => prev.filter((e) => String(e.id) !== String(payload.old.id)));
       }
     });
 
     return () => {
-      subscription.unsubscribe();
+      // Properly remove channel (Issue 6 pattern)
+      supabase.removeChannel(subscription);
     };
   }, []);
 
@@ -50,12 +61,13 @@ export const EnquiryProvider = ({ children }) => {
       try {
         const created = await enquiryService.create(data);
         const mapped = mapEnquiryFromDB(created);
-        setEnquiries((prev) => [mapped, ...prev]);
+        // Issue 10 fix: DON'T add to state manually here — let the real-time INSERT handle it
+        // (with deduplication). This prevents duplicate entries.
         showToast("Enquiry sent! The owner will contact you shortly.", "success");
         return mapped;
       } catch (error) {
-        console.error("Error adding enquiry:", error);
-        // Fallback to local state
+        devError("Error adding enquiry:", error);
+        // Fallback to local state only when Supabase fails
         const newEnquiry = {
           ...data,
           id: Date.now(),
@@ -72,19 +84,20 @@ export const EnquiryProvider = ({ children }) => {
 
   const updateStatus = useCallback(
     async (id, newStatus) => {
+      // Optimistic update for instant UI feedback
+      setEnquiries((prev) =>
+        prev.map((e) => (String(e.id) === String(id) ? { ...e, status: newStatus } : e)),
+      );
       try {
         await enquiryService.updateStatus(id, newStatus);
-        setEnquiries((prev) =>
-          prev.map((e) => (e.id === id ? { ...e, status: newStatus } : e)),
-        );
-        showToast(`Lead status updated to ${newStatus}`, "info");
+        showToast(`Status updated to "${newStatus}"`, "info");
       } catch (error) {
-        console.error("Error updating status:", error);
-        // Fallback to local state
+        devError("Error updating status:", error);
+        // Revert optimistic update on failure
         setEnquiries((prev) =>
-          prev.map((e) => (e.id === id ? { ...e, status: newStatus } : e)),
+          prev.map((e) => (String(e.id) === String(id) ? { ...e, status: e.status } : e)),
         );
-        showToast(`Lead status updated to ${newStatus}`, "info");
+        showToast("Failed to update status. Please try again.", "error");
       }
     },
     [showToast],
@@ -92,12 +105,19 @@ export const EnquiryProvider = ({ children }) => {
 
   const deleteEnquiry = useCallback(
     async (id) => {
+      // Optimistic removal
+      setEnquiries((prev) => prev.filter((e) => String(e.id) !== String(id)));
       try {
         await enquiryService.delete(id);
-        setEnquiries((prev) => prev.filter((e) => e.id !== id));
         showToast("Enquiry removed", "info");
       } catch (error) {
-        console.error("Error deleting enquiry:", error);
+        devError("Error deleting enquiry:", error);
+        showToast("Failed to delete enquiry.", "error");
+        // Re-fetch to restore state
+        try {
+          const data = await enquiryService.getAll();
+          setEnquiries(data.map(mapEnquiryFromDB));
+        } catch (_) { /* silent */ }
       }
     },
     [showToast],

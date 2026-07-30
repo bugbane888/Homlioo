@@ -60,22 +60,25 @@ const Settings = () => {
   };
 
   const handleSaveProfile = async () => {
-    if (!formData.name.trim() || !formData.email.trim()) {
-      showToast("Name and email are required", "error");
+    if (!formData.name.trim()) {
+      showToast("Name is required", "error");
       return;
     }
 
     setIsSaving(true);
-    setTimeout(() => {
-      updateProfile({
+    try {
+      await updateProfile({
         name: formData.name,
-        email: formData.email,
         phone: formData.phone,
         photo: photoPreview,
       });
       showToast("Profile updated successfully!", "success");
+    } catch (err) {
+      console.error("Profile save error:", err);
+      showToast("Failed to save profile. Please try again.", "error");
+    } finally {
       setIsSaving(false);
-    }, 500);
+    }
   };
 
   const handleSavePassword = async () => {
@@ -198,7 +201,7 @@ const Settings = () => {
                 />
               </div>
 
-              {/* Email Field */}
+              {/* Email Field — read-only; email change requires Supabase auth flow */}
               <div>
                 <label className="block text-sm font-bold text-brand-navy dark:text-white mb-2">
                   Email Address
@@ -207,10 +210,13 @@ const Settings = () => {
                   type="email"
                   name="email"
                   value={formData.email}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-xl text-sm font-medium dark:text-white outline-none focus:ring-2 ring-brand-purple/50 transition-all"
-                  placeholder="Enter your email"
+                  readOnly
+                  disabled
+                  className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-400 dark:text-slate-500 outline-none cursor-not-allowed"
                 />
+                <p className="text-xs text-slate-400 mt-1">
+                  To change your email address, please contact support.
+                </p>
               </div>
 
               {/* Phone Field */}
