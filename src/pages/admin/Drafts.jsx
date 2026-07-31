@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useToast } from "../../context/ToastContext";
 import { Trash2, Edit3, Plus, Send } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+
 import Button from "../../components/common/Button";
 import AdminPropertyForm from "../../components/admin/AdminPropertyForm";
 import { useProperties } from "../../context/PropertyContext";
