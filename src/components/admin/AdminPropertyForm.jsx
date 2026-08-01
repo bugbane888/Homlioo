@@ -237,8 +237,8 @@ const AdminPropertyForm = ({
           finalCoverImage = await propertyService.uploadImage(coverImageFile);
           devLog("[AdminPropertyForm] Cover image uploaded:", finalCoverImage);
         } catch (uploadError) {
-          devLog("[AdminPropertyForm] Cover image upload to storage failed, using base64 fallback:", uploadError);
-          // formData.coverImage already holds the base64 from FileReader — use that
+          devLog("[AdminPropertyForm] Cover image upload to storage failed:", uploadError);
+          throw new Error("Cover image upload failed. Please try again.");
         }
       }
 
@@ -253,20 +253,23 @@ const AdminPropertyForm = ({
           devLog("[AdminPropertyForm] Gallery images uploaded:", uploadedUrls);
         } catch (uploadError) {
           devLog("[AdminPropertyForm] Gallery upload failed:", uploadError);
-          // Don't abort — existing images are still valid
+          throw new Error("Gallery images upload failed. Please try again.");
         }
       }
 
-      // ── Step 3: Derive price/total from the single room rent (for backward compat)
-      const singleRent = parseInt(formData.rooms.single?.rent || 0, 10);
+      // ── Step 3: Derive price/total from the lowest available room rent
+      const validRents = Object.values(formData.rooms)
+        .map(r => parseInt(r.rent || 0, 10))
+        .filter(rent => rent > 0);
+      const basePrice = validRents.length > 0 ? Math.min(...validRents) : 0;
 
       const submittedData = {
         ...formData,
         coverImage: finalCoverImage,
         galleryImages: finalGalleryImages,
         id: initialData?.id || Date.now(),
-        price: singleRent,
-        total: singleRent,
+        price: basePrice,
+        total: basePrice,
         rating: parseFloat(formData.rating || 5.0),
         reviews: formData.reviews || 0,
         roomsLeft: formData.roomsLeft || 3,
