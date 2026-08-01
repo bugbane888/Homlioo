@@ -229,7 +229,16 @@ function buildDbPayload(data) {
   // Only include fields that are explicitly provided (don't overwrite with undefined)
   if (data.name !== undefined) payload.name = data.name;
   if (data.locality !== undefined) payload.locality = data.locality;
+  if (data.city !== undefined) payload.city = data.city;
+  if (data.state !== undefined) payload.state = data.state;
+  if (data.pincode !== undefined) payload.pincode = data.pincode;
   if (data.college !== undefined) payload.college = data.college;
+  if (data.collegeTime !== undefined) payload.college_time = data.collegeTime;
+  if (data.collegeDistance !== undefined) payload.college_distance = data.collegeDistance;
+  if (data.metroTime !== undefined) payload.metro_time = data.metroTime;
+  if (data.metroDistance !== undefined) payload.metro_distance = data.metroDistance;
+  if (data.hospitalTime !== undefined) payload.hospital_time = data.hospitalTime;
+  if (data.hospitalDistance !== undefined) payload.hospital_distance = data.hospitalDistance;
   if (data.price !== undefined) payload.price = data.price;
   if (data.total !== undefined) payload.total = data.total;
   if (data.gender !== undefined) payload.gender = data.gender;
@@ -269,15 +278,23 @@ export const mapPropertyFromDB = (row) => {
   const rooms = row.rooms || null;
 
   // Derive price/total from rooms if available, otherwise fall back to DB columns
-  const singleRent = rooms?.single?.rent ? parseInt(rooms.single.rent, 10) : row.price;
+  const validRents = rooms 
+    ? Object.values(rooms).map(r => parseInt(r.rent || 0, 10)).filter(rent => rent > 0)
+    : [];
+  const basePrice = validRents.length > 0 ? Math.min(...validRents) : row.price;
 
   return {
     id: row.id,
     name: row.name,
     locality: row.locality,
+    city: row.city || '',
+    state: row.state || '',
+    pincode: row.pincode || '',
     college: row.college,
-    price: singleRent || row.price || 0,
-    total: row.total || singleRent || 0,
+    collegeTime: row.college_time || '',
+    collegeDistance: row.college_distance || '',
+    price: basePrice || row.price || 0,
+    total: row.total || basePrice || 0,
     gender: row.gender,
     sharing: row.sharing,
     rating: parseFloat(row.rating) || 0,
@@ -289,7 +306,11 @@ export const mapPropertyFromDB = (row) => {
     tags: row.tags || [],
     rules: row.rules || [],
     metro: row.metro || '',
+    metroTime: row.metro_time || '',
+    metroDistance: row.metro_distance || '',
     hospital: row.hospital || '',
+    hospitalTime: row.hospital_time || '',
+    hospitalDistance: row.hospital_distance || '',
     mapUrl: row.map_url || '',
     description: row.description || '',
     ownerName: row.owner_name || '',
