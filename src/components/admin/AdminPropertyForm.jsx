@@ -75,17 +75,21 @@ const AdminPropertyForm = ({
   const [validationErrors, setValidationErrors] = useState({});
   const [selectedRoomType, setSelectedRoomType] = useState("single");
   const [isUploading, setIsUploading] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [coverImageFile, setCoverImageFile] = useState(null);
   const [galleryImageFiles, setGalleryImageFiles] = useState([]);
   const [galleryPreviews, setGalleryPreviews] = useState([]);  // Bug 4: previews for new files
   const [formData, setFormData] = useState(getDefaultFormData());
+  // Stable key used to identify this draft in localStorage — set when the form opens
+  const draftKeyRef = React.useRef(null);
 
-  // ── Bug 2 fix: useEffect only populates rooms from initialData.rooms, NEVER from initialData.price
   useEffect(() => {
     if (!isOpen) return;
 
     if (initialData) {
       console.log("[AdminPropertyForm] Loading initialData:", initialData);
+      // Establish stable draftKey from existing ID or generate a new one
+      draftKeyRef.current = initialData.id || draftKeyRef.current || Date.now();
       setFormData({
         ...getDefaultFormData(),   // Start from clean defaults
         ...initialData,            // Overlay saved fields
@@ -108,6 +112,8 @@ const AdminPropertyForm = ({
       setGalleryImageFiles([]);
       setGalleryPreviews([]);
     } else {
+      // New property form — generate a fresh stable key for this session
+      draftKeyRef.current = Date.now();
       // New property form — fully reset
       setFormData(getDefaultFormData());
       setCoverImageFile(null);
@@ -212,9 +218,11 @@ const AdminPropertyForm = ({
     }));
   };
 
-  // ── Bug 1 fix: handleSubmit — draft removal and success toast only after backend confirms ──
+  // ── handleSubmit — draft removal and success toast only after backend confirms ──
   const handleSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
+    // Prevent double-click
+    if (isUploading) return;
 
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
@@ -243,12 +251,10 @@ const AdminPropertyForm = ({
       }
 
       // ── Step 2: Upload new gallery images to storage
-      // Bug 4 fix: upload ALL gallery files and collect their public URLs
       let finalGalleryImages = [...(formData.galleryImages || [])];
       if (galleryImageFiles.length > 0) {
         try {
           const uploadedUrls = await propertyService.uploadImages(galleryImageFiles);
-          // Append new URLs to existing saved URLs
           finalGalleryImages = [...finalGalleryImages, ...uploadedUrls];
           devLog("[AdminPropertyForm] Gallery images uploaded:", uploadedUrls);
         } catch (uploadError) {
@@ -267,7 +273,7 @@ const AdminPropertyForm = ({
         ...formData,
         coverImage: finalCoverImage,
         galleryImages: finalGalleryImages,
-        id: initialData?.id || Date.now(),
+        id: initialData?.id || draftKeyRef.current || Date.now(),
         price: basePrice,
         total: basePrice,
         rating: parseFloat(formData.rating || 5.0),
@@ -284,29 +290,28 @@ const AdminPropertyForm = ({
 
       devLog("[AdminPropertyForm] Submitting data to backend:", submittedData);
 
-      // ── Step 4: Call backend — Bug 1 fix: await this BEFORE touching localStorage or showing success
+      // ── Step 4: Call backend — await BEFORE touching localStorage or showing success
       await onSubmit(submittedData);
 
       // ── Step 5: Only reach here if backend succeeded ──────────────────────
-      // Remove from drafts now that it's been published successfully
+      // Remove the draft from localStorage now that it's been published
       try {
+        const draftId = initialData?.id || draftKeyRef.current;
         const drafts = JSON.parse(localStorage.getItem("homlioo_drafts") || "[]");
-        const draftId = initialData?.id || submittedData.id;
-        const updatedDrafts = drafts.filter((d) => d.id !== draftId);
+        const updatedDrafts = drafts.filter((d) => String(d.id) !== String(draftId));
         localStorage.setItem("homlioo_drafts", JSON.stringify(updatedDrafts));
         devLog("[AdminPropertyForm] Draft removed from localStorage (publish succeeded)");
       } catch (localErr) {
         devLog("[AdminPropertyForm] Could not clean draft from localStorage:", localErr);
-        // Non-critical — don't block success flow
       }
 
       showToast("Property published successfully! 🎉", "success");
       onClose();
     } catch (error) {
-      // ── Bug 1 fix: If backend failed, draft stays in localStorage — do NOT remove it
+      // If backend failed, draft stays in localStorage — do NOT remove it
       devError("[AdminPropertyForm] Publish failed:", error);
       showToast(
-        `Failed to publish property: ${error?.message || "Unknown error"}. Your draft has been kept.`,
+        `Failed to publish: ${error?.message || "Unknown error"}. Your draft has been kept.`,
         "error"
       );
       // Do NOT call onClose() — keep the modal open so admin can retry
@@ -315,12 +320,16 @@ const AdminPropertyForm = ({
     }
   };
 
-  // ── Save draft (localStorage only — no backend) ─────────────────────────────
-  const handleSaveDraft = () => {
+  // ── Save draft (localStorage only — no backend, idempotent) ─────────────────
+  const handleSaveDraft = async () => {
+    // Prevent double-click / concurrent saves
+    if (isSavingDraft || isUploading) return;
+    setIsSavingDraft(true);
     try {
+      // Always use the same stable draftKey for this form session
+      const draftId = initialData?.id || draftKeyRef.current;
       const drafts = JSON.parse(localStorage.getItem("homlioo_drafts") || "[]");
-      const draftId = initialData?.id || Date.now();
-      const existingIndex = drafts.findIndex((d) => d.id === draftId);
+      const existingIndex = drafts.findIndex((d) => String(d.id) === String(draftId));
 
       const draftToSave = {
         ...formData,
@@ -330,16 +339,19 @@ const AdminPropertyForm = ({
       };
 
       if (existingIndex >= 0) {
+        // Update existing draft in-place (prevents duplication)
         drafts[existingIndex] = draftToSave;
       } else {
         drafts.push(draftToSave);
       }
 
       localStorage.setItem("homlioo_drafts", JSON.stringify(drafts));
-      showToast("Draft saved successfully! You can continue editing later.", "success");
+      showToast("Draft saved! You can continue editing later.", "success");
     } catch (err) {
       console.error("[AdminPropertyForm] Failed to save draft:", err);
       showToast("Failed to save draft. Please try again.", "error");
+    } finally {
+      setIsSavingDraft(false);
     }
   };
 
@@ -973,18 +985,33 @@ const AdminPropertyForm = ({
 
         {/* Fixed footer buttons */}
         <div className="flex gap-4 p-8 lg:p-12 bg-white dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700 shrink-0 flex-wrap justify-end">
-          <Button type="button" variant="outline" onClick={onClose} className="min-w-[130px]">
+          <Button type="button" variant="outline" onClick={onClose} disabled={isUploading} className="min-w-[130px]">
             Cancel
           </Button>
-          <Button type="button" variant="outline" onClick={handleSaveDraft} className="min-w-[150px]">
-            <FileText size={18} /> Save Draft
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleSaveDraft}
+            disabled={isSavingDraft || isUploading}
+            className="min-w-[150px]"
+          >
+            {isSavingDraft ? (
+              <span className="flex items-center gap-2">
+                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Saving...
+              </span>
+            ) : (
+              <><FileText size={18} /> Save Draft</>
+            )}
           </Button>
-          {/* Bug 1 fix: single click handler via form onSubmit — not duplicated */}
           <Button
             type="button"
             variant="primary"
             className="min-w-[150px] py-3 shadow-xl shadow-amber-500/20"
-            disabled={isUploading}
+            disabled={isUploading || isSavingDraft}
             onClick={handleSubmit}
           >
             {isUploading ? (
