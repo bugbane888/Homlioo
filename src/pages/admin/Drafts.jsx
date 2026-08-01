@@ -37,24 +37,18 @@ const Drafts = () => {
     setIsFormOpen(true);
   };
 
-  // Bug 1 fix: publish is handled inside AdminPropertyForm.handleSubmit
   // This onSubmit callback is called ONLY after the backend responds successfully.
   const handleFormSubmit = async (formData) => {
     try {
-      if (editingDraft?.id) {
-        // If draft has a valid Supabase-issued ID (not a Date.now() fallback),
-        // try updating; otherwise create new.
-        const isSupabaseId = typeof editingDraft.id === "number" && editingDraft.id < 1e13;
-        if (isSupabaseId) {
-          await updateProperty(editingDraft.id, formData);
-        } else {
-          await addProperty(formData);
-        }
+      if (editingDraft?.supabaseId) {
+        // Draft was previously saved to Supabase with a real DB id — update it
+        await updateProperty(editingDraft.supabaseId, formData);
       } else {
+        // New draft being published for the first time — create in DB
         await addProperty(formData);
       }
-      // Success — AdminPropertyForm will remove the draft from localStorage
-      // and show the success toast internally. We just close here.
+      // Success — AdminPropertyForm removes the draft from localStorage
+      // and shows the success toast internally. We just close here.
       setIsFormOpen(false);
       setEditingDraft(null);
       reloadDrafts(); // Refresh the drafts list

@@ -260,14 +260,22 @@ function buildDbPayload(data) {
   if (data.ownerPhone !== undefined) payload.owner_phone = data.ownerPhone;
   if (data.coverImage !== undefined) payload.cover_image = data.coverImage;
   if (data.galleryImages !== undefined) payload.gallery_images = data.galleryImages;
+  // Gate / rules / food
+  if (data.gateClosingTime !== undefined) payload.gate_closing_time = data.gateClosingTime;
+  if (data.smokingAllowed !== undefined) payload.smoking_allowed = data.smokingAllowed;
+  if (data.guestsAllowed !== undefined) payload.guests_allowed = data.guestsAllowed;
+  if (data.noticePeriod !== undefined) payload.notice_period = data.noticePeriod;
+  if (data.lockInPeriod !== undefined) payload.lock_in_period = data.lockInPeriod;
+  if (data.foodTiming !== undefined) payload.food_timing = data.foodTiming;
   // Rooms (full JSONB structure with per-room pricing)
   if (data.rooms !== undefined) payload.rooms = data.rooms;
   // Electricity — only store if explicitly provided (avoid defaulting to 500)
   if (data.electricity !== undefined && data.electricity !== '') {
     payload.electricity = parseInt(data.electricity, 10) || null;
   }
-  // Status for draft/publish workflow
+  // Status & timestamps
   if (data.status !== undefined) payload.status = data.status;
+  if (data.publishedAt !== undefined) payload.published_at = data.publishedAt;
 
   return payload;
 }
@@ -324,8 +332,16 @@ export const mapPropertyFromDB = (row) => {
     rooms: rooms,
     // electricity: only set if explicitly stored; null means "not specified"
     electricity: row.electricity ?? null,
+    // Gate / rules / food
+    gateClosingTime: row.gate_closing_time || '10:00 PM',
+    smokingAllowed: row.smoking_allowed || false,
+    guestsAllowed: row.guests_allowed || false,
+    noticePeriod: row.notice_period || '30 Days',
+    lockInPeriod: row.lock_in_period || '6 Months',
+    foodTiming: row.food_timing || '',
     // status: default to 'published' for backward compatibility with old rows
     status: row.status || 'published',
+    publishedAt: row.published_at || null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
